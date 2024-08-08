@@ -1,0 +1,408 @@
+{
+  "id": "d7efd4ee-a92a-4c96-b266-d8595a276757",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.Category": {
+      "name": "Category",
+      "schema": "",
+      "columns": {
+        "CG_id": {
+          "name": "CG_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "CG_name": {
+          "name": "CG_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Comment": {
+      "name": "Comment",
+      "schema": "",
+      "columns": {
+        "CM_id": {
+          "name": "CM_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "CM_text": {
+          "name": "CM_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "CM_createDate": {
+          "name": "CM_createDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "P_id": {
+          "name": "P_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Comment_P_id_Product_P_id_fk": {
+          "name": "Comment_P_id_Product_P_id_fk",
+          "tableFrom": "Comment",
+          "tableTo": "Product",
+          "columnsFrom": [
+            "P_id"
+          ],
+          "columnsTo": [
+            "P_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Customer": {
+      "name": "Customer",
+      "schema": "",
+      "columns": {
+        "C_id": {
+          "name": "C_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "C_name": {
+          "name": "C_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "C_password": {
+          "name": "C_password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "C_email": {
+          "name": "C_email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "C_gender": {
+          "name": "C_gender",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "C_age": {
+          "name": "C_age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.OrderDetail": {
+      "name": "OrderDetail",
+      "schema": "",
+      "columns": {
+        "OD_id": {
+          "name": "OD_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "OD_quantity": {
+          "name": "OD_quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "OD_price": {
+          "name": "OD_price",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "P_id": {
+          "name": "P_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "O_id": {
+          "name": "O_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "OrderDetail_P_id_Product_P_id_fk": {
+          "name": "OrderDetail_P_id_Product_P_id_fk",
+          "tableFrom": "OrderDetail",
+          "tableTo": "Product",
+          "columnsFrom": [
+            "P_id"
+          ],
+          "columnsTo": [
+            "P_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "OrderDetail_O_id_Order_O_id_fk": {
+          "name": "OrderDetail_O_id_Order_O_id_fk",
+          "tableFrom": "OrderDetail",
+          "tableTo": "Order",
+          "columnsFrom": [
+            "O_id"
+          ],
+          "columnsTo": [
+            "O_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Order": {
+      "name": "Order",
+      "schema": "",
+      "columns": {
+        "O_id": {
+          "name": "O_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "Date_time": {
+          "name": "Date_time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Total": {
+          "name": "Total",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "C_id": {
+          "name": "C_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "PM_id": {
+          "name": "PM_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Order_C_id_Customer_C_id_fk": {
+          "name": "Order_C_id_Customer_C_id_fk",
+          "tableFrom": "Order",
+          "tableTo": "Customer",
+          "columnsFrom": [
+            "C_id"
+          ],
+          "columnsTo": [
+            "C_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Order_PM_id_Payment_PM_id_fk": {
+          "name": "Order_PM_id_Payment_PM_id_fk",
+          "tableFrom": "Order",
+          "tableTo": "Payment",
+          "columnsFrom": [
+            "PM_id"
+          ],
+          "columnsTo": [
+            "PM_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Payment": {
+      "name": "Payment",
+      "schema": "",
+      "columns": {
+        "PM_id": {
+          "name": "PM_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "PM_amount": {
+          "name": "PM_amount",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "PM_type": {
+          "name": "PM_type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Date_time": {
+          "name": "Date_time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Product": {
+      "name": "Product",
+      "schema": "",
+      "columns": {
+        "P_id": {
+          "name": "P_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "P_name": {
+          "name": "P_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "P_description": {
+          "name": "P_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "P_quantity": {
+          "name": "P_quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "P_price": {
+          "name": "P_price",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "CG_id": {
+          "name": "CG_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Product_CG_id_Category_CG_id_fk": {
+          "name": "Product_CG_id_Category_CG_id_fk",
+          "tableFrom": "Product",
+          "tableTo": "Category",
+          "columnsFrom": [
+            "CG_id"
+          ],
+          "columnsTo": [
+            "CG_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Rate": {
+      "name": "Rate",
+      "schema": "",
+      "columns": {
+        "R_id": {
+          "name": "R_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "R_total": {
+          "name": "R_total",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "R_createDate": {
+          "name": "R_createDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "P_id": {
+          "name": "P_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Rate_P_id_Product_P_id_fk": {
+          "name": "Rate_P_id_Product_P_id_fk",
+          "tableFrom": "Rate",
+          "tableTo": "Product",
+          "columnsFrom": [
+            "P_id"
+          ],
+          "columnsTo": [
+            "P_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
