@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "Comment" (
 	"CM_id" integer PRIMARY KEY NOT NULL,
 	"CM_text" text,
 	"CM_createDate" timestamp,
-	"P_id" integer
+	"P_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Customer" (
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS "OrderDetail" (
 	"OD_id" integer PRIMARY KEY NOT NULL,
 	"OD_quantity" integer,
 	"OD_price" numeric(10, 2),
-	"P_id" integer,
+	"P_id" uuid,
 	"O_id" integer
 );
 --> statement-breakpoint
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS "Rate" (
 	"R_id" integer PRIMARY KEY NOT NULL,
 	"R_total" numeric(10, 2),
 	"R_createDate" timestamp,
-	"P_id" integer
+	"P_id" uuid
 );
 --> statement-breakpoint
 DO $$ BEGIN

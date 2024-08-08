@@ -1,5 +1,5 @@
 {
-  "id": "d7efd4ee-a92a-4c96-b266-d8595a276757",
+  "id": "b4643999-2af4-4fed-9a46-681835f1edb6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -50,7 +50,7 @@
         },
         "P_id": {
           "name": "P_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         }
@@ -144,7 +144,7 @@
         },
         "P_id": {
           "name": "P_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -373,7 +373,7 @@
         },
         "P_id": {
           "name": "P_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         }
