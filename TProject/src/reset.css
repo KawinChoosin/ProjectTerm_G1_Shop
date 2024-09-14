@@ -1,0 +1,52 @@
+/* Reset box-sizing to border-box */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Reset margin and padding for all elements */
+html, body, div, h1, h2, h3, h4, h5, h6, p, ul, ol, li, table, tr, td, th, form, fieldset, legend, input, textarea, button {
+  margin: 0;
+  padding: 0;
+}
+
+/* Set a default font size and line height */
+body {
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: Arial, sans-serif;
+}
+
+/* Remove list styles */
+ul, ol {
+  list-style: none;
+}
+
+/* Remove table border spacing */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Remove default border from form elements */
+input, textarea, button, select {
+  border: none;
+  outline: none;
+}
+
+/* Ensure links are not underlined by default */
+a {
+  text-decoration: none;
+}
+
+/* Ensure images and other media elements are responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Set a default background color */
+body {
+  background-color: #fff;
+}

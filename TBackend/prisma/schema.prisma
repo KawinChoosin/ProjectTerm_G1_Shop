@@ -1,0 +1,87 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  P_id          String   @id @default(uuid())
+  P_name        String
+  P_description String?
+  P_quantity    Int
+  P_price       Decimal
+  P_img         String?
+  CG_id         Int
+  Category      Category  @relation(fields: [CG_id], references: [CG_id])
+
+  Rate          Rate[]
+  Comment       Comment[]
+  OrderDetail   OrderDetail[]
+}
+
+model Customer {
+  C_id       Int      @id @default(autoincrement())
+  C_name     String
+  C_password String
+  C_email    String
+  C_gender   String
+  C_age      Int
+
+  Order      Order[]
+}
+
+model Order {
+  O_id      Int      @id @default(autoincrement())
+  Date_time DateTime
+  Total     Decimal
+  C_id      Int
+  PM_id     Int
+  Customer  Customer  @relation(fields: [C_id], references: [C_id])
+  Payment   Payment   @relation(fields: [PM_id], references: [PM_id])
+  OrderDetail OrderDetail[]
+}
+
+model OrderDetail {
+  OD_id     Int      @id @default(autoincrement())
+  OD_quantity Int
+  OD_price  Decimal
+  P_id      String
+  O_id      Int
+  Product   Product   @relation(fields: [P_id], references: [P_id])
+  Order     Order     @relation(fields: [O_id], references: [O_id])
+}
+
+model Payment {
+  PM_id     Int      @id @default(autoincrement())
+  PM_amount Decimal
+  PM_type   String
+  Date_time DateTime
+
+  Order     Order[]
+}
+
+model Category {
+  CG_id     Int      @id @default(autoincrement())
+  CG_name   String
+
+  Product   Product[]
+}
+
+model Rate {
+  R_id         Int      @id @default(autoincrement())
+  R_total      Decimal
+  R_createDate DateTime
+  P_id         String
+  Product      Product   @relation(fields: [P_id], references: [P_id])
+}
+
+model Comment {
+  CM_id        Int      @id @default(autoincrement())
+  CM_text      String
+  CM_createDate DateTime
+  P_id         String
+  Product      Product   @relation(fields: [P_id], references: [P_id])
+}

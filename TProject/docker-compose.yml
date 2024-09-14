@@ -1,0 +1,14 @@
+name: g1-project # You can also change this to another name to avoid warning with existing group. 
+services:
+  frontend:
+    container_name: g1-frontend
+    build: .
+    ports:
+      - 3333:5173
+    networks:
+      - g1-net
+    environment:
+      - NGINX_PROXY=http://pf-backend:3000
+      - NGINX_PORT=5173
+networks:
+  g1-net: # Check by using `docker network ls` command
