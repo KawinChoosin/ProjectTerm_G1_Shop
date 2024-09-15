@@ -9,17 +9,6 @@ app.use(cors());
 app.use(express.json());
 
 
-// Enable CORS for all requests
-// Health check route to verify DB connection
-app.get('/products', async (req, res) => {
-    try {
-      const products = await prisma.product.findMany();
-      res.json(products);
-    } catch (error) {
-      res.status(500).json({ error: 'Database connection error' });
-    }
-  });
-
 // Get all products
 app.get('/products', async (req, res) => {
   try {

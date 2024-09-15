@@ -6,14 +6,23 @@ WORKDIR /app
 
 # Install app dependencies
 COPY package*.json ./
-
 RUN npm install
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Run the app
+
+# Copy Prisma schema
+COPY prisma ./prisma
 
 # Copy app source code
 COPY . .
 
-# Expose the port the app runs on
-EXPOSE 2222
 
-# Run the app
+RUN npx prisma generate
+# RUN npx prisma migrate dev --name init
+# # Generate Prisma client
+
 CMD ["node", "index.js"]
+

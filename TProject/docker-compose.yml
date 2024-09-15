@@ -7,8 +7,9 @@ services:
       - 3333:5173
     networks:
       - g1-net
+    depends_on:
+      - http://localhost:3000
     environment:
-      - NGINX_PROXY=http://pf-backend:3000
-      - NGINX_PORT=5173
+     - CHOKIDAR_USEPOLLING=true
 networks:
   g1-net: # Check by using `docker network ls` command

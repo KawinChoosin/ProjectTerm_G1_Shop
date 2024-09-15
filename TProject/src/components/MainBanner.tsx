@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 
+
 interface MainBannerProps {
   mainpic: string;
   Topic: string;
