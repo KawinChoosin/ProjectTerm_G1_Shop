@@ -1,7 +1,7 @@
 # Get started
 
 - Make `.env` from `.env.example`
-- `docker compose up -d`
+
 
 # User management 
 
