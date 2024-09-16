@@ -88,14 +88,15 @@ model Comment {
 }
 
 model CartDetail {
-  CA_id       Int
+  CA_id       Int      @id @default(autoincrement())
   C_id        Int
   P_id        Int
   CA_quantity Int
-  CA_price    Int     // Changed to integer
+  CA_price    Float
 
+  // Define the relation fields if necessary
+  Product     Product @relation(fields: [P_id], references: [P_id])
   Customer    Customer @relation(fields: [C_id], references: [C_id])
-  Product     Product  @relation(fields: [P_id], references: [P_id])
-  
-  @@id([C_id, P_id]) // Composite primary key
+
+  @@unique([C_id, P_id]) // Composite key to ensure a unique combination
 }
