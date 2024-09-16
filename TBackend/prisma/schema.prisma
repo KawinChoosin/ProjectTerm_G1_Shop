@@ -7,81 +7,95 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Category {
+  CG_id   Int      @id @default(autoincrement())
+  CG_name String   @db.VarChar(255)
+  Product Product[]
+}
+
 model Product {
-  P_id          String   @id @default(uuid())
-  P_name        String
-  P_description String?
+  P_id          Int      @id @default(autoincrement())
+  P_name        String   @db.VarChar(255)
+  P_description String?  @db.Text
   P_quantity    Int
-  P_price       Decimal
-  P_img         String?
+  P_price       Int     // Changed to integer
+  P_img         String? @db.VarChar(1000)
   CG_id         Int
-  Category      Category  @relation(fields: [CG_id], references: [CG_id])
+  Category      Category @relation(fields: [CG_id], references: [CG_id])
 
   Rate          Rate[]
   Comment       Comment[]
   OrderDetail   OrderDetail[]
+  CartDetail    CartDetail[]
 }
 
 model Customer {
   C_id       Int      @id @default(autoincrement())
-  C_name     String
-  C_password String
-  C_email    String
-  C_gender   String
+  C_name     String   @db.VarChar(255)
+  C_password String   @db.VarChar(255)
+  C_email    String   @db.VarChar(255)
+  C_gender   String   @db.VarChar(10)
   C_age      Int
 
   Order      Order[]
+  CartDetail CartDetail[]
 }
 
 model Order {
   O_id      Int      @id @default(autoincrement())
-  Date_time DateTime
-  Total     Decimal
   C_id      Int
+  Date_time DateTime
+  Total     Int     // Changed to integer
   PM_id     Int
-  Customer  Customer  @relation(fields: [C_id], references: [C_id])
-  Payment   Payment   @relation(fields: [PM_id], references: [PM_id])
+  Customer  Customer @relation(fields: [C_id], references: [C_id])
+  Payment   Payment  @relation(fields: [PM_id], references: [PM_id])
   OrderDetail OrderDetail[]
 }
 
 model OrderDetail {
   OD_id     Int      @id @default(autoincrement())
-  OD_quantity Int
-  OD_price  Decimal
-  P_id      String
   O_id      Int
-  Product   Product   @relation(fields: [P_id], references: [P_id])
-  Order     Order     @relation(fields: [O_id], references: [O_id])
+  P_id      Int
+  OD_quantity Int
+  OD_price  Int     // Changed to integer
+  Order     Order   @relation(fields: [O_id], references: [O_id])
+  Product   Product @relation(fields: [P_id], references: [P_id])
 }
 
 model Payment {
   PM_id     Int      @id @default(autoincrement())
-  PM_amount Decimal
-  PM_type   String
+  PM_amount Int     // Changed to integer
+  PM_type   String   @db.VarChar(50)
   Date_time DateTime
 
   Order     Order[]
 }
 
-model Category {
-  CG_id     Int      @id @default(autoincrement())
-  CG_name   String
-
-  Product   Product[]
-}
-
 model Rate {
   R_id         Int      @id @default(autoincrement())
-  R_total      Decimal
+  R_total      Int     // Changed to integer
   R_createDate DateTime
-  P_id         String
-  Product      Product   @relation(fields: [P_id], references: [P_id])
+  P_id         Int
+  Product      Product @relation(fields: [P_id], references: [P_id])
 }
 
 model Comment {
   CM_id        Int      @id @default(autoincrement())
-  CM_text      String
+  CM_text      String   @db.Text
   CM_createDate DateTime
-  P_id         String
-  Product      Product   @relation(fields: [P_id], references: [P_id])
+  P_id         Int
+  Product      Product @relation(fields: [P_id], references: [P_id])
+}
+
+model CartDetail {
+  CA_id       Int
+  C_id        Int
+  P_id        Int
+  CA_quantity Int
+  CA_price    Int     // Changed to integer
+
+  Customer    Customer @relation(fields: [C_id], references: [C_id])
+  Product     Product  @relation(fields: [P_id], references: [P_id])
+  
+  @@id([C_id, P_id]) // Composite primary key
 }

@@ -6,7 +6,7 @@
 # User management 
 
 - `docker exec -it g1-db bash`
-- ``
+- `psql -U usertest -d g1db`
 - Don't forget to change the password.
 
 ```
