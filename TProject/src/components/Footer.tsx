@@ -8,7 +8,7 @@ function Footer() {
       sx={{
         width: '100%',
         height: '170px',
-        background: '#BDBDBE',
+        background: '#0c0d0e',
         boxSizing: 'border-box',
         padding: '0 20px',
         mt:"10%",
