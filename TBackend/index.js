@@ -78,7 +78,7 @@ app.get("/products/:id", async (req, res) => {
   }
 });
 
-// Add product to cart
+
 // Add product to cart
 app.post("/cart/add", async (req, res) => {
   const { C_id, P_id, CA_quantity, CA_price } = req.body;
@@ -120,6 +120,31 @@ app.post("/cart/add", async (req, res) => {
     res.status(500).json({ error: "Error adding product to cart" });
   }
 });
+
+// Get all cart items for a specific customer
+app.get("/cart/:C_id", async (req, res) => {
+  const { C_id } = req.params;
+
+  try {
+    const cartItems = await prisma.cartDetail.findMany({
+      where: {
+        C_id: parseInt(C_id, 10), // Ensure C_id is treated as an integer
+      },
+      include: {
+        Product: true, 
+      },
+    });
+    if (cartItems.length === 0) {
+      return res.status(404).json({ message: "No items found in the cart for this customer" });
+    }
+
+    res.json(cartItems);
+  } catch (error) {
+    console.error("Error fetching cart items:", error);
+    res.status(500).json({ error: "Error fetching cart items" });
+  }
+});
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
