@@ -1,4 +1,5 @@
 import React from "react";
+import google from "./element/google.png";
 import "./style_login.css"; // Assuming the CSS file is imported here
 
 const LoginForm: React.FC = () => {
@@ -17,7 +18,7 @@ const LoginForm: React.FC = () => {
 
         <div
           className="remember-forgot"
-          style={{ marginTop: "1px", marginBottom: "5px" }}
+          style={{ marginTop: "-15px", marginBottom: "15px" }}
         >
           <label>
             <input type="checkbox" style={{ marginRight: "5px" }} />
@@ -40,7 +41,7 @@ const LoginForm: React.FC = () => {
         <button type="submit" className="btn_authG">
           <img
             className="google"
-            src="/element/google.png"
+            src={google}
             alt="Google"
             style={{ height: "25px" }}
           />
