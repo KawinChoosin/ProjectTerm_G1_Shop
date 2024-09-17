@@ -78,6 +78,28 @@ app.get("/products/:id", async (req, res) => {
   }
 });
 
+// Update product quantity in cart
+app.patch("/cart/update", async (req, res) => {
+  const { C_id, P_id, CA_quantity, CA_price } = req.body;
+
+  try {
+    const updatedCartDetail = await prisma.cartDetail.update({
+      where: {
+        C_id_P_id: { C_id, P_id },
+      },
+      data: {
+        CA_quantity,
+        CA_price: CA_price * CA_quantity, // Update total price accordingly
+      },
+    });
+    res.json(updatedCartDetail);
+  } catch (error) {
+    console.error("Error updating cart quantity:", error);
+    res.status(500).json({ error: "Error updating cart quantity" });
+  }
+});
+
+
 
 // Add product to cart
 app.post("/cart/add", async (req, res) => {

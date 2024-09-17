@@ -4,8 +4,8 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import App from './App.tsx'
 import CartPage from './components/cart/CartPage.tsx';
-import './input.css'
-
+// import './input.css'
+// import Login from "./page/Login/App_Login.tsx"
 import React from 'react'
 import './reset.css';
 import ProductDetail from './components/Productdetail.tsx'
@@ -16,6 +16,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/products/:id" element={<ProductDetail />} />
+        {/* <Route path="/login" element={<Login />} /> */}
         <Route path="/cart" element={<CartPage />} />
         {/* <Route path="/electronic" element={<Elec />} />
         <Route path="/cloth" element={<Cloth />} />
