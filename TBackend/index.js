@@ -106,15 +106,14 @@ app.post("/cart/add", async (req, res) => {
   const { C_id, P_id, CA_quantity, CA_price } = req.body;
 
   try {
-    // Check if the product is already in the cart for the customer
     const existingCartDetail = await prisma.cartDetail.findUnique({
       where: {
         C_id_P_id: { C_id, P_id }, // Composite primary key
       },
     });
-
+    
+    // already have item
     if (existingCartDetail) {
-      // If the product is already in the cart, update the quantity and price
       const updatedCartDetail = await prisma.cartDetail.update({
         where: {
           C_id_P_id: { C_id, P_id },
@@ -126,7 +125,6 @@ app.post("/cart/add", async (req, res) => {
       });
       res.json(updatedCartDetail);
     } else {
-      // If the product is not in the cart, create a new cart detail entry
       const newCartDetail = await prisma.cartDetail.create({
         data: {
           C_id,
@@ -142,6 +140,29 @@ app.post("/cart/add", async (req, res) => {
     res.status(500).json({ error: "Error adding product to cart" });
   }
 });
+
+// Delete product from cart
+app.delete("/cart/delete", async (req, res) => {
+  const { C_id, P_id } = req.body;
+
+  try {
+    // Delete the cart item where the customer ID and product ID match
+    const deletedCartDetail = await prisma.cartDetail.delete({
+      where: {
+        C_id_P_id: {
+          C_id: parseInt(C_id, 10), // Ensure C_id is treated as an integer
+          P_id: parseInt(P_id, 10), // Ensure P_id is treated as an integer
+        },
+      },
+    });
+    res.json({ message: "Item successfully deleted from cart", deletedCartDetail });
+  } catch (error) {
+    console.error("Error deleting product from cart:", error);
+    res.status(500).json({ error: "Error deleting product from cart" });
+  }
+});
+
+
 
 // Get all cart items for a specific customer
 app.get("/cart/:C_id", async (req, res) => {

@@ -8,13 +8,11 @@ import {
   Grid,
   Container,
   Typography,
-  Button,
-  TextField,
   CircularProgress,
   Alert,
-
   Box,
 } from '@mui/material';
+import './cart.css'; 
 
 interface CartItemType {
   CA_id: number;
@@ -35,10 +33,7 @@ const CartPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [customerId, setCustomerId] = useState<number>(1); // Example customer_id
- 
 
-  
-  // Fetch cart items from the backend when the component is mounted
   useEffect(() => {
     const fetchCartDetails = async () => {
       try {
@@ -82,6 +77,22 @@ const CartPage: React.FC = () => {
     }
   };
 
+  const handleDelete = async (P_id: number, C_id: number) => {
+    try {
+      await axios.delete(`http://localhost:3000/cart/delete`, {
+        data: {
+          C_id,
+          P_id,
+        },
+      });
+      
+      // Remove the item from the state after successful deletion
+      setCartItems(cartItems.filter(item => item.P_id !== P_id));
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+
   // Handle loading state
   if (loading) {
     return <CircularProgress />;
@@ -102,9 +113,9 @@ const CartPage: React.FC = () => {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '100%', padding: '0', margin: '0' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '100%', padding: '0', margin: '0'}}>
         <Navbar />
-        <Container maxWidth="lg" sx={{ mt: 20, mb: 8 }}>
+        <Container maxWidth="xl" sx={{ mt: 20, mb: 8 }}>
           <Typography
             variant="h3"
             align="left"
@@ -122,13 +133,14 @@ const CartPage: React.FC = () => {
 
           <Grid container spacing={5} justifyContent="center">
             <Grid item xs={12} md={8}>
-              <Box sx={{ border: '1px solid #e0e0e0', p: 4, borderRadius: '8px' }}>
+              <Box className="scrollable-container" sx={{ p: 4, borderRadius: '8px', maxHeight: '600px', overflowY: 'auto' }}>
                 {cartItems.length > 0 ? (
                   cartItems.map((item) => (
                     <CartItem
                       key={item.P_id}
                       item={{ ...item.Product, CA_quantity: item.CA_quantity }}
                       onQuantityChange={(newQuantity) => handleQuantityChange(item.P_id, newQuantity)}
+                      onDelete={() => handleDelete(item.P_id, item.C_id)}
                     />
                   ))
                 ) : (
@@ -140,13 +152,10 @@ const CartPage: React.FC = () => {
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <Box sx={{ border: '1px solid #e0e0e0', p: 4, borderRadius: '8px' }}>
               <CartTotals subtotal={subtotal} shipping={shipping} discount={discount} total={total} />
-              </Box>
             </Grid>
           </Grid>
         </Container>
-
         <Footer />
       </div>
     </>
