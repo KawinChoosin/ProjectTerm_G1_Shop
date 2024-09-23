@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { CircularProgress, Typography } from "@mui/material";
+import { useParams } from "react-router-dom";
+import { CircularProgress, Typography, createSvgIcon } from "@mui/material";
 import axios from "axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import Box from "@mui/material/Box";
+import Fab from "@mui/material/Fab";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import useScreenSize from "./useScreenSize";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Get the product ID from the route
@@ -11,7 +17,8 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
   const [quantity, setQuantity] = useState(0);
-  const navigate = useNavigate();
+  const screenSize = useScreenSize();
+  const isMobile = screenSize.width < 900;
 
   // Fetch the product details by ID
   useEffect(() => {
@@ -69,13 +76,13 @@ const ProductDetail: React.FC = () => {
 
   const increaseQuantity = () => {
     if (quantity < (product?.P_quantity ?? 1)) {
-      setQuantity(quantity + 1);
+      setQuantity((prev) => prev + 1);
     }
   };
 
   const decreaseQuantity = () => {
     if (quantity > 0) {
-      setQuantity(quantity - 1);
+      setQuantity((prev) => Math.max(0, prev - 1));
     }
   };
 
@@ -103,60 +110,284 @@ const ProductDetail: React.FC = () => {
   };
 
   const handleAddToFav = () => {
-    alert(`Added ${product?.P_name} to favourite!`);
-    // navigate("/fav", {
-    //   state: {
+    alert(`Added ${product?.P_name} to your favourite!`);
+    // try {
+    //   const response = await axios.post("http://localhost:3000/fav/add", {
+    //     C_id: 1, // Replace with actual customer ID
     //     P_id: product.P_id,
-    //     P_name: product.P_name,
-    //     P_price: product.P_price,
-    //   },
-    // });
+    //     CA_quantity: quantity,
+    //     CA_price: product.P_price,
+    //   });
+
+    //   if (response.status === 200) {
+    //     alert(`Added ${product?.P_name} to your favourite!`);
+    //   }
+    // } catch (error) {
+    //   console.error("Error adding to cart:", error);
+    //   alert("Failed to add product to cart");
+    // }
   };
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        maxWidth: "100%",
-        padding: "0",
-        margin: "0",
-      }}
+  const PlusIcon = createSvgIcon(
+    // credit: plus icon from https://heroicons.com
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
     >
-      {/* header */}
-      <Navbar />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 4.5v15m7.5-7.5h-15"
+      />
+    </svg>,
+    "Plus"
+  );
 
-      <section
+  const MinusIcon = createSvgIcon(
+    // credit: minus icon from https://heroicons.com
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+    </svg>,
+    "Minus"
+  );
+
+  if (!isMobile) {
+    return (
+      <div
         style={{
           display: "flex",
-          padding: "2rem",
-          justifyContent: "center",
-          marginTop: "140px",
+          flexDirection: "column",
         }}
       >
-        <div style={{ flex: 1 }}>
+        {/* header */}
+        <Navbar />
+
+        <section
+          style={{
+            display: "flex",
+            padding: "2rem",
+            justifyContent: "center",
+            marginTop: "140px",
+            alignItems: "stretch",
+          }}
+        >
+          <div style={{ flex: 2, display: "flex" }}>
+            <img
+              src={product.P_img}
+              alt={product?.P_name}
+              style={{
+                width: "100%",
+                height: "auto",
+                objectFit: "contain",
+                borderRadius: "0.5rem",
+              }}
+            />
+          </div>
+          <div style={{ flex: 0.5 }}></div>
+          <div
+            style={{
+              flex: 2,
+              backgroundColor: "#f4f4f4",
+              padding: "1.5rem",
+              borderRadius: "0.5rem",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              height: "100%",
+              maxWidth: "50%",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography variant="h4" gutterBottom>
+                {product.P_name}
+              </Typography>
+              <Fab onClick={handleAddToFav} size="small" aria-label="like">
+                <FavoriteIcon />
+              </Fab>
+            </div>
+            <Typography variant="h6" color="textSecondary" gutterBottom>
+              {product.P_description}
+            </Typography>
+            <Typography variant="h5" color="red" gutterBottom>
+              ฿{product.P_price}
+            </Typography>
+            <p
+              style={{
+                color:
+                  product?.P_quantity && product.P_quantity > 0
+                    ? "green"
+                    : "red",
+              }}
+            >
+              {product?.P_quantity && product.P_quantity > 0
+                ? "In Stock: " + product.P_quantity
+                : "Out of Stock"}
+            </p>
+
+            {/* Quantity and Add to Cart Button */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                margin: "1.5rem 0",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginRight: "2rem",
+                  border: "1px solid",
+                  borderColor: "#027efa",
+                  borderRadius: "4px",
+                }}
+              >
+                <Button onClick={decreaseQuantity} sx={{ height: "40px" }}>
+                  <MinusIcon />
+                </Button>
+                <TextField
+                  variant="outlined"
+                  value={quantity}
+                  size="small"
+                  error={quantity > product.P_quantity}
+                  sx={{
+                    height: "40px",
+                    width: "50px",
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 0,
+                      "& fieldset": {
+                        borderLeft: "1px solid #027efa",
+                        borderRight: "1px solid #027efa",
+                        borderTop: "none",
+                        borderBottom: "none",
+                      },
+                      "&:hover fieldset": {
+                        borderLeft: "1px solid #027efa",
+                        borderRight: "1px solid #027efa",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderLeft: "1px solid #027efa",
+                        borderRight: "1px solid #027efa",
+                      },
+                    },
+                    "& .MuiOutlinedInput-input": {
+                      textAlign: "center",
+                      color: quantity > product.P_quantity ? "red" : "inherit",
+                    },
+                  }}
+                  onChange={(e) => {
+                    const value = Math.max(
+                      0,
+                      parseInt(e.target.value, 10) || 0
+                    );
+                    setQuantity(value);
+                  }}
+                />
+                <Button onClick={increaseQuantity} sx={{ height: "40px" }}>
+                  <PlusIcon />
+                </Button>
+              </Box>
+
+              <Button
+                onClick={handleAddToCart}
+                variant="contained"
+                sx={{
+                  backgroundColor: "#2e3135",
+                  color: "#fff",
+                  "&:hover": {
+                    backgroundColor: "#1a1819",
+                  },
+                }}
+                disabled={quantity < 1 || quantity > product.P_quantity}
+              >
+                Add to cart
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* footer */}
+        <Footer />
+      </div>
+    );
+  } else {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* header */}
+        <Navbar />
+
+        <div
+          style={{
+            flex: 2,
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "2rem",
+          }}
+        >
           <img
             src={product.P_img}
             alt={product?.P_name}
             style={{
-              width: "100%",
-              height: "auto",
-              objectFit: "cover",
+              width: "90%",
+              height: "90%",
+              objectFit: "contain",
               borderRadius: "0.5rem",
             }}
           />
         </div>
-        <div style={{ flex: 0.05 }}></div>
         <div
           style={{
-            flex: 2,
             backgroundColor: "#f4f4f4",
-            padding: "1.5rem",
+            padding: "2rem",
             borderRadius: "0.5rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            height: "100%",
+            maxWidth: "100%",
+            wordWrap: "break-word",
+            overflowWrap: "break-word",
+            marginTop: "2rem",
+            marginLeft: "1rem",
+            marginRight: "1rem",
           }}
         >
-          <Typography variant="h4" gutterBottom>
-            {product.P_name}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography variant="h4" gutterBottom>
+              {product.P_name}
+            </Typography>
+            <Fab onClick={handleAddToFav} size="small" aria-label="like">
+              <FavoriteIcon />
+            </Fab>
+          </div>
+          <Typography variant="h6" color="textSecondary" gutterBottom>
+            {product.P_description}
           </Typography>
           <Typography variant="h5" color="red" gutterBottom>
             ฿{product.P_price}
@@ -168,7 +399,7 @@ const ProductDetail: React.FC = () => {
             }}
           >
             {product?.P_quantity && product.P_quantity > 0
-              ? "In Stock"
+              ? "In Stock: " + product.P_quantity
               : "Out of Stock"}
           </p>
 
@@ -180,85 +411,81 @@ const ProductDetail: React.FC = () => {
               margin: "1.5rem 0",
             }}
           >
-            <button
-              onClick={decreaseQuantity}
-              style={{
-                padding: "0.5rem 1rem",
-                fontSize: "1rem",
-                cursor: "Pointer",
-                border: "2px solid #2A2927",
-                borderRadius: "0.25rem",
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "2rem",
+                border: "1px solid",
+                borderColor: "#027efa",
+                borderRadius: "4px",
               }}
             >
-              -
-            </button>
-            <span style={{ margin: "0 1rem", fontSize: "1.2rem" }}>
-              {quantity}
-            </span>
-            <button
-              onClick={increaseQuantity}
-              style={{
-                padding: "0.5rem 1rem",
-                border: "2px solid #2A2927",
-                borderRadius: "0.25rem",
-                fontSize: "1rem",
-                cursor: "Pointer",
-              }}
-            >
-              +
-            </button>
-            <button
+              <Button onClick={decreaseQuantity} sx={{ height: "40px" }}>
+                <MinusIcon />
+              </Button>
+              <TextField
+                variant="outlined"
+                value={quantity}
+                size="small"
+                error={quantity > product.P_quantity}
+                sx={{
+                  height: "40px",
+                  width: "50px",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 0,
+                    "& fieldset": {
+                      borderLeft: "1px solid #027efa",
+                      borderRight: "1px solid #027efa",
+                      borderTop: "none",
+                      borderBottom: "none",
+                    },
+                    "&:hover fieldset": {
+                      borderLeft: "1px solid #027efa",
+                      borderRight: "1px solid #027efa",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderLeft: "1px solid #027efa",
+                      borderRight: "1px solid #027efa",
+                    },
+                  },
+                  "& .MuiOutlinedInput-input": {
+                    textAlign: "center",
+                    color: quantity > product.P_quantity ? "red" : "inherit",
+                  },
+                }}
+                onChange={(e) => {
+                  const value = Math.max(0, parseInt(e.target.value, 10) || 0);
+                  setQuantity(value);
+                }}
+              />
+              <Button onClick={increaseQuantity} sx={{ height: "40px" }}>
+                <PlusIcon />
+              </Button>
+            </Box>
+
+            <Button
               onClick={handleAddToCart}
-              style={{
-                marginLeft: "1.5rem",
-                padding: "0.5rem 1rem",
-                backgroundColor: "#282828",
-                color: "white",
-                borderRadius: "0.25rem",
-                cursor: quantity < 1 ? "not-allowed" : "pointer",
+              variant="contained"
+              sx={{
+                backgroundColor: "#2e3135",
+                color: "#fff",
+                "&:hover": {
+                  backgroundColor: "#1a1819",
+                },
               }}
+              disabled={quantity < 1 || quantity > product.P_quantity}
             >
               Add to cart
-            </button>
-          </div>
-          <div>
-            <button
-              onClick={handleAddToFav}
-              style={{
-                padding: "0.3rem 0.3rem",
-                border: "2px solid #2A2927",
-                backgroundColor: "#ff9966",
-                color: "#2A2927",
-                borderRadius: "0.5rem",
-                fontSize: "0.7rem",
-                cursor: "Pointer",
-              }}
-            >
-              ❤ Add to favourite
-            </button>
+            </Button>
           </div>
         </div>
-      </section>
 
-      {/* Description Section */}
-      <section
-        style={{
-          padding: "1.5rem",
-          borderTop: "1px solid #C0C0C0",
-        }}
-      >
-        <Typography variant="h5" gutterBottom>
-          Description:
-        </Typography>
-        <Typography variant="body1" color="textSecondary" gutterBottom>
-          {product.P_description}
-        </Typography>
-      </section>
-
-      {/* footer */}
-      <Footer />
-    </div>
-  );
+        {/* footer */}
+        <Footer />
+      </div>
+    );
+  }
 };
 
 export default ProductDetail;
