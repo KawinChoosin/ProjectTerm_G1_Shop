@@ -20,5 +20,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "../TBackend/auth.service.js",
+    "../TBackend/auth.controller.js"
+  ]
 }
