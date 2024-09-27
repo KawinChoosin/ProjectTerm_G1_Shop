@@ -4,6 +4,7 @@ import CartItem from './CartItem';
 import CartTotals from './CartTotals';
 import Navbar from '../Navbar';
 import Footer from '../Footer';
+import CheckoutDialog from './CheckoutDialog';
 import {
   Grid,
   Container,
@@ -11,6 +12,8 @@ import {
   CircularProgress,
   Alert,
   Box,
+  createTheme, 
+  ThemeProvider,
 } from '@mui/material';
 import './cart.css'; 
 
@@ -28,29 +31,43 @@ interface CartItemType {
   };
 }
 
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Montserrat, sans-serif',
+    h6: {
+      fontFamily: 'Montserrat, sans-serif',
+    },
+    body2: {
+      fontFamily: 'Open Sans, sans-serif',
+    },
+  },
+});
+
 const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [customerId, setCustomerId] = useState<number>(1); // Example customer_id
+  const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false);
+  const [checkoutAddresses, setCheckoutAddresses] = useState<string[]>([]);
+
 
   useEffect(() => {
     const fetchCartDetails = async () => {
-      try {
+      // try {
         const response = await axios.get(`http://localhost:3000/cart/${customerId}`);
         setCartItems(response.data);  // Update state with cart items from API
         setLoading(false);            // Stop loading once data is fetched
-      } catch (error) {
-        console.error("Error fetching cart details:", error);
-        setError("Error fetching cart details");
-        setLoading(false);
-      }
+      // } catch (error) {
+      //   console.error("Error fetching cart details:", error);
+      //   setError("Error fetching cart details");
+      //   setLoading(false);
+      // }
     };
 
     fetchCartDetails();
   }, [customerId]);
 
-  // Function to handle quantity change and update cart details in the backend
   const handleQuantityChange = async (id: number, newQuantity: number) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
@@ -86,21 +103,33 @@ const CartPage: React.FC = () => {
         },
       });
       
-      // Remove the item from the state after successful deletion
       setCartItems(cartItems.filter(item => item.P_id !== P_id));
     } catch (error) {
       console.error('Error deleting item:', error);
     }
   };
 
-  // Handle loading state
-  if (loading) {
-    return <CircularProgress />;
-  }
+  const handleOpenCheckout = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/address/${customerId}`);
+      const addresses = response.data.map((addr: any) => {
+        return `${addr.A_street}, ${addr.A_city}, ${addr.A_state}, ${addr.A_postalCode}, ${addr.A_country}`;
+      });
+      setCheckoutAddresses(addresses);
+      setOpenCheckoutDialog(true);
+    } catch (error) {
+      console.error('Error fetching addresses:', error);
+    }
+  };
 
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
-  }
+  const handleCloseCheckout = () => setOpenCheckoutDialog(false);
+
+  const handleCheckoutSubmit = async (address: string, paymentMethod: string) => {
+    // Handle checkout submission logic here
+    console.log('Address:', address);
+    console.log('Payment Method:', paymentMethod);
+    handleCloseCheckout();
+  };
 
   const calculateSubtotal = () => {
     return cartItems.reduce((sum, item) => sum + item.Product.P_price * item.CA_quantity, 0);
@@ -116,6 +145,7 @@ const CartPage: React.FC = () => {
       <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '100%', padding: '0', margin: '0'}}>
         <Navbar />
         <Container maxWidth="xl" sx={{ mt: 20, mb: 8 }}>
+        <ThemeProvider theme={theme}>
           <Typography
             variant="h3"
             align="left"
@@ -152,11 +182,26 @@ const CartPage: React.FC = () => {
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <CartTotals subtotal={subtotal} shipping={shipping} discount={discount} total={total} />
+              <CartTotals
+                subtotal={subtotal}
+                shipping={shipping}
+                discount={discount}
+                total={total}
+                onCheckout={handleOpenCheckout} // Pass handleOpenCheckout to CartTotals
+              />
             </Grid>
           </Grid>
+          </ThemeProvider>
         </Container>
         <Footer />
+        <CheckoutDialog
+          customerId={customerId}
+          open={openCheckoutDialog}
+          onClose={handleCloseCheckout}
+          onSubmit={handleCheckoutSubmit}
+          total={total}
+          addresses={checkoutAddresses}  // Pass fetched addresses
+        />
       </div>
     </>
   );

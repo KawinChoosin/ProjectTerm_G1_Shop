@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Typography, IconButton, Box } from '@mui/material';
 import { Add, Remove, Close } from '@mui/icons-material';
+import './cart.css'
 
 interface CartItemProps {
   item: {
@@ -30,7 +31,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, onQuantityChange, onDelete })
   };
 
   return (
-    <Box mb={2} p={2} display="flex" justifyContent="space-between" alignItems="center" borderBottom={1} borderColor="#e0e0e0" sx={{ borderColor: '#e0e0e0', borderBottomWidth: '1px' }}>
+    <Box mb={2} p={2} display="flex" justifyContent="space-between" alignItems="center" borderBottom={1} borderColor="#e0e0e0">
       <Box display="flex" alignItems="center" width="100%">
         <img
           src={item.P_img || '/placeholder.png'}
@@ -42,7 +43,12 @@ const CartItem: React.FC<CartItemProps> = ({ item, onQuantityChange, onDelete })
           <Typography variant="body2" color="textSecondary">
             {item.P_description}
           </Typography>
+          <Typography className="price" fontWeight="500">
+            ${item.P_price.toFixed(2)}
+          </Typography>
+
         </Box>
+
         <Box display="flex" alignItems="center">
           <IconButton onClick={handleDecrease} disabled={item.CA_quantity <= 1} size="small" sx={{ color: '#000' }}>
             <Remove />

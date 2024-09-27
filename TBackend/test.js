@@ -120,6 +120,28 @@ async function P_test() {
       },
     ],
   });
+
+  // Insert addresses for the customer
+  await prisma.address.createMany({
+    data: [
+      {
+        A_street: "123 Main St",
+        A_city: "Hometown",
+        A_state: "CA",
+        A_postalCode: "12345",
+        A_country: "USA",
+        C_id: 1, 
+      },
+      {
+        A_street: "456 Elm St",
+        A_city: "Big City",
+        A_state: "NY",
+        A_postalCode: "67890",
+        A_country: "USA",
+        C_id: 1, 
+      },
+    ],
+  });
 }
 
 // Call the function
