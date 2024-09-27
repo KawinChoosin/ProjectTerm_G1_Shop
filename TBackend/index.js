@@ -196,21 +196,20 @@ app.get("/favourite/:C_id", async (req, res) => {
   try {
     const favItems = await prisma.favourite.findMany({
       where: {
-        C_id: parseInt(C_id, 10), // Ensure C_id is treated as an integer
+        C_id: parseInt(C_id, 10), // แปลง C_id ให้เป็นตัวเลข
       },
       include: {
-        Product: true,
+        Product: true, // ดึงข้อมูลสินค้าที่เกี่ยวข้อง
       },
     });
 
-    // Check if favItems is empty
     if (favItems.length === 0) {
       return res.status(404).json({
         message: "No items found in the favourites for this customer",
       });
     }
 
-    res.json(favItems); // Return the correct variable here
+    res.json(favItems);
   } catch (error) {
     console.error("Error fetching favourite items:", error);
     res.status(500).json({ error: "Error fetching favourite items" });
@@ -219,7 +218,7 @@ app.get("/favourite/:C_id", async (req, res) => {
 
 // Add product to favourites
 app.post("/favourite/add", async (req, res) => {
-  const { C_id, P_id } = req.body; // Assuming CA_quantity and CA_price are not needed for favourites
+  const { C_id, P_id } = req.body;
 
   try {
     const existingFavItem = await prisma.favourite.findUnique({
@@ -228,7 +227,6 @@ app.post("/favourite/add", async (req, res) => {
       },
     });
 
-    // Already have item in favourites
     if (existingFavItem) {
       return res.status(400).json({ error: "Item already in favourites" });
     } else {
@@ -250,22 +248,24 @@ app.post("/favourite/add", async (req, res) => {
 app.delete("/favourite/remove", async (req, res) => {
   const { C_id, P_id } = req.body;
 
+  if (!C_id || !P_id) {
+    return res.status(400).json({ error: "C_id and P_id are required" });
+  }
+
   try {
-    const removeItem = await prisma.favourite.deleteMany({
+    const removeItem = await prisma.favourite.delete({
       where: {
-        C_id_P_id: {
-          C_id: parseInt(C_id, 10),
-          P_id: parseInt(P_id, 10),
-        },
+        C_id_P_id: { C_id, P_id },
       },
     });
+
     res.json({
-      message: "Item successfully removed from favourite",
+      message: "Item successfully removed from favourites",
       removeItem,
     });
   } catch (error) {
-    console.error("Error removing product from favourite:", error);
-    res.status(500).json({ error: "Error removing product from favourite" });
+    console.error("Error removing product from favourites:", error);
+    res.status(500).json({ error: "Error removing product from favourites" });
   }
 });
 

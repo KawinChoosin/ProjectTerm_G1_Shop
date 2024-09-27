@@ -6,7 +6,6 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Box from "@mui/material/Box";
 import Fab from "@mui/material/Fab";
-import FavoriteBorderSharpIcon from "@mui/icons-material/FavoriteBorderSharp";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -19,7 +18,7 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
   const [quantity, setQuantity] = useState(0);
-  const [isLiked, setIsLiked] = useState<boolean>(true);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
 
@@ -142,31 +141,39 @@ const ProductDetail: React.FC = () => {
     }
 
     try {
-      console.log(isLiked);
       if (isLiked) {
-        await axios.delete("http://localhost:3000/favourite/remove", {
-          data: {
+        const response = await axios.delete(
+          "http://localhost:3000/favourite/remove",
+          {
+            data: {
+              C_id: customerId,
+              P_id: product.P_id,
+            },
+          }
+        );
+        if (response.status === 200) {
+          alert(`Removed ${product.P_name} from your favourites!`);
+        }
+      } else {
+        const response = await axios.post(
+          "http://localhost:3000/favourite/add",
+          {
             C_id: customerId,
             P_id: product.P_id,
-          },
-        });
-        alert(`Removed ${product.P_name} from your favourites!`);
-      } else {
-        // if (isLiked) {
-        await axios.post("http://localhost:3000/favourite/add", {
-          C_id: customerId,
-          P_id: product.P_id,
-        });
-        alert(`Added ${product.P_name} to your favourites!`);
+          }
+        );
+        if (response.status === 200) {
+          alert(`Added ${product.P_name} to your favourites!`);
+        }
       }
-      setIsLiked(!isLiked);
+      setIsLiked(!isLiked); // Toggle favourite status
     } catch (error) {
       console.error("Error managing favourites:", error);
       alert("Failed to manage your favourites");
     }
   };
 
-  const fabColor = isLiked ? "default" : "secondary";
+  const fabColor = !isLiked ? "default" : "secondary";
 
   const PlusIcon = createSvgIcon(
     // credit: plus icon from https://heroicons.com
