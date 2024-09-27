@@ -40,6 +40,7 @@ model Customer {
 
   Order      Order[]
   CartDetail CartDetail[]
+  Address     Address[]  
   Favourite     Favourite[]
 }
 
@@ -103,6 +104,17 @@ model CartDetail {
   @@unique([C_id, P_id]) // Composite key to ensure a unique combination
 }
 
+model Address {
+  A_id         Int      @id @default(autoincrement())
+  C_id         Int
+  A_street     String   @db.VarChar(255)
+  A_city       String   @db.VarChar(100)
+  A_state      String   @db.VarChar(100)
+  A_postalCode String   @db.VarChar(20)
+  A_country    String   @db.VarChar(100)
+  
+  Customer     Customer @relation(fields: [C_id], references: [C_id])
+}
 model Favourite {
   Fav_id      Int      @id @default(autoincrement())
   C_id        Int
