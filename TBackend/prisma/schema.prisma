@@ -18,7 +18,7 @@ model Product {
   P_name        String   @db.VarChar(255)
   P_description String?  @db.Text
   P_quantity    Int
-  P_price       Int     // Changed to integer
+  P_price       Decimal  // Changed to Decimal for precise floating point numbers
   P_img         String? @db.VarChar(1000)
   CG_id         Int
   Category      Category @relation(fields: [CG_id], references: [CG_id])
@@ -27,6 +27,7 @@ model Product {
   Comment       Comment[]
   OrderDetail   OrderDetail[]
   CartDetail    CartDetail[]
+  Favourite     Favourite[]
 }
 
 model Customer {
@@ -39,6 +40,7 @@ model Customer {
 
   Order      Order[]
   CartDetail CartDetail[]
+  Favourite     Favourite[]
 }
 
 model Order {
@@ -93,6 +95,18 @@ model CartDetail {
   P_id        Int
   CA_quantity Int
   CA_price    Float
+
+  // Define the relation fields if necessary
+  Product     Product @relation(fields: [P_id], references: [P_id])
+  Customer    Customer @relation(fields: [C_id], references: [C_id])
+
+  @@unique([C_id, P_id]) // Composite key to ensure a unique combination
+}
+
+model Favourite {
+  Fav_id      Int      @id @default(autoincrement())
+  C_id        Int
+  P_id        Int
 
   // Define the relation fields if necessary
   Product     Product @relation(fields: [P_id], references: [P_id])

@@ -1,16 +1,17 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import App from './App.tsx'
-import CartPage from './components/cart/CartPage.tsx';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import App from "./App.tsx";
+import CartPage from "./components/cart/CartPage.tsx";
 // import './input.css'
 // import Login from "./page/Login/App_Login.tsx"
-import React from 'react'
-import './reset.css';
-import ProductDetail from './components/Productdetail.tsx'
+import React from "react";
+import "./reset.css";
+import ProductDetail from "./components/Productdetail.tsx";
+import FavPage from "./components/favourite/FavPage.tsx";
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <Router>
       <Routes>
@@ -21,7 +22,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         {/* <Route path="/electronic" element={<Elec />} />
         <Route path="/cloth" element={<Cloth />} />
         <Route path="/sport" element={<Sport />} /> */}
+        <Route path="/favourite" element={<FavPage />} />
       </Routes>
     </Router>
   </React.StrictMode>
-)
+);

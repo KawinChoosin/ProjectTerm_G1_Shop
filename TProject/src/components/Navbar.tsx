@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 const Navbar: React.FC = () => {
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleLogoClick = () => {
     navigate("/"); // Navigate to root path
@@ -18,9 +18,12 @@ const Navbar: React.FC = () => {
   };
 
   const handleLoginClick = () => {
-    navigate("/login"); // Navigate to cart page
+    navigate("/login"); // Navigate to login page
   };
- 
+
+  const handleFavClick = () => {
+    navigate("/favourite"); // Navigate to favourite page
+  };
 
   if (!isMobile) {
     // Render for desktop view
@@ -40,9 +43,8 @@ const Navbar: React.FC = () => {
           boxSizing: "border-box",
           zIndex: 20,
           overflow: "hidden",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
-        
       >
         <div
           style={{
@@ -53,9 +55,8 @@ const Navbar: React.FC = () => {
             marginRight: "30px",
             marginLeft: "7%",
             textShadow: "0 0 5px rgba(255, 255, 255, 0.5)",
-            
           }}
-          onClick= { handleLogoClick }
+          onClick={handleLogoClick}
         >
           KAD-ENT
         </div>
@@ -69,7 +70,7 @@ const Navbar: React.FC = () => {
             gap: "10px",
           }}
         >
-          <IconButton sx={{ mb: "5px" }} onClick={handleCartClick} >
+          <IconButton sx={{ mb: "5px" }} onClick={handleCartClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="30px"
@@ -77,13 +78,12 @@ const Navbar: React.FC = () => {
               fill="#FCFCFD"
               className="bi bi-cart2"
               viewBox="0 0 16 16"
-              
             >
               <title>Cart</title>
               <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0" />
             </svg>
           </IconButton>
-          <IconButton  onClick={handleLoginClick}>
+          <IconButton onClick={handleLoginClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="30px"
@@ -95,7 +95,7 @@ const Navbar: React.FC = () => {
               <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
             </svg>
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleFavClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="27px"
@@ -138,13 +138,12 @@ const Navbar: React.FC = () => {
             position: "absolute",
             boxSizing: "border-box",
             zIndex: 10,
-            cursor: "pointer"
+            cursor: "pointer",
           }}
           onClick={handleLogoClick}
         >
           <div
             style={{
-              
               fontFamily: "Syncopate",
               fontSize: "calc(2rem + 2vw)", // Responsive font size
               color: "#FCFCFD",
@@ -171,7 +170,7 @@ const Navbar: React.FC = () => {
             zIndex: 30,
           }}
         >
-          <IconButton sx={{ mb: "5px" }} onClick={handleCartClick} >
+          <IconButton sx={{ mb: "5px" }} onClick={handleCartClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="30px"
@@ -179,13 +178,12 @@ const Navbar: React.FC = () => {
               fill="#FCFCFD"
               className="bi bi-cart2"
               viewBox="0 0 16 16"
-              
             >
               <title>Cart</title>
               <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0" />
             </svg>
           </IconButton>
-          <IconButton  onClick={handleLoginClick}>
+          <IconButton onClick={handleLoginClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="30px"
@@ -198,7 +196,7 @@ const Navbar: React.FC = () => {
               <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
             </svg>
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleFavClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="27px"

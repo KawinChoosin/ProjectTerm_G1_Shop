@@ -99,8 +99,6 @@ app.patch("/cart/update", async (req, res) => {
   }
 });
 
-
-
 // Add product to cart
 app.post("/cart/add", async (req, res) => {
   const { C_id, P_id, CA_quantity, CA_price } = req.body;
@@ -111,7 +109,7 @@ app.post("/cart/add", async (req, res) => {
         C_id_P_id: { C_id, P_id }, // Composite primary key
       },
     });
-    
+
     // already have item
     if (existingCartDetail) {
       const updatedCartDetail = await prisma.cartDetail.update({
@@ -155,14 +153,15 @@ app.delete("/cart/delete", async (req, res) => {
         },
       },
     });
-    res.json({ message: "Item successfully deleted from cart", deletedCartDetail });
+    res.json({
+      message: "Item successfully deleted from cart",
+      deletedCartDetail,
+    });
   } catch (error) {
     console.error("Error deleting product from cart:", error);
     res.status(500).json({ error: "Error deleting product from cart" });
   }
 });
-
-
 
 // Get all cart items for a specific customer
 app.get("/cart/:C_id", async (req, res) => {
@@ -174,11 +173,13 @@ app.get("/cart/:C_id", async (req, res) => {
         C_id: parseInt(C_id, 10), // Ensure C_id is treated as an integer
       },
       include: {
-        Product: true, 
+        Product: true,
       },
     });
     if (cartItems.length === 0) {
-      return res.status(404).json({ message: "No items found in the cart for this customer" });
+      return res
+        .status(404)
+        .json({ message: "No items found in the cart for this customer" });
     }
 
     res.json(cartItems);
@@ -188,6 +189,85 @@ app.get("/cart/:C_id", async (req, res) => {
   }
 });
 
+// Get all favourite items for a specific customer
+app.get("/favourite/:C_id", async (req, res) => {
+  const { C_id } = req.params;
+
+  try {
+    const favItems = await prisma.favourite.findMany({
+      where: {
+        C_id: parseInt(C_id, 10), // Ensure C_id is treated as an integer
+      },
+      include: {
+        Product: true,
+      },
+    });
+
+    // Check if favItems is empty
+    if (favItems.length === 0) {
+      return res.status(404).json({
+        message: "No items found in the favourites for this customer",
+      });
+    }
+
+    res.json(favItems); // Return the correct variable here
+  } catch (error) {
+    console.error("Error fetching favourite items:", error);
+    res.status(500).json({ error: "Error fetching favourite items" });
+  }
+});
+
+// Add product to favourites
+app.post("/favourite/add", async (req, res) => {
+  const { C_id, P_id } = req.body; // Assuming CA_quantity and CA_price are not needed for favourites
+
+  try {
+    const existingFavItem = await prisma.favourite.findUnique({
+      where: {
+        C_id_P_id: { C_id, P_id }, // Composite primary key for favorites
+      },
+    });
+
+    // Already have item in favourites
+    if (existingFavItem) {
+      return res.status(400).json({ error: "Item already in favourites" });
+    } else {
+      const newFavItem = await prisma.favourite.create({
+        data: {
+          C_id,
+          P_id,
+        },
+      });
+      res.json(newFavItem);
+    }
+  } catch (error) {
+    console.error("Error adding product to favourites:", error);
+    res.status(500).json({ error: "Error adding product to favourites" });
+  }
+});
+
+// Remove product from favourites
+app.delete("/favourite/remove", async (req, res) => {
+  const { C_id, P_id } = req.body;
+
+  try {
+    const removeItem = await prisma.favourite.deleteMany({
+      where: {
+        C_id_P_id: {
+          C_id: parseInt(C_id, 10),
+          P_id: parseInt(P_id, 10),
+        },
+      },
+    });
+    res.json({
+      message: "Item successfully removed from favourite",
+      removeItem,
+    });
+  } catch (error) {
+    console.error("Error removing product from favourite:", error);
+    res.status(500).json({ error: "Error removing product from favourite" });
+  }
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

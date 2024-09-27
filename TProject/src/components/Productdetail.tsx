@@ -6,6 +6,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Box from "@mui/material/Box";
 import Fab from "@mui/material/Fab";
+import FavoriteBorderSharpIcon from "@mui/icons-material/FavoriteBorderSharp";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -14,20 +15,26 @@ import useScreenSize from "./useScreenSize";
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Get the product ID from the route
   const [product, setProduct] = useState<any | null>(null); // State to hold product details
+  const [customerId, setCustomerId] = useState<number>(1); // Example customer_id
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
   const [quantity, setQuantity] = useState(0);
+  const [isLiked, setIsLiked] = useState<boolean>(true);
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
 
-  // Fetch the product details by ID
+  // Fetch the product details by product ID
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
         const response = await axios.get(
           `http://localhost:3000/products/${id}`
         );
-        setProduct(response.data); // Set the fetched product data
+        const product = response.data;
+
+        // Set the fetched product, category, and customer data
+        setProduct(product);
+
         setLoading(false); // Turn off loading
       } catch (err) {
         console.error("Error fetching product details:", err);
@@ -38,6 +45,20 @@ const ProductDetail: React.FC = () => {
 
     fetchProductDetails();
   }, [id]); // Run when the component mounts or when the ID changes
+
+  // Fetch the Customer ID
+  // useEffect(() => {
+  //   const fetchCustomerId = async () => {
+  //     try {
+  //       const response = await axios.get("http://localhost:3000/customer/info");
+  //       setCustomerId(response.data.C_id);
+  //     } catch (error) {
+  //       console.error("Error fetching customer ID:", error);
+  //     }
+  //   };
+
+  //   fetchCustomerId();
+  // }, []);
 
   if (loading) {
     return (
@@ -87,6 +108,11 @@ const ProductDetail: React.FC = () => {
   };
 
   const handleAddToCart = async () => {
+    if (!customerId) {
+      alert("Please log in to add items to your cart");
+      return;
+    }
+
     if (quantity < 1) {
       alert("Please select a valid quantity");
       return;
@@ -94,7 +120,7 @@ const ProductDetail: React.FC = () => {
 
     try {
       const response = await axios.post("http://localhost:3000/cart/add", {
-        C_id: 1, // Replace with actual customer ID
+        C_id: customerId,
         P_id: product.P_id,
         CA_quantity: quantity,
         CA_price: product.P_price,
@@ -104,29 +130,43 @@ const ProductDetail: React.FC = () => {
         alert(`Added ${quantity} ${product?.P_name} to cart!`);
       }
     } catch (error) {
-      console.error("Error adding to cart:", error);
-      alert("Failed to add product to cart");
+      console.error("Error adding to your cart:", error);
+      alert("Failed to add product to your cart");
     }
   };
 
-  const handleAddToFav = () => {
-    alert(`Added ${product?.P_name} to your favourite!`);
-    // try {
-    //   const response = await axios.post("http://localhost:3000/fav/add", {
-    //     C_id: 1, // Replace with actual customer ID
-    //     P_id: product.P_id,
-    //     CA_quantity: quantity,
-    //     CA_price: product.P_price,
-    //   });
+  const handleToggleFav = async () => {
+    if (!customerId) {
+      alert("Please log in to manage your favourites");
+      return;
+    }
 
-    //   if (response.status === 200) {
-    //     alert(`Added ${product?.P_name} to your favourite!`);
-    //   }
-    // } catch (error) {
-    //   console.error("Error adding to cart:", error);
-    //   alert("Failed to add product to cart");
-    // }
+    try {
+      console.log(isLiked);
+      if (isLiked) {
+        await axios.delete("http://localhost:3000/favourite/remove", {
+          data: {
+            C_id: customerId,
+            P_id: product.P_id,
+          },
+        });
+        alert(`Removed ${product.P_name} from your favourites!`);
+      } else {
+        // if (isLiked) {
+        await axios.post("http://localhost:3000/favourite/add", {
+          C_id: customerId,
+          P_id: product.P_id,
+        });
+        alert(`Added ${product.P_name} to your favourites!`);
+      }
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error("Error managing favourites:", error);
+      alert("Failed to manage your favourites");
+    }
   };
+
+  const fabColor = isLiked ? "default" : "secondary";
 
   const PlusIcon = createSvgIcon(
     // credit: plus icon from https://heroicons.com
@@ -217,7 +257,12 @@ const ProductDetail: React.FC = () => {
               <Typography variant="h4" gutterBottom>
                 {product.P_name}
               </Typography>
-              <Fab onClick={handleAddToFav} size="small" aria-label="like">
+              <Fab
+                color={fabColor}
+                onClick={handleToggleFav}
+                size="small"
+                aria-label="like"
+              >
                 <FavoriteIcon />
               </Fab>
             </div>
@@ -240,7 +285,6 @@ const ProductDetail: React.FC = () => {
                 : "Out of Stock"}
             </p>
 
-            {/* Quantity and Add to Cart Button */}
             <div
               style={{
                 display: "flex",
@@ -356,6 +400,7 @@ const ProductDetail: React.FC = () => {
             }}
           />
         </div>
+
         <div
           style={{
             backgroundColor: "#f4f4f4",
@@ -382,7 +427,12 @@ const ProductDetail: React.FC = () => {
             <Typography variant="h4" gutterBottom>
               {product.P_name}
             </Typography>
-            <Fab onClick={handleAddToFav} size="small" aria-label="like">
+            <Fab
+              color={fabColor}
+              onClick={handleToggleFav}
+              size="small"
+              aria-label="like"
+            >
               <FavoriteIcon />
             </Fab>
           </div>
@@ -402,8 +452,6 @@ const ProductDetail: React.FC = () => {
               ? "In Stock: " + product.P_quantity
               : "Out of Stock"}
           </p>
-
-          {/* Quantity and Add to Cart Button */}
           <div
             style={{
               display: "flex",
