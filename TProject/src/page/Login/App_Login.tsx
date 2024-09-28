@@ -3,13 +3,14 @@ import google from "./element/google.png";
 import "./style_login.css"; // Assuming the CSS file is imported here
 import { onLogin } from "./auth.api.login";
 import { AuthForm } from "./Auth.component.login";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import UserContext from "../../context/UserContext";
 
 const LoginForm: React.FC = () => {
   const { setC_id } = useContext(UserContext); // Access the setC_id function
   const navigate = useNavigate();
+  const location = useLocation(); // Access location to get the "from" state
   const [credentials, setCredentials] = useState({
     C_name: "",
     C_password: "",
@@ -40,8 +41,11 @@ const LoginForm: React.FC = () => {
 
         if (serverResponse.ok) {
           setC_id(result.C_id); // Set C_id in UserContext
-          navigate("/");
-          console.log(result.C_id); // show C_id whose login to the page
+          sessionStorage.setItem("C_id", result.C_id); // Save C_id to sessionStorage
+
+          // Check if a "from" location is provided (i.e., where the user came from)
+          const from = location.state?.from?.pathname || "/";
+          navigate(from); // Redirect back to the page they tried to visit, or home
         } else {
           setError(result.error || "Failed to Login");
         }

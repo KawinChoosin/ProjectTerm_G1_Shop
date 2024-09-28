@@ -20,18 +20,18 @@ interface UserProviderProps {
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [C_id, setC_id] = useState<number | null>(null);
 
-  // Load the C_id from localStorage when the component mounts
+  // Load the C_id from sessionStorage when the component mounts
   useEffect(() => {
-    const storedC_id = localStorage.getItem("C_id");
+    const storedC_id = sessionStorage.getItem("C_id");
     if (storedC_id) {
       setC_id(Number(storedC_id)); // Convert the string to a number
     }
   }, []);
 
-  // Save the C_id to localStorage whenever it changes
+  // Save the C_id to sessionStorage whenever it changes
   const handleSetC_id = (C_id: number) => {
     setC_id(C_id);
-    localStorage.setItem("C_id", C_id.toString()); // Store it as a string in localStorage
+    sessionStorage.setItem("C_id", C_id.toString()); // Store it as a string in sessionStorage
   };
 
   return (

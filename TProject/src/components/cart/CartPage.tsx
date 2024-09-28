@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
 import CartItem from "./CartItem";
 import CartTotals from "./CartTotals";
 import Navbar from "../Navbar";
@@ -51,9 +52,15 @@ const CartPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false);
   const [checkoutAddresses, setCheckoutAddresses] = useState<string[]>([]);
+  const navigate = useNavigate(); // Use useNavigate for redirection
+  const location = useLocation(); // To get the current URL
 
   useEffect(() => {
-    if (C_id === null) return; // Prevent API call if C_id is not set
+    // If C_id is null, redirect to login
+    if (C_id === null) {
+      navigate("/login", { state: { from: location } }); // Pass current location as state
+      return;
+    }
 
     const fetchCartDetails = async () => {
       try {
@@ -75,7 +82,7 @@ const CartPage: React.FC = () => {
     };
 
     fetchCartDetails();
-  }, [C_id]);
+  }, [C_id, navigate]);
 
   const handleQuantityChange = async (id: number, newQuantity: number) => {
     setCartItems((prevItems) =>
@@ -147,10 +154,6 @@ const CartPage: React.FC = () => {
   const shipping = 0; // Assume free shipping for now
   const discount = 10; // Assume a fixed discount for now
   const total = subtotal + shipping - discount;
-
-  if (C_id === null) {
-    return <Typography>Loading user information...</Typography>; // Handle if C_id is not available
-  }
 
   if (loading) {
     return <CircularProgress />;

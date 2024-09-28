@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import useScreenSize from "../useScreenSize";
 import UserContext from "../../context/UserContext";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface FavItemType {
   F_id: number;
@@ -32,9 +33,14 @@ const FavPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
+  const navigate = useNavigate(); // Use useNavigate for redirection
+  const location = useLocation(); // To get the current URL
 
   useEffect(() => {
-    if (C_id === null) return; // Prevent API call if C_id is not set
+    if (C_id === null) {
+      navigate("/login", { state: { from: location } }); // Pass current location as state
+      return;
+    }
 
     const fetchFavDetails = async () => {
       try {
