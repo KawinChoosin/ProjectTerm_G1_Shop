@@ -5,6 +5,7 @@ const addressRoutes = require("./routes/addressRoutes");
 const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const favRoutes = require("./routes/favRoutes");
 
 const app = express();
 const cors = require("cors");
@@ -18,6 +19,7 @@ app.use("/address", addressRoutes);
 app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
 app.use("/order", orderRoutes);
+app.use("/favourite", favRoutes);
 
 // Default route
 app.get("/", (req, res) => {

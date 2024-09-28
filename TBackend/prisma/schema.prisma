@@ -47,11 +47,15 @@ model Customer {
 model Order {
   O_id      Int      @id @default(autoincrement())
   C_id      Int
-  Date_time DateTime
-  Total     Int     // Changed to integer
+  Q_Date_time DateTime
+  O_Total     Decimal     // Changed to integer
   PM_id     Int
+  A_id      Int
+  O_Description  String?  @db.Text
+
   Customer  Customer @relation(fields: [C_id], references: [C_id])
   Payment   Payment  @relation(fields: [PM_id], references: [PM_id])
+  Address     Address @relation(fields: [A_id], references: [A_id])
   OrderDetail OrderDetail[]
 }
 
@@ -60,14 +64,14 @@ model OrderDetail {
   O_id      Int
   P_id      Int
   OD_quantity Int
-  OD_price  Int     // Changed to integer
+  OD_price  Decimal     // Changed to integer
   Order     Order   @relation(fields: [O_id], references: [O_id])
   Product   Product @relation(fields: [P_id], references: [P_id])
 }
 
 model Payment {
   PM_id     Int      @id @default(autoincrement())
-  PM_amount Int     // Changed to integer
+  PM_amount Decimal     // Changed to integer
   PM_type   String   @db.VarChar(50)
   Date_time DateTime
 
@@ -76,7 +80,7 @@ model Payment {
 
 model Rate {
   R_id         Int      @id @default(autoincrement())
-  R_total      Int     // Changed to integer
+  R_total      Decimal     // Changed to integer
   R_createDate DateTime
   P_id         Int
   Product      Product @relation(fields: [P_id], references: [P_id])
@@ -95,7 +99,7 @@ model CartDetail {
   C_id        Int
   P_id        Int
   CA_quantity Int
-  CA_price    Float
+  CA_price    Decimal
 
   // Define the relation fields if necessary
   Product     Product @relation(fields: [P_id], references: [P_id])
@@ -114,7 +118,9 @@ model Address {
   A_country    String   @db.VarChar(100)
   
   Customer     Customer @relation(fields: [C_id], references: [C_id])
+  Order        Order[]
 }
+
 model Favourite {
   Fav_id      Int      @id @default(autoincrement())
   C_id        Int

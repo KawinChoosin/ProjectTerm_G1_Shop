@@ -2,8 +2,7 @@
 
 - Make `.env` from `.env.example`
 
-
-# User management 
+# User management
 
 - `docker exec -it g1-db bash`
 - `psql -U usertest -d g1db`
@@ -22,12 +21,18 @@ ALTER USER tuser CREATEDB;
 ```
 
 # Database prisma setup
+
 ```
 npx prisma migrate dev --name init
 npx prisma generate
 ```
 
-# Data Insert and run 
+# use zod
+
+- `npm install zod`
+
+# Data Insert and run
+
 ```
 node test.js
 node index.js

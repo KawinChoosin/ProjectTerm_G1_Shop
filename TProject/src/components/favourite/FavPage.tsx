@@ -4,7 +4,6 @@ import FavItem from "./FavItem";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
 import {
-  Grid,
   Container,
   Typography,
   CircularProgress,
@@ -39,8 +38,8 @@ const FavPage: React.FC = () => {
         const response = await axios.get(
           `http://localhost:3000/favourite/${customerId}`
         );
-        setFavItems(response.data); // Update state with favorite items from API
-        setLoading(false); // Stop loading once data is fetched
+        setFavItems(response.data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching favourite items:", error);
         setError("Error fetching favourite items");
@@ -51,7 +50,6 @@ const FavPage: React.FC = () => {
     fetchFavDetails();
   }, [customerId]);
 
-  // Handle loading state
   if (loading) {
     return <CircularProgress />;
   }
@@ -60,129 +58,60 @@ const FavPage: React.FC = () => {
     return <Alert severity="error">{error}</Alert>;
   }
 
-  if (!isMobile) {
-    return (
-      <>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            maxWidth: "100%",
-            padding: "0",
-            margin: "0",
+  // Common layout for both mobile and desktop
+  const renderFavItems = () => (
+    <Box
+      sx={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 2,
+        justifyContent: "center",
+        padding: 4,
+      }}
+    >
+      {favItems.length > 0 ? (
+        favItems.map((item) => (
+          <FavItem
+            key={item.P_id}
+            item={{
+              P_id: item.P_id,
+              ...item.Product,
+              P_price: item.Product.P_price.toString(),
+            }}
+          />
+        ))
+      ) : (
+        <Typography variant="body1" align="center">
+          You have no favourite.
+        </Typography>
+      )}
+    </Box>
+  );
+
+  return (
+    <div
+      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+    >
+      <Navbar />
+      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8 }}>
+        <Typography
+          variant="h3"
+          align="left"
+          gutterBottom
+          sx={{
+            fontFamily: "Syncopate",
+            textAlign: "left",
+            fontSize: "2.5rem",
+            mt: 4,
           }}
         >
-          <Navbar />
-          <Container maxWidth="xl" sx={{ mt: 20, mb: 8 }}>
-            <Typography
-              variant="h3"
-              align="left"
-              gutterBottom
-              sx={{
-                fontFamily: "Syncopate",
-                textAlign: "left",
-                flex: "1 0 100%",
-                fontSize: "2.5rem",
-                mt: 4,
-              }}
-            >
-              Your Favourites
-            </Typography>
-
-            <Grid container spacing={5} justifyContent="center">
-              <Grid item xs={12} md={8}>
-                <Box
-                  sx={{
-                    p: 4,
-                    borderRadius: "8px",
-                    overflowY: "auto",
-                  }}
-                >
-                  {favItems.length > 0 ? (
-                    favItems.map((item) => (
-                      <FavItem
-                        key={item.P_id}
-                        item={{
-                          P_id: item.P_id,
-                          ...item.Product,
-                          P_price: item.Product.P_price.toString(),
-                        }}
-                      />
-                    ))
-                  ) : (
-                    <Typography variant="body1" align="center">
-                      You have no favourite.
-                    </Typography>
-                  )}
-                </Box>
-              </Grid>
-            </Grid>
-          </Container>
-          <Footer />
-        </div>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            maxWidth: "100%",
-          }}
-        >
-          <Navbar />
-          <Container maxWidth="xl" sx={{ mb: 8 }}>
-            <Typography
-              variant="h3"
-              align="left"
-              gutterBottom
-              sx={{
-                fontFamily: "Syncopate",
-                textAlign: "left",
-                flex: "1 0 100%",
-                fontSize: "2.5rem",
-                mt: 4,
-              }}
-            >
-              Your Favourites
-            </Typography>
-
-            <Grid container spacing={5} justifyContent="center">
-              <Grid item xs={12} md={8}>
-                <Box
-                  sx={{
-                    p: 4,
-                    borderRadius: "8px",
-                    overflowY: "auto",
-                  }}
-                >
-                  {favItems.length > 0 ? (
-                    favItems.map((item) => (
-                      <FavItem
-                        key={item.P_id}
-                        item={{
-                          P_id: item.P_id,
-                          ...item.Product,
-                          P_price: item.Product.P_price.toString(),
-                        }}
-                      />
-                    ))
-                  ) : (
-                    <Typography variant="body1" align="center">
-                      You have no favourite.
-                    </Typography>
-                  )}
-                </Box>
-              </Grid>
-            </Grid>
-          </Container>
-          <Footer />
-        </div>
-      </>
-    );
-  }
+          Your Favourites
+        </Typography>
+        {renderFavItems()}
+      </Container>
+      <Footer />
+    </div>
+  );
 };
 
 export default FavPage;

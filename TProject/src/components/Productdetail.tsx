@@ -19,6 +19,7 @@ const ProductDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null); // Error state
   const [quantity, setQuantity] = useState(0);
   const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [fabColor, setFabColor] = useState<"default" | "secondary">("default");
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
 
@@ -31,8 +32,20 @@ const ProductDetail: React.FC = () => {
         );
         const product = response.data;
 
-        // Set the fetched product, category, and customer data
+        // Set the fetched product data
         setProduct(product);
+
+        // Check if the product is liked by the customer, setting default C_id to 1
+        const favoriteResponse = await axios.get(
+          `http://localhost:3000/favourite/check/${product.P_id}`, // Pass P_id as a path parameter
+          {
+            params: {
+              C_id: 1, // Set C_id to 1
+            },
+          }
+        );
+        setIsLiked(favoriteResponse.data.isLiked);
+        setFabColor(favoriteResponse.data.isLiked ? "secondary" : "default");
 
         setLoading(false); // Turn off loading
       } catch (err) {
@@ -43,21 +56,8 @@ const ProductDetail: React.FC = () => {
     };
 
     fetchProductDetails();
-  }, [id]); // Run when the component mounts or when the ID changes
-
-  // Fetch the Customer ID
-  // useEffect(() => {
-  //   const fetchCustomerId = async () => {
-  //     try {
-  //       const response = await axios.get("http://localhost:3000/customer/info");
-  //       setCustomerId(response.data.C_id);
-  //     } catch (error) {
-  //       console.error("Error fetching customer ID:", error);
-  //     }
-  //   };
-
-  //   fetchCustomerId();
-  // }, []);
+  }, [id]);
+  // Run when the component mounts or when the ID or customer ID changes
 
   if (loading) {
     return (
@@ -140,8 +140,24 @@ const ProductDetail: React.FC = () => {
       return;
     }
 
+    // Optimistically update the state
+    const newIsLiked = !isLiked;
+    setIsLiked(newIsLiked);
+    setFabColor(newIsLiked ? "secondary" : "default");
+
     try {
-      if (isLiked) {
+      if (newIsLiked) {
+        const response = await axios.post(
+          "http://localhost:3000/favourite/add",
+          {
+            C_id: customerId,
+            P_id: product.P_id,
+          }
+        );
+        if (response.status === 200) {
+          alert(`Added ${product.P_name} to your favourites!`);
+        }
+      } else {
         const response = await axios.delete(
           "http://localhost:3000/favourite/remove",
           {
@@ -154,26 +170,16 @@ const ProductDetail: React.FC = () => {
         if (response.status === 200) {
           alert(`Removed ${product.P_name} from your favourites!`);
         }
-      } else {
-        const response = await axios.post(
-          "http://localhost:3000/favourite/add",
-          {
-            C_id: customerId,
-            P_id: product.P_id,
-          }
-        );
-        if (response.status === 200) {
-          alert(`Added ${product.P_name} to your favourites!`);
-        }
       }
-      setIsLiked(!isLiked); // Toggle favourite status
     } catch (error) {
       console.error("Error managing favourites:", error);
       alert("Failed to manage your favourites");
+
+      // Rollback state if there was an error
+      setIsLiked(!newIsLiked); // Revert to the previous state
+      setFabColor(newIsLiked ? "default" : "secondary");
     }
   };
-
-  const fabColor = !isLiked ? "default" : "secondary";
 
   const PlusIcon = createSvgIcon(
     // credit: plus icon from https://heroicons.com

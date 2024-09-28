@@ -1,7 +1,7 @@
-import React from 'react';
-import { Button, Typography, IconButton, Box } from '@mui/material';
-import { Add, Remove, Close } from '@mui/icons-material';
-import './cart.css'
+import React from "react";
+import { Typography, IconButton, Box } from "@mui/material";
+import { Add, Remove, Close } from "@mui/icons-material";
+import "./cart.css";
 
 interface CartItemProps {
   item: {
@@ -45,65 +45,75 @@ const CartItem: React.FC<CartItemProps> = ({
       borderColor="#e0e0e0"
       sx={{ borderColor: "#e0e0e0", borderBottomWidth: "1px" }}
     >
-    <Box mb={2} p={2} display="flex" justifyContent="space-between" alignItems="center" borderBottom={1} borderColor="#e0e0e0">
-      <Box display="flex" alignItems="center" width="100%">
-        <img
-          src={item.P_img || "/placeholder.png"}
-          alt={`${item.P_name} image`}
-          style={{
-            width: "60px",
-            height: "60px",
-            objectFit: "cover",
-            marginRight: "16px",
-            borderRadius: "4px",
-          }}
-        />
-        <Box flex="1">
-          <Typography variant="h6" fontWeight="500">
-            {item.P_name}
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            {item.P_description}
-          </Typography>
-          <Typography className="price" fontWeight="500">
-            ${item.P_price.toFixed(2)}
-          </Typography>
+      <Box
+        mb={2}
+        p={2}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        borderBottom={1}
+        borderColor="#e0e0e0"
+      >
+        <Box display="flex" alignItems="center" width="100%">
+          <img
+            src={item.P_img || "/placeholder.png"}
+            alt={`${item.P_name} image`}
+            style={{
+              width: "60px",
+              height: "60px",
+              objectFit: "cover",
+              marginRight: "16px",
+              borderRadius: "4px",
+            }}
+          />
+          <Box flex="1">
+            <Typography variant="h6" fontWeight="500">
+              {item.P_name}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {item.P_description}
+            </Typography>
+            <Typography className="price" fontWeight="500">
+              ${item.P_price}
+            </Typography>
+          </Box>
 
-        </Box>
-
-        <Box display="flex" alignItems="center">
-          <IconButton
-            onClick={handleDecrease}
-            disabled={item.CA_quantity <= 1}
-            size="small"
-            sx={{ color: "#000" }}
+          <Box display="flex" alignItems="center">
+            <IconButton
+              onClick={handleDecrease}
+              disabled={item.CA_quantity <= 1}
+              size="small"
+              sx={{ color: "#000" }}
+            >
+              <Remove />
+            </IconButton>
+            <Typography sx={{ margin: "0 10px" }}>
+              {item.CA_quantity}
+            </Typography>
+            <IconButton
+              onClick={handleIncrease}
+              size="small"
+              sx={{ color: "#000" }}
+            >
+              <Add />
+            </IconButton>
+          </Box>
+          <Typography
+            variant="h6"
+            align="right"
+            fontWeight="500"
+            sx={{ width: "100px", textAlign: "left" }}
           >
-            <Remove />
-          </IconButton>
-          <Typography sx={{ margin: "0 10px" }}>{item.CA_quantity}</Typography>
+            ฿ {parseFloat(item.P_price).toFixed(2)}
+          </Typography>
           <IconButton
-            onClick={handleIncrease}
+            onClick={handleDelete}
             size="small"
-            sx={{ color: "#000" }}
+            sx={{ marginLeft: "16px", color: "#888" }}
           >
-            <Add />
+            <Close />
           </IconButton>
         </Box>
-        <Typography
-          variant="h6"
-          align="right"
-          fontWeight="500"
-          sx={{ width: "100px", textAlign: "left" }}
-        >
-          ฿ {parseFloat(item.P_price).toFixed(2)}
-        </Typography>
-        <IconButton
-          onClick={handleDelete}
-          size="small"
-          sx={{ marginLeft: "16px", color: "#888" }}
-        >
-          <Close />
-        </IconButton>
       </Box>
     </Box>
   );

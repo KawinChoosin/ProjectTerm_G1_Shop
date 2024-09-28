@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
 export interface FavItemProps {
@@ -14,48 +14,51 @@ export interface FavItemProps {
 
 const FavItem: React.FC<FavItemProps> = ({ item }) => {
   return (
-    <Link to={`/products/${item.P_id}`} style={{ color: "inherit" }}>
-      <Box
-        mb={2}
-        p={2}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        borderBottom={1}
-        borderColor="#e0e0e0"
-        sx={{ borderColor: "#e0e0e0", borderBottomWidth: "1px" }}
+    <Link
+      to={`/products/${item.P_id}`}
+      style={{ color: "inherit", textDecoration: "none" }}
+    >
+      <Card
+        variant="outlined"
+        sx={{
+          width: "200px",
+          height: "400px",
+          border: "2px solid #ddd",
+          borderRadius: "10px",
+          boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
+          transition: "transform 0.3s ease-in-out",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          "&:hover": {
+            transform: "scale(1.03)",
+            boxShadow: "0px 6px 20px rgba(0, 0, 0, 0.3)",
+          },
+        }}
       >
-        <Box display="flex" alignItems="center" width="100%">
-          <img
-            src={item.P_img || "/placeholder.png"}
-            alt={`${item.P_name} image`}
-            style={{
-              width: "100px",
-              height: "auto",
-              objectFit: "cover",
-              marginRight: "16px",
-              borderRadius: "4px",
-            }}
-          />
-          <Box flex="1">
-            <Typography variant="h6" fontWeight="500">
-              {item.P_name}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              {item.P_description}
-            </Typography>
-          </Box>
-
-          <Typography
-            variant="h6"
-            align="right"
-            fontWeight="500"
-            sx={{ width: "100px", textAlign: "left" }}
-          >
+        <CardMedia
+          component="img"
+          height="100%"
+          image={item.P_img}
+          alt={item.P_name}
+          sx={{
+            objectFit: "contain",
+            maxHeight: "330px",
+            width: "100%",
+          }}
+        />
+        <CardContent sx={{ padding: "10%" }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            {item.P_name}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+            {item.P_description}
+          </Typography>
+          <Typography variant="h6" sx={{ mb: 2 }}>
             ฿ {parseFloat(item.P_price).toFixed(2)}
           </Typography>
-        </Box>
-      </Box>
+        </CardContent>
+      </Card>
     </Link>
   );
 };
