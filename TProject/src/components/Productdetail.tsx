@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { CircularProgress, Typography, createSvgIcon } from "@mui/material";
 import axios from "axios";
@@ -10,11 +10,12 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import useScreenSize from "./useScreenSize";
+import UserContext from "../context/UserContext";
 
 const ProductDetail: React.FC = () => {
+  const { C_id } = useContext(UserContext);
   const { id } = useParams<{ id: string }>(); // Get the product ID from the route
   const [product, setProduct] = useState<any | null>(null); // State to hold product details
-  const [customerId, setCustomerId] = useState<number>(1); // Example customer_id
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
   const [quantity, setQuantity] = useState(0);
@@ -34,18 +35,20 @@ const ProductDetail: React.FC = () => {
 
         // Set the fetched product data
         setProduct(product);
+        console.log(C_id);
 
-        // Check if the product is liked by the customer, setting default C_id to 1
-        const favoriteResponse = await axios.get(
-          `http://localhost:3000/favourite/check/${product.P_id}`, // Pass P_id as a path parameter
-          {
-            params: {
-              C_id: 1, // Set C_id to 1
-            },
-          }
-        );
-        setIsLiked(favoriteResponse.data.isLiked);
-        setFabColor(favoriteResponse.data.isLiked ? "secondary" : "default");
+        if (C_id) {
+          const favoriteResponse = await axios.get(
+            `http://localhost:3000/favourite/check/${product.P_id}`,
+            {
+              params: {
+                C_id: C_id,
+              },
+            }
+          );
+          setIsLiked(favoriteResponse.data.isLiked);
+          setFabColor(favoriteResponse.data.isLiked ? "secondary" : "default");
+        }
 
         setLoading(false); // Turn off loading
       } catch (err) {
@@ -107,7 +110,7 @@ const ProductDetail: React.FC = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!customerId) {
+    if (!C_id) {
       alert("Please log in to add items to your cart");
       return;
     }
@@ -119,7 +122,7 @@ const ProductDetail: React.FC = () => {
 
     try {
       const response = await axios.post("http://localhost:3000/cart/add", {
-        C_id: customerId,
+        C_id: C_id,
         P_id: product.P_id,
         CA_quantity: quantity,
         CA_price: product.P_price,
@@ -135,7 +138,7 @@ const ProductDetail: React.FC = () => {
   };
 
   const handleToggleFav = async () => {
-    if (!customerId) {
+    if (!C_id) {
       alert("Please log in to manage your favourites");
       return;
     }
@@ -150,7 +153,7 @@ const ProductDetail: React.FC = () => {
         const response = await axios.post(
           "http://localhost:3000/favourite/add",
           {
-            C_id: customerId,
+            C_id: C_id,
             P_id: product.P_id,
           }
         );
@@ -162,7 +165,7 @@ const ProductDetail: React.FC = () => {
           "http://localhost:3000/favourite/remove",
           {
             data: {
-              C_id: customerId,
+              C_id: C_id,
               P_id: product.P_id,
             },
           }

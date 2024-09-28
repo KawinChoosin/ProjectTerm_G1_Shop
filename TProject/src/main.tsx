@@ -1,31 +1,33 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import App from "./App.tsx";
-import CartPage from "./components/cart/CartPage.tsx";
-import SummaryPage from "./components/summaryPage.tsx";
-// import './input.css'
-// import Login from "./page/Login/App_Login.tsx"
 import React from "react";
 import "./reset.css";
+import App from "./App.tsx";
+import CartPage from "./components/cart/CartPage.tsx";
+import SummaryPage from "./components/SummaryPage.tsx";
 import ProductDetail from "./components/Productdetail.tsx";
+import App_Login from "./page/Login/App_Login.tsx";
+import App_Register from "./page/Register/App_Register.tsx";
 import FavPage from "./components/favourite/FavPage.tsx";
+import { UserProvider } from "./context/UserContext.tsx"; // Import UserProvider
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <Router>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
-        {/* <Route path="/login" element={<Login />} /> */}
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/summary" element={<SummaryPage />} />
-        {/* <Route path="/electronic" element={<Elec />} />
-        <Route path="/cloth" element={<Cloth />} />
-        <Route path="/sport" element={<Sport />} /> */}
-        <Route path="/favourite" element={<FavPage />} />
-      </Routes>
-    </Router>
-  </React.StrictMode>
+const root = createRoot(document.getElementById("root") as HTMLElement);
+
+root.render(
+  <StrictMode>
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/summary" element={<SummaryPage />} />
+          <Route path="/login" element={<App_Login />} />
+          <Route path="/register" element={<App_Register />} />
+          <Route path="/favourite" element={<FavPage />} />
+        </Routes>
+      </Router>
+    </UserProvider>
+  </StrictMode>
 );

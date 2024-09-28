@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import FavItem from "./FavItem";
 import Navbar from "../Navbar";
@@ -11,6 +11,7 @@ import {
   Box,
 } from "@mui/material";
 import useScreenSize from "../useScreenSize";
+import UserContext from "../../context/UserContext";
 
 interface FavItemType {
   F_id: number;
@@ -25,19 +26,22 @@ interface FavItemType {
 }
 
 const FavPage: React.FC = () => {
+  const { C_id } = useContext(UserContext);
   const [favItems, setFavItems] = useState<FavItemType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [customerId, setCustomerId] = useState<number>(1); // Example customer_id
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
 
   useEffect(() => {
+    if (C_id === null) return; // Prevent API call if C_id is not set
+
     const fetchFavDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/favourite/${customerId}`
+          `http://localhost:3000/favourite/${C_id}`
         );
+        console.log(C_id);
         setFavItems(response.data);
         setLoading(false);
       } catch (error) {
@@ -48,7 +52,11 @@ const FavPage: React.FC = () => {
     };
 
     fetchFavDetails();
-  }, [customerId]);
+  }, [C_id]);
+
+  if (C_id === null) {
+    return <Typography>Loading user information...</Typography>; // Optionally display loading for user info
+  }
 
   if (loading) {
     return <CircularProgress />;
@@ -82,7 +90,7 @@ const FavPage: React.FC = () => {
         ))
       ) : (
         <Typography variant="body1" align="center">
-          You have no favourite.
+          You have no favourites.
         </Typography>
       )}
     </Box>
