@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { CircularProgress, Typography, createSvgIcon } from "@mui/material";
 import axios from "axios";
 import Navbar from "./Navbar";
@@ -23,6 +23,8 @@ const ProductDetail: React.FC = () => {
   const [fabColor, setFabColor] = useState<"default" | "secondary">("default");
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
+  const navigate = useNavigate(); // Use useNavigate for redirection
+  const location = useLocation(); // To get the current URL
 
   // Fetch the product details by product ID
   useEffect(() => {
@@ -112,6 +114,7 @@ const ProductDetail: React.FC = () => {
   const handleAddToCart = async () => {
     if (!C_id) {
       alert("Please log in to add items to your cart");
+      navigate("/login", { state: { from: location } });
       return;
     }
 
@@ -140,6 +143,7 @@ const ProductDetail: React.FC = () => {
   const handleToggleFav = async () => {
     if (!C_id) {
       alert("Please log in to manage your favourites");
+      navigate("/login", { state: { from: location } });
       return;
     }
 
