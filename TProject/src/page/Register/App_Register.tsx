@@ -3,6 +3,7 @@ import "./style_register.css";
 import { AuthForm } from "./components/Auth.component.register";
 import { useNavigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
+import bgImage from "../bg.avif"; // Import the background image
 
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
@@ -12,13 +13,14 @@ const RegisterForm: React.FC = () => {
     C_password: "",
     C_gender: "",
     C_age: 0,
+    T_pnum: "", // Added T_pnum to credentials
   });
-  const [birthday, setBirthday] = useState(""); // State for storing birthday
-  const [repassword, setrepassword] = useState({
+  const [birthday, setBirthday] = useState("");
+  const [repassword, setRepassword] = useState({
     re_password: "",
   });
   const [error, setError] = useState("");
-  const [passwordMatchError, setPasswordMatchError] = useState(""); // State for password mismatch error
+  const [passwordMatchError, setPasswordMatchError] = useState("");
 
   useEffect(() => {
     if (credentials.C_password !== repassword.re_password) {
@@ -48,12 +50,12 @@ const RegisterForm: React.FC = () => {
   const register = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (isSubmitting) return; // Prevent further submissions
-    setIsSubmitting(true); // Disable further submissions
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     if (credentials.C_password !== repassword.re_password) {
       setError("Passwords do not match");
-      setIsSubmitting(false); // Re-enable on error
+      setIsSubmitting(false);
       return;
     }
 
@@ -79,7 +81,7 @@ const RegisterForm: React.FC = () => {
     } catch (error) {
       setError("An unexpected error occurred.");
     } finally {
-      setIsSubmitting(false); // Re-enable after submission
+      setIsSubmitting(false);
     }
   };
 
@@ -100,7 +102,7 @@ const RegisterForm: React.FC = () => {
         ...credentials,
         [name]: value,
       });
-      setrepassword({
+      setRepassword({
         ...repassword,
         [name]: value,
       });
@@ -108,6 +110,15 @@ const RegisterForm: React.FC = () => {
   };
 
   return (
+    <div
+    style={{
+      backgroundImage: `url(${bgImage})`, // Use the imported image
+      backgroundSize: "cover", // Optional: to cover the whole div
+      backgroundPosition: "center", // Optional: to center the image
+      height: "100vh", // Set the height of the div to cover the viewport
+      width: "100%", // Ensure it takes the full width
+    }}
+  >
     <AuthForm
       onSubmit={register}
       style={{
@@ -193,6 +204,19 @@ const RegisterForm: React.FC = () => {
           <i className="bx bxs-calendar"></i>
         </div>
 
+        <div className="input-box">
+          <input
+            type="text"
+            name="T_pnum" // Added input for T_pnum
+            placeholder=" "
+            value={credentials.T_pnum}
+            onChange={handleChange}
+            required
+          />
+          <label>Phone Number</label>
+          <i className="bx bxs-phone"></i>
+        </div>
+
         <div className="input-box-birth">
           <select
             name="C_gender"
@@ -213,6 +237,7 @@ const RegisterForm: React.FC = () => {
         </button>
       </div>
     </AuthForm>
+    </div>
   );
 };
 

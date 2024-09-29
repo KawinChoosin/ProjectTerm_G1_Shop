@@ -18,15 +18,11 @@ interface UserProviderProps {
 
 // Create a provider component
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [C_id, setC_id] = useState<number | null>(null);
-
-  // Load the C_id from sessionStorage when the component mounts
-  useEffect(() => {
+  // Initialize state with the value from sessionStorage
+  const [C_id, setC_id] = useState<number | null>(() => {
     const storedC_id = sessionStorage.getItem("C_id");
-    if (storedC_id) {
-      setC_id(Number(storedC_id)); // Convert the string to a number
-    }
-  }, []);
+    return storedC_id ? Number(storedC_id) : null;
+  });
 
   // Save the C_id to sessionStorage whenever it changes
   const handleSetC_id = (C_id: number) => {

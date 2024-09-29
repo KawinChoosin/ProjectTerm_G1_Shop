@@ -6,6 +6,7 @@ import { AuthForm } from "./Auth.component.login";
 import { useNavigate, useLocation } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import UserContext from "../../context/UserContext";
+import bgImage from "../bg.avif"; // Import the background image
 
 const LoginForm: React.FC = () => {
   const { setC_id } = useContext(UserContext); // Access the setC_id function
@@ -66,13 +67,23 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <AuthForm
+    <div
+  style={{
+    backgroundImage: `url(${bgImage})`, // Use the imported image
+    backgroundSize: "cover", // Optional: to cover the whole div
+    backgroundPosition: "center", // Optional: to center the image
+    height: "100vh", // Set the height of the div to cover the viewport
+    width: "100%", // Ensure it takes the full width
+  }}
+>
+
+        <AuthForm
       onSubmit={login}
       style={{
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
-      }}
+            }}
     >
       <div className="wrapper">
         <h1>Login</h1>
@@ -149,6 +160,8 @@ const LoginForm: React.FC = () => {
         </div>
       </div>
     </AuthForm>
+    </div>
+    
   );
 };
 

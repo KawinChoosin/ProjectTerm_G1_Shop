@@ -34,10 +34,10 @@ model Customer {
   C_id       Int      @id @default(autoincrement())
   C_name     String   @db.VarChar(255)
   C_password String   @db.VarChar(255)
-  C_email    String   @db.VarChar(255)
+  C_email    String   @db.VarChar(255) @unique
   C_gender   String   @db.VarChar(10)
   C_age      Int
-
+  T_pnum   String @db.VarChar(11)
   Order      Order[]
   CartDetail CartDetail[]
   Address     Address[]  
@@ -52,7 +52,7 @@ model Order {
   PM_id     Int
   A_id      Int
   O_Description  String?  @db.Text
-
+  Payslip  String 
   Customer  Customer @relation(fields: [C_id], references: [C_id])
   Payment   Payment  @relation(fields: [PM_id], references: [PM_id])
   Address     Address @relation(fields: [A_id], references: [A_id])

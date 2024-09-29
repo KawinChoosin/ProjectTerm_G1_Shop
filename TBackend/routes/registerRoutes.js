@@ -14,21 +14,20 @@ router.get("/", async (req, res) => {
 
 // Add a Customer
 router.post("/", async (req, res) => {
-  const { C_name, C_password, C_email, C_gender, C_age } = req.body;
+  const { C_name, C_password, C_email, C_gender, C_age, T_pnum } = req.body; // Include T_pnum
 
   try {
     // Check if customer with the same C_name or C_email already exists
     const existingCustomer = await prisma.customer.findMany({
       where: {
         OR: [
-          { C_name }, // Check for existing C_name
-          { C_email }, // Check for existing C_email
+          { C_name },
+          { C_email },
         ],
       },
     });
 
     if (existingCustomer.length > 0) {
-      // Prepare error messages based on what already exists
       const errors = [];
       if (existingCustomer.some((customer) => customer.C_name === C_name)) {
         errors.push("Customer with this name already exists.");
@@ -50,12 +49,13 @@ router.post("/", async (req, res) => {
     // Create new customer record
     const newCustomer = await prisma.customer.create({
       data: {
-        C_id, // UUID for customer ID
+        C_id,
         C_name,
-        C_password, // You should hash the password before storing it (for security)
+        C_password, // Remember to hash the password before storing it
         C_email,
         C_gender,
         C_age: age,
+        T_pnum, // Include T_pnum in the customer record
       },
     });
 
@@ -72,20 +72,17 @@ router.delete("/register/:C_id", async (req, res) => {
   console.log(`Received DELETE request for C_id: ${C_id}`);
 
   try {
-    // First, delete all related CartDetail records for the customer
     await prisma.cartDetail.deleteMany({
       where: { C_id: parseInt(C_id, 10) },
     });
 
-    // Then, delete the customer
     const deletedCustomer = await prisma.customer.delete({
       where: { C_id: parseInt(C_id, 10) },
     });
 
-    res.json(deletedCustomer); // Return the deleted customer data
+    res.json(deletedCustomer);
   } catch (error) {
     if (error.code === "P2003") {
-      // Foreign key constraint error
       return res.status(400).json({
         error: "Cannot delete customer due to foreign key constraints.",
       });

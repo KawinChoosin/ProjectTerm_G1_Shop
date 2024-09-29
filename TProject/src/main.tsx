@@ -11,6 +11,8 @@ import App_Login from "./page/Login/App_Login.tsx";
 import App_Register from "./page/Register/App_Register.tsx";
 import FavPage from "./components/favourite/FavPage.tsx";
 import { UserProvider } from "./context/UserContext.tsx"; // Import UserProvider
+import Tapmenu from "./page/User/TabsMenu.tsx"
+import ProtectedRoute from "./ProtectedRoute.tsx"
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -26,6 +28,10 @@ root.render(
           <Route path="/login" element={<App_Login />} />
           <Route path="/register" element={<App_Register />} />
           <Route path="/favourite" element={<FavPage />} />
+          
+          {/* <Route element={<ProtectedRoute />}> */}
+            <Route path="/profile" element={<Tapmenu />} />
+          {/* </Route> */}
         </Routes>
       </Router>
     </UserProvider>

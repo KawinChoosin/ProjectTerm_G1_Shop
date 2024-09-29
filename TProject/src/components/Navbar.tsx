@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
   };
 
   const handleLoginClick = () => {
-    navigate("/login"); // Navigate to login page
+    navigate("/profile"); // Navigate to login page
   };
 
   const handleFavClick = () => {
