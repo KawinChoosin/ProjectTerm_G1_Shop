@@ -1,34 +1,33 @@
 /* Scrollbar for Webkit browsers */
 .scrollable-container::-webkit-scrollbar {
-    width: 12px; /* Width of the scrollbar */
-  }
-  
-  .scrollable-container::-webkit-scrollbar-track {
-    background: #fff; /* Background color of the track */
-  }
-  
-  .scrollable-container::-webkit-scrollbar-thumb {
-    background: #888; /* Color of the scrollbar thumb */
-    border-radius: 6px; /* Rounded corners for the thumb */
-  }
-  
-  .scrollable-container::-webkit-scrollbar-thumb:hover {
-    background: #555; /* Color of the thumb on hover */
-  }
+  width: 12px; /* Width of the scrollbar */
+}
 
-  body {
-    font-family: 'Montserrat', sans-serif;
-  }
-  
-  .MuiTypography-root {
-    font-family: 'Montserrat', sans-serif;
-  }
+.scrollable-container::-webkit-scrollbar-track {
+  background: #fff; /* Background color of the track */
+}
 
-  .price {
-    color: #596fb7;
-    font-weight: bold;
-    font-size: 1rem;
-    margin-top: 8px;
-  }
-  
-  
+.scrollable-container::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the scrollbar thumb */
+  border-radius: 6px; /* Rounded corners for the thumb */
+}
+
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color of the thumb on hover */
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.MuiTypography-root {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.price {
+  color: #596fb7;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 8px;
+}
+
