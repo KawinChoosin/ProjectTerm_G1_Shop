@@ -56,7 +56,7 @@ const CartPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => { 
-    // setCustomerId(C_id)
+    setCustomerId(C_id)
     if(C_id!==null){
     const fetchCartDetails = async () => {
       try {

@@ -72,7 +72,7 @@ model OrderDetail {
 model Payment {
   PM_id     Int      @id @default(autoincrement())
   PM_amount Decimal     // Changed to integer
-  PM_type   String   @db.VarChar(50)
+  PM_path   String   @db.VarChar(100)
   Date_time DateTime
 
   Order     Order[]

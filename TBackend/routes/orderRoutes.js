@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const _ = require('lodash');
+const QRCode = require('qrcode');
+const generatePayload =  require('promptpay-qr');
+const upload = require('../upload');
+
 
 // Get all orders for a customer
 router.get("/customer/:C_id", async (req, res) => {
@@ -35,32 +40,32 @@ router.get("/customer/:C_id", async (req, res) => {
 
 
 // Get a specific order by ID
-router.get("/:O_id", async (req, res) => {
-  const orderId = parseInt(req.params.O_id, 10);
-  try {
-    const order = await prisma.order.findUnique({
-      where: { O_id: orderId },
-      include: {
-        Customer: true,
-        Payment: true,
-        OrderDetail: {
-          include: {
-            Product: true, // Include the Product model
-          },
-        },
-      },
-    });
+// router.get("/:O_id", async (req, res) => {
+//   const orderId = parseInt(req.params.O_id, 10);
+//   try {
+//     const order = await prisma.order.findUnique({
+//       where: { O_id: orderId },
+//       include: {
+//         Customer: true,
+//         Payment: true,
+//         OrderDetail: {
+//           include: {
+//             Product: true, // Include the Product model
+//           },
+//         },
+//       },
+//     });
 
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
+//     if (!order) {
+//       return res.status(404).json({ message: "Order not found" });
+//     }
 
-    res.json(order);
-  } catch (error) {
-    console.error("Error fetching order by ID:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+//     res.json(order);
+//   } catch (error) {
+//     console.error("Error fetching order by ID:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
 // Get order details by order ID
 router.get("/orderdetails/:O_id", async (req, res) => {
@@ -218,5 +223,30 @@ router.post('/generateQR', (req, res) => {
 
   })
 })
+
+router.post('/payments', upload.single('slip'), async (req, res) => {
+  try {
+    const { PM_amount, Date_time } = req.body;
+
+    // Get the uploaded file path
+    const PM_path = req.file ? req.file.path : '';
+
+    // Create the payment record
+    const newPayment = await prisma.payment.create({
+      data: {
+        PM_amount: parseFloat(PM_amount),
+        PM_path, // Store the file path
+        Date_time: new Date(Date_time),
+      },
+    });
+
+    res.status(201).json(newPayment);
+  } catch (error) {
+    res.status(500).json({ error: 'Error creating payment' });
+  }
+});
+
+
+
 
 module.exports = router;
