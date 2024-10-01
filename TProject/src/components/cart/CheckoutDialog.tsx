@@ -13,8 +13,8 @@ import {
   Select,
   InputLabel,
   FormControl,
-  Grid,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { TransitionProps } from "@mui/material/transitions";
 import axios from "axios";
 
@@ -76,7 +76,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       });
       setShowNewAddressForm(false); // Ensure the form starts closed
     }
-  }, [open,address]);
+  }, [open]);
 
   // interface Product {
   //   P_name: string;
@@ -188,13 +188,13 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
 
       // Hide the new address form and reset the fields
       setShowNewAddressForm(false);
-      setNewAddress({
-        street: "",
-        city: "",
-        state: "",
-        postalCode: "",
-        country: "",
-      });
+      // setNewAddress({
+      //   street: "",
+      //   city: "",
+      //   state: "",
+      //   postalCode: "",
+      //   country: "",
+      // });
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(
@@ -244,7 +244,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
             </FormControl>
           ) : (
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid>
                 <TextField
                   label="Street"
                   fullWidth
@@ -256,7 +256,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                   variant="outlined"
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid>
                 <TextField
                   label="City"
                   fullWidth
@@ -268,7 +268,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                   variant="outlined"
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid>
                 <TextField
                   label="State"
                   fullWidth
@@ -280,7 +280,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                   variant="outlined"
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid>
                 <TextField
                   label="Postal Code"
                   fullWidth
@@ -292,7 +292,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                   variant="outlined"
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid>
                 <TextField
                   label="Country"
                   fullWidth
@@ -304,7 +304,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                   variant="outlined"
                 />
               </Grid>
-              <Grid item xs={12} container justifyContent="center">
+              <Grid>
                 <Button
                   onClick={handleAddNewAddress}
                   sx={{ mt: 2, color: "#596fb7" }}

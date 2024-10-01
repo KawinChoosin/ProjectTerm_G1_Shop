@@ -14,6 +14,7 @@ router.get("/customer/:C_id", async (req, res) => {
       include: {
         Customer: true,
         Payment: true,
+        Address: true,
         OrderDetail: {
           include: {
             Product: true, // Include the Product model to get product details
@@ -33,7 +34,6 @@ router.get("/customer/:C_id", async (req, res) => {
   }
 });
 
-
 // Get a specific order by ID
 router.get("/:O_id", async (req, res) => {
   const orderId = parseInt(req.params.O_id, 10);
@@ -43,6 +43,7 @@ router.get("/:O_id", async (req, res) => {
       include: {
         Customer: true,
         Payment: true,
+        Address: true,
         OrderDetail: {
           include: {
             Product: true, // Include the Product model
@@ -89,14 +90,14 @@ router.get("/orderdetails/:O_id", async (req, res) => {
 
 // Add a new order
 router.post("/", async (req, res) => {
-  const { C_id, Date_time, Total, PM_type, PM_amount, orderDetails } = req.body;
+  const { C_id, Date_time, Total, PM_type, PM_amount, A_id, O_Description, Payslip, orderDetails } = req.body;
 
   try {
-    paymentMethod = await prisma.payment.create({
+    const paymentMethod = await prisma.payment.create({
       data: {
-        PM_amount: PM_amount,
+        PM_amount: parseFloat(PM_amount),
         PM_type: PM_type,
-        Date_time: new Date(Date_time), // Use the appropriate date format
+        Date_time: new Date(Date_time), // Ensure the date format is correct
       },
     });
 
@@ -104,14 +105,17 @@ router.post("/", async (req, res) => {
     const newOrder = await prisma.order.create({
       data: {
         C_id: parseInt(C_id, 10),
-        Date_time: new Date(Date_time),
-        Total: parseInt(Total, 10),
-        PM_id: paymentMethod.PM_id, // Link the new or existing payment method
+        Q_Date_time: new Date(Date_time),
+        O_Total: parseFloat(Total),
+        PM_id: paymentMethod.PM_id,
+        A_id: parseInt(A_id, 10), // Address ID
+        O_Description: O_Description || null,
+        Payslip: Payslip,
         OrderDetail: {
           create: orderDetails.map((detail) => ({
-            P_id: detail.P_id,
-            OD_quantity: detail.OD_quantity,
-            OD_price: detail.OD_price,
+            P_id: parseInt(detail.P_id, 10),
+            OD_quantity: parseInt(detail.OD_quantity, 10),
+            OD_price: parseFloat(detail.OD_price),
           })),
         },
       },
@@ -131,10 +135,10 @@ router.post("/orderdetails", async (req, res) => {
   try {
     const newOrderDetail = await prisma.orderDetail.create({
       data: {
-        O_id: parseInt(O_id, 10), // Order ID
-        P_id: parseInt(P_id, 10), // Product ID
-        OD_quantity: parseInt(OD_quantity, 10), // Quantity
-        OD_price: parseFloat(OD_price), // Price
+        O_id: parseInt(O_id, 10),
+        P_id: parseInt(P_id, 10),
+        OD_quantity: parseInt(OD_quantity, 10),
+        OD_price: parseFloat(OD_price),
       },
     });
 
@@ -154,13 +158,13 @@ router.patch("/:O_id", async (req, res) => {
     const updatedOrder = await prisma.order.update({
       where: { O_id: orderId },
       data: {
-        Total: parseInt(Total, 10),
+        O_Total: parseFloat(Total),
         OrderDetail: {
-          deleteMany: {},
+          deleteMany: {}, // Clear previous order details
           create: orderDetails.map((detail) => ({
-            P_id: detail.P_id,
-            OD_quantity: detail.OD_quantity,
-            OD_price: detail.OD_price,
+            P_id: parseInt(detail.P_id, 10),
+            OD_quantity: parseInt(detail.OD_quantity, 10),
+            OD_price: parseFloat(detail.OD_price),
           })),
         },
       },
@@ -190,33 +194,32 @@ router.delete("/:O_id", async (req, res) => {
   }
 });
 
+// Generate QR code
 router.post('/generateQR', (req, res) => {
   const amount = parseFloat(_.get(req, ["body", "amount"]));
   const mobileNumber = '0980798171';
   const payload = generatePayload(mobileNumber, { amount });
   const option = {
-      color: {
-          dark: '#000',
-          light: '#fff'
-      }
-  }
+    color: {
+      dark: '#000',
+      light: '#fff'
+    }
+  };
   QRCode.toDataURL(payload, option, (err, url) => {
-      if(err) {
-          console.log('generate fail')
-          return res.status(400).json({
-              RespCode: 400,
-              RespMessage: 'bad : ' + err
-          })  
-      } 
-      else {
-          return res.status(200).json({
-              RespCode: 200,
-              RespMessage: 'good',
-              Result: url
-          })  
-      }
-
-  })
-})
+    if (err) {
+      console.log('generate fail');
+      return res.status(400).json({
+        RespCode: 400,
+        RespMessage: 'bad : ' + err
+      });
+    } else {
+      return res.status(200).json({
+        RespCode: 200,
+        RespMessage: 'good',
+        Result: url
+      });
+    }
+  });
+});
 
 module.exports = router;

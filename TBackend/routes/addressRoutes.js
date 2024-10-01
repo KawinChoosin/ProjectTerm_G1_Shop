@@ -1,4 +1,3 @@
-// routes/addressRoutes.js
 const express = require("express");
 const prisma = require("../prisma/client");
 const addressSchema = require("../schemas/addressSchema");
@@ -15,10 +14,8 @@ router.get("/:C_id", async (req, res) => {
         C_id: parseInt(C_id, 10),
       },
     });
-    if (addresses.length === 0) {
-      return res.status(404).json({ message: "No addresses found for this customer" });
-    }
-    res.json(addresses);
+    // Return addresses even if empty as an empty array
+    res.status(200).json(addresses); // This will return [] if no addresses found
   } catch (error) {
     console.error("Error fetching addresses:", error);
     res.status(500).json({ error: "Error fetching addresses" });
@@ -26,7 +23,7 @@ router.get("/:C_id", async (req, res) => {
 });
 
 // Get a specific address by ID
-router.get("/:id", async (req, res) => {
+router.get("/address/:id", async (req, res) => {
   const addressId = parseInt(req.params.id, 10);
   try {
     const address = await prisma.address.findUnique({
@@ -49,7 +46,7 @@ router.post("/", async (req, res) => {
     const newAddress = await prisma.address.create({
       data: validatedData,
     });
-    res.json(newAddress);
+    res.status(201).json(newAddress); // Return 201 for created resources
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors });
