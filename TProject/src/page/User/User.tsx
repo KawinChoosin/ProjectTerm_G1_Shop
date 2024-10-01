@@ -203,16 +203,16 @@ function User() {
       {/* Edit Dialog */}
       <Dialog open={editMode} onClose={() => setEditMode(false)}>
         <DialogTitle>Edit User</DialogTitle>
-        <DialogContent>
-          <TextField fullWidth name="C_name" label="Name" value={formData.C_name} onChange={handleInputChange} />
-          <TextField fullWidth name="C_email" label="Email" value={formData.C_email} onChange={handleInputChange} />
-          <TextField fullWidth name="T_pnum" label="Phone" value={formData.T_pnum} onChange={handleInputChange} />
-          <TextField fullWidth name="C_gender" label="Gender" value={formData.C_gender} onChange={handleInputChange} />
-          <TextField fullWidth name="C_age" label="Age" value={formData.C_age} onChange={handleInputChange} />
+        <DialogContent >
+          <TextField sx={{mt:'20px'}} fullWidth name="C_name" label="Name" value={formData.C_name} onChange={handleInputChange} />
+          <TextField sx={{mt:'20px'}} fullWidth name="C_email" label="Email" value={formData.C_email} onChange={handleInputChange} />
+          <TextField sx={{mt:'20px'}} fullWidth name="T_pnum" label="Phone" value={formData.T_pnum} onChange={handleInputChange} />
+          <TextField sx={{mt:'20px'}} fullWidth name="C_gender" label="Gender" value={formData.C_gender} onChange={handleInputChange} />
+          <TextField sx={{mt:'20px'}} fullWidth name="C_age" label="Age" value={formData.C_age} onChange={handleInputChange} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditMode(false)}>Cancel</Button>
-          <Button onClick={handleSubmit}>Submit</Button>
+          <Button sx={{mb:'20px'}}  onClick={() => setEditMode(false)}>Cancel</Button>
+          <Button sx={{mb:'20px',mr:"20px"}} onClick={handleSubmit}>Submit</Button>
         </DialogActions>
       </Dialog>
 
@@ -221,6 +221,7 @@ function User() {
         <DialogTitle>Change Password</DialogTitle>
         <DialogContent>
           <TextField
+            sx={{mb:'20px'}}
             fullWidth
             label="Old Password"
             type={showOldPassword ? 'text' : 'password'}
@@ -230,7 +231,7 @@ function User() {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={() => setShowOldPassword(!showOldPassword)}>
+                  <IconButton sx={{fontSize:'14px'}} onClick={() => setShowOldPassword(!showOldPassword)}>
                     {showOldPassword ? 'Hide' : 'Show'}
                   </IconButton>
                 </InputAdornment>
@@ -238,6 +239,7 @@ function User() {
             }}
           />
           <TextField
+            sx={{mb:'20px'}}
             fullWidth
             label="New Password"
             type={showNewPassword ? 'text' : 'password'}
@@ -247,7 +249,7 @@ function User() {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={() => setShowNewPassword(!showNewPassword)}>
+                  <IconButton sx={{fontSize:'14px'}} onClick={() => setShowNewPassword(!showNewPassword)}>
                     {showNewPassword ? 'Hide' : 'Show'}
                   </IconButton>
                 </InputAdornment>
@@ -255,6 +257,7 @@ function User() {
             }}
           />
           <TextField
+ 
             fullWidth
             label="Retype New Password"
             type={showRetypePassword ? 'text' : 'password'}
@@ -264,7 +267,7 @@ function User() {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={() => setShowRetypePassword(!showRetypePassword)}>
+                  <IconButton sx={{fontSize:'14px'}}  onClick={() => setShowRetypePassword(!showRetypePassword)}>
                     {showRetypePassword ? 'Hide' : 'Show'}
                   </IconButton>
                 </InputAdornment>
@@ -273,8 +276,8 @@ function User() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setChangePass(false)}>Cancel</Button>
-          <Button onClick={handleChangePass}>Submit</Button>
+          <Button sx={{mb:'20px'}} onClick={() => setChangePass(false)}>Cancel</Button>
+          <Button sx={{mb:'20px',mr:"20px"}} onClick={handleChangePass}>Submit</Button>
         </DialogActions>
       </Dialog>
     </Box>

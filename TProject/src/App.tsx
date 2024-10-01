@@ -39,6 +39,8 @@ const App: React.FC = () => {
     fetchProducts();
   }, []);
 
+  
+
   const handleClick = (category: string) => {
     setSelectedCategory(category);
   };

@@ -17,6 +17,8 @@ import {
 import Grid from "@mui/material/Grid2";
 import { TransitionProps } from "@mui/material/transitions";
 import axios from "axios";
+import QR from "./Qr";
+import PaymentForm from "./uploadfile"; // Import the new PaymentForm component
 
 interface CheckoutDialogProps {
   open: boolean;
@@ -25,6 +27,12 @@ interface CheckoutDialogProps {
   total: number;
   addresses: string[];
   customerId: number;
+}
+
+interface CartItem {
+  P_id: number; // Product ID
+  CA_quantity: number; // Quantity of the product
+  CA_price: number; // Price per unit
 }
 
 // Theme na ja
@@ -62,6 +70,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     country: "",
   });
   const [showNewAddressForm, setShowNewAddressForm] = useState<boolean>(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // Reset the address form when the dialog opens
   useEffect(() => {
@@ -75,34 +84,46 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         country: "",
       });
       setShowNewAddressForm(false); // Ensure the form starts closed
+      setSelectedFile(null);
     }
   }, [open]);
 
-  // interface Product {
-  //   P_name: string;
-  //   P_description?: string;
-  //   P_img?: string;
-  // }
-
-  // interface OrderDetail {
-  //   P_id: number;
-  //   OD_quantity: number;
-  //   OD_price: number;
-  //   Product: Product;
-  // }
-
-  interface CartItem {
-    P_id: number; // Product ID
-    CA_quantity: number; // Quantity of the product
-    CA_price: number; // Price per unit
-  }
-  
+  const handleFileUpload = (file: File | null) => {
+    setSelectedFile(file);
+  };
 
   // Cart to order
   const handleCheckoutSubmit = async () => {
     if (!address && !newAddress.street) {
       alert("Please select or add an address!");
       return;
+    }
+    // Check if a file is selected before proceeding
+    if (!selectedFile) {
+      alert("Please upload a slip before confirming checkout.");
+      return; // Exit the function if no file is selected
+    }
+
+    const formData = new FormData();
+    formData.append("slip", selectedFile);
+    formData.append("PM_amount", total.toString());
+    formData.append("Date_time", new Date().toISOString());
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/order/payments",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Payment uploaded", response.data);
+      // Optionally handle success (e.g., show a message or reset form)
+    } catch (error) {
+      console.error("Error uploading payment", error);
+      // Optionally handle error (e.g., show an error message)
     }
 
     const selectedAddress = showNewAddressForm
@@ -122,7 +143,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       }
 
       // Prepare the order details by mapping cart items to the expected order format
-      const orderDetails = cartItems.map((item : CartItem) => ({
+      const orderDetails = cartItems.map((item: CartItem) => ({
         P_id: item.P_id, // Product ID
         OD_quantity: item.CA_quantity, // Quantity of the product
         OD_price: item.CA_price, // Price per unit
@@ -241,6 +262,23 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
               >
                 Add New Address
               </Button>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  gap: "16px",
+                }}
+              >
+                <QR amount={total} />
+                <h3>TOTAL: {total}</h3>
+                <PaymentForm
+                  total={total}
+                  onFileUpload={handleFileUpload}
+                />{" "}
+                {/* Pass handler */}
+              </div>
             </FormControl>
           ) : (
             <Grid container spacing={2}>
