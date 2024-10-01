@@ -13,7 +13,7 @@ router.post("/add", async (req, res) => {
         C_id_P_id: { C_id, P_id },
       },
     });
-    
+
     if (existingCartDetail) {
       const updatedCartDetail = await prisma.cartDetail.update({
         where: {
@@ -50,7 +50,10 @@ router.delete("/delete", async (req, res) => {
         C_id_P_id: { C_id: parseInt(C_id, 10), P_id: parseInt(P_id, 10) },
       },
     });
-    res.json({ message: "Item successfully deleted from cart", deletedCartDetail });
+    res.json({
+      message: "Item successfully deleted from cart",
+      deletedCartDetail,
+    });
   } catch (error) {
     res.status(500).json({ error: "Error deleting product from cart" });
   }
@@ -64,9 +67,9 @@ router.get("/:C_id", async (req, res) => {
       where: { C_id: parseInt(C_id, 10) },
       include: { Product: true },
     });
-    if (cartItems.length === 0) {
-      return res.status(404).json({ message: "No items found in cart" });
-    }
+    // if (cartItems.length === 0) {
+    //   return res.status(404).json({ message: "No items found in cart" });
+    // }
     res.json(cartItems);
   } catch (error) {
     res.status(500).json({ error: "Error fetching cart items" });
@@ -94,6 +97,4 @@ router.patch("/update", async (req, res) => {
   }
 });
 
-  
-  
 module.exports = router;

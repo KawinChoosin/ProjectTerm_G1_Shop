@@ -130,11 +130,11 @@ const CartPage: React.FC = () => {
       const response = await axios.get(
         `http://localhost:3000/address/${customerId}`
       );
-      console.log("Fetched addresses:", response.data); // Log 
+      console.log("Fetched addresses:", response.data); // Log
       const addresses = response.data.map((addr: any) => {
         return `${addr.A_street}, ${addr.A_city}, ${addr.A_state}, ${addr.A_postalCode}, ${addr.A_country}`;
       });
-      console.log("Formatted addresses:", addresses); // Log 
+      console.log("Formatted addresses:", addresses); // Log
       setCheckoutAddresses(addresses);
       setOpenCheckoutDialog(true);
     } catch (error) {
