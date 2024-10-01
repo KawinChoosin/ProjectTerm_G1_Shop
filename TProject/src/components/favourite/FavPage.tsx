@@ -67,6 +67,7 @@ const FavPage: React.FC = () => {
         gap: 2,
         justifyContent: "center",
         padding: 4,
+        flexGrow: 1,
       }}
     >
       {favItems.length > 0 ? (
@@ -81,7 +82,15 @@ const FavPage: React.FC = () => {
           />
         ))
       ) : (
-        <Typography variant="body1" align="center">
+        <Typography
+          variant="body1"
+          align="center"
+          sx={{
+            textAlign: "left",
+            fontSize: "1.5rem",
+            mt: 4,
+          }}
+        >
           You have no favourite.
         </Typography>
       )}
@@ -93,7 +102,16 @@ const FavPage: React.FC = () => {
       style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
     >
       <Navbar />
-      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8 }}>
+      <Container
+        maxWidth="xl"
+        sx={{
+          mt: isMobile ? 0 : 20,
+          mb: 8,
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <Typography
           variant="h3"
           align="left"
