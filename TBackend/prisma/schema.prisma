@@ -39,6 +39,7 @@ model Customer {
 
   Order      Order[]
   CartDetail CartDetail[]
+  Address     Address[]  
 }
 
 model Order {
@@ -88,14 +89,27 @@ model Comment {
 }
 
 model CartDetail {
-  CA_id       Int
+  CA_id       Int      @id @default(autoincrement())
   C_id        Int
   P_id        Int
   CA_quantity Int
-  CA_price    Int     // Changed to integer
+  CA_price    Float
 
+  // Define the relation fields if necessary
+  Product     Product @relation(fields: [P_id], references: [P_id])
   Customer    Customer @relation(fields: [C_id], references: [C_id])
-  Product     Product  @relation(fields: [P_id], references: [P_id])
+
+  @@unique([C_id, P_id]) // Composite key to ensure a unique combination
+}
+
+model Address {
+  A_id         Int      @id @default(autoincrement())
+  C_id         Int
+  A_street     String   @db.VarChar(255)
+  A_city       String   @db.VarChar(100)
+  A_state      String   @db.VarChar(100)
+  A_postalCode String   @db.VarChar(20)
+  A_country    String   @db.VarChar(100)
   
-  @@id([C_id, P_id]) // Composite primary key
+  Customer     Customer @relation(fields: [C_id], references: [C_id])
 }

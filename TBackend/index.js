@@ -3,11 +3,18 @@ const { v4: uuidv4 } = require("uuid"); // Import UUID library
 const { PrismaClient } = require("@prisma/client");
 const cors = require("cors");
 const prisma = new PrismaClient();
+// app.js
+const bodyParser = require("body-parser");
+const addressRoutes = require("./routes/addressRoutes");
+const productRoutes = require("./routes/productRoutes");
+const cartRoutes = require("./routes/cartRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+
 const app = express();
-const port = 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 
 // Get all products
 app.get("/products", async (req, res) => {
@@ -221,7 +228,18 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });
 });
 
-// Running the app
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+// Use the modular routes
+app.use("/address", addressRoutes);
+app.use("/products", productRoutes);
+app.use("/cart", cartRoutes);
+app.use("/order", orderRoutes);
+
+// Default route
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
