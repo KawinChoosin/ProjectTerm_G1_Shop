@@ -9,6 +9,8 @@ const favRoutes = require("./routes/favRoutes");
 const loginRoutes = require("./routes/loginRoutes");
 const registerRoutes = require("./routes/registerRoutes");
 const profile = require("./routes/profileRoutes")
+const uploadRoutes = require("./routes/uploadRoutes"); // Adjust the path as necessary
+
 
 const app = express();
 const cors = require("cors");
@@ -26,6 +28,7 @@ app.use("/favourite", favRoutes);
 app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/profile", profile);
+app.use("/upload", uploadRoutes);
 
 // Default route
 app.get("/", (req, res) => {

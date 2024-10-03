@@ -16,7 +16,6 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import "./cart.css";
 import { useNavigate } from "react-router-dom";
 
 interface CartItemType {
@@ -51,7 +50,6 @@ const CartPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [customerId, setCustomerId] = useState<number | null>(null);
   const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false);
-  const [checkoutAddresses, setCheckoutAddresses] = useState<string[]>([]);
   const { C_id } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -121,34 +119,17 @@ const CartPage: React.FC = () => {
     }
   };
 
-  const handleOpenCheckout = async () => {
-    if (!customerId) {
-      console.error("Customer ID is not set.");
-      return;
-    }
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/address/${customerId}`
-      );
-      console.log("Fetched addresses:", response.data); // Log
-      const addresses = response.data.map((addr: any) => {
-        return `${addr.A_street}, ${addr.A_city}, ${addr.A_state}, ${addr.A_postalCode}, ${addr.A_country}`;
-      });
-      console.log("Formatted addresses:", addresses); // Log
-      setCheckoutAddresses(addresses);
-      setOpenCheckoutDialog(true);
-    } catch (error) {
-      console.error("Error fetching addresses:", error);
-    }
+  const handleOpenCheckout = () => {
+    setOpenCheckoutDialog(true);
   };
 
   const handleCloseCheckout = () => setOpenCheckoutDialog(false);
 
   const handleCheckoutSubmit = async (
-    address: string,
+    addressId: number,
     paymentMethod: string
   ) => {
-    console.log("Address:", address);
+    console.log("Address ID:", addressId);
     console.log("Payment Method:", paymentMethod);
     handleCloseCheckout();
   };
@@ -254,7 +235,6 @@ const CartPage: React.FC = () => {
             onClose={handleCloseCheckout}
             onSubmit={handleCheckoutSubmit}
             total={total}
-            addresses={checkoutAddresses} // Pass fetched addresses
           />
         )}
       </div>

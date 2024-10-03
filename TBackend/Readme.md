@@ -35,8 +35,6 @@ npx prisma generate
 
 # Data Insert and run
 
-# Data Insert and run
-
 ```
 node test.js
 node index.js
@@ -53,3 +51,8 @@ npm install uuid
 ```
 npm install jsonwebtoken
 ```
+
+# upload img?
+
+```npm install multer
+
