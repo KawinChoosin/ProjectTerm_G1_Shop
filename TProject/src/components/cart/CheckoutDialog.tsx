@@ -23,7 +23,7 @@ import PaymentForm from "./uploadfile"; // Ensure this is the correct import for
 interface CheckoutDialogProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (addressId: number, paymentMethod: string) => void;
+  onSubmit: (addressId: number) => void;
   total: number;
   customerId: number;
 }
@@ -174,18 +174,14 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   };
 
   const handleCheckoutSubmit = async () => {
+    // Validate address selection or addition
     if (!address && !newAddress.street) {
       alert("Please select or add an address!");
       return;
     }
 
-    if (!selectedFile) {
-      alert("Please upload a payslip before confirming checkout.");
-      return;
-    }
-
     try {
-      const payslipPath = await uploadPayslip(selectedFile);
+      // Fetch cart items
       const cartItems = await fetchCartItems(customerId);
 
       if (!cartItems || cartItems.length === 0) {
@@ -193,29 +189,153 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         return;
       }
 
+      // Prepare order details
       const orderDetails = cartItems.map((item: CartItem) => ({
         P_id: item.P_id,
         OD_quantity: item.CA_quantity,
         OD_price: item.CA_price,
       }));
 
-      let addressId: number = await handleAddressSubmission();
-      await submitOrder(customerId, payslipPath, orderDetails, addressId);
+      // Calculate total amount
+      const total = cartItems.reduce(
+        (sum: number, item: CartItem) => sum + item.CA_price * item.CA_quantity,
+        0
+      );
 
-      // Clear the cart after successful order
+      // Handle address submission (new or existing)
+      const addressId: number = await handleAddressSubmission();
+
+      // Handle file upload before submitting the order
+      let payslipPath: string | null = null; // Initialize payslipPath
+
+      if (selectedFile) {
+        payslipPath = await uploadPayslip(selectedFile); // Get the file path
+      } else {
+        alert("Please upload a payslip.");
+        return;
+      }
+      
+      console.log("pay:", payslipPath);
+
+      // Check if payslipPath is null
+      if (payslipPath === null) {
+        alert("Failed to upload payslip. Please try again.");
+        return; // Or handle this error as needed
+      }
+
+      // Submit the order with payment information
+      await submitOrder(
+        customerId,
+        addressId,
+        orderDetails,
+        total,
+        payslipPath
+      ); // Pass the payslip path
+
+      console.log("Order Details:", orderDetails);
+
+      // Clear the cart after a successful order
       await clearCart(cartItems);
 
       alert("Order successfully placed and cart cleared!");
-      onSubmit(addressId, "PromPlay");
+      onSubmit(addressId); // Pass selected address and payment method
     } catch (error) {
       console.error("Error during checkout:", error);
       alert("Failed to complete checkout. Please try again.");
     }
   };
 
+  const submitOrder = async (
+    customerId: number,
+    addressId: number,
+    orderDetails: any,
+    total: number, // Ensure total is passed correctly
+    payslipPath: string // New parameter for the payslip path
+  ) => {
+
+    const orderData = {
+      C_id: customerId,
+      Date_time: new Date().toISOString(),
+      Total: total,
+      PM_amount: total,
+      A_id: addressId,
+      PM_path: payslipPath,
+      O_Description: "test",
+      orderDetails,
+    };
+    
+
+    await axios.post("http://localhost:3000/order", orderData);
+    // console.log("Customer ID:", customerId);
+    // console.log("Total:", total);
+    // console.log("Address ID:", addressId);
+    // console.log("Order Details:", orderDetails);
+    // console.log("Payslip Path:", payslipPath); // Log the payslip path
+  
+    // Create FormData instance
+    // const formData = new FormData();
+  
+    // // Check if the parameters are defined
+    // if (
+    //   typeof customerId === "undefined" ||
+    //   typeof total === "undefined" ||
+    //   typeof addressId === "undefined" ||
+    //   !payslipPath // Check if payslipPath is provided
+    // ) {
+    //   console.error("One of the parameters is undefined");
+    //   return;
+    // }
+  
+    // // Append data to FormData
+    // formData.append("C_id", customerId.toString());
+    // formData.append("Date_time", new Date().toISOString());
+    // formData.append("O_Total", total.toString());
+    // formData.append("PM_amount", total.toString());
+    // formData.append("A_id", addressId.toString());
+    // formData.append("O_Description", "Optional description here"); // If you have a description
+    // formData.append("PM_path", payslipPath); // Append the payslip path
+  
+    // // Check if orderDetails is an array and not empty
+    // if (!Array.isArray(orderDetails) || orderDetails.length === 0) {
+    //   console.error("Order details are invalid");
+    //   return;
+    // }
+  
+    // Append orderDetails as JSON strings
+    // orderDetails.forEach((detail) => {
+    //   formData.append("orderDetails", JSON.stringify(detail));
+    // });
+  
+    // try {
+    //   const response = await axios.post(
+    //     "http://localhost:3000/order",
+    //     formData,
+    //     {
+    //       headers: {
+    //         "Content-Type": "multipart/form-data",
+    //       },
+    //     }
+    //   );
+    //   console.log("Order placed successfully:", response.data);
+    //   return response.data;
+    // } catch (error) {
+    //   if (axios.isAxiosError(error)) {
+    //     console.error("Error response:", error.response?.data);
+    //   } else {
+    //     console.error("Error:", error);
+    //   }
+    //   throw error; // Rethrow error for upstream handling
+    // }
+  };
+  
+  
+
   const uploadPayslip = async (file: File) => {
     const formData = new FormData();
     formData.append("slip", file);
+
+    // If you're appending numbers, convert them to strings first
+    formData.append("total", total.toString());
 
     const fileUploadResponse = await axios.post(
       "http://localhost:3000/upload/slip",
@@ -270,26 +390,6 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       throw new Error("Selected address is invalid.");
     }
     return addressId;
-  };
-
-  const submitOrder = async (
-    customerId: number,
-    payslipPath: string,
-    orderDetails: any,
-    addressId: number
-  ) => {
-    const orderData = {
-      C_id: customerId,
-      Date_time: new Date().toISOString(),
-      Total: total,
-      PM_type: "PromPlay",
-      PM_amount: total,
-      A_id: addressId,
-      Payslip: payslipPath,
-      orderDetails,
-    };
-
-    await axios.post("http://localhost:3000/order", orderData);
   };
 
   const clearCart = async (cartItems: CartItem[]) => {

@@ -53,7 +53,6 @@ model Order {
   PM_id     Int
   A_id      Int
   O_Description  String?  @db.Text
-  Payslip  String 
   Customer  Customer @relation(fields: [C_id], references: [C_id])
   Payment   Payment  @relation(fields: [PM_id], references: [PM_id])
   Address     Address @relation(fields: [A_id], references: [A_id])

@@ -4,8 +4,6 @@
 
 # User management
 
-# User management
-
 - `docker exec -it g1-db bash`
 - `psql -U usertest -d g1db`
 - Don't forget to change the password.
@@ -54,5 +52,5 @@ npm install jsonwebtoken
 
 # upload img?
 
-```npm install multer
+```npm install multery
 

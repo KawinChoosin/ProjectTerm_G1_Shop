@@ -13,3 +13,6 @@ like this:
     const ProductDetail: React.FC = () => {
         const { C_id } = useContext(UserContext);
 ```
+
+```npm install -D sass-embedded
+
