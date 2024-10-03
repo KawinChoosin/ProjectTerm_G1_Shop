@@ -4,7 +4,6 @@ import MainBanner from "./components/MainBanner";
 import ProductGrid from "./components/ProductGrid";
 import {
   Container,
-  CircularProgress,
   Typography,
   Button,
   Fab,
@@ -13,6 +12,7 @@ import Footer from "./components/Footer";
 import axios from "axios";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useLocation } from "react-router-dom";
+import LoadingCompo from "./components/loading";
 
 const App: React.FC = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -64,18 +64,13 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </div>
+
+        <LoadingCompo />
+    
     );
   }
+  
+  
 
   if (error) {
     return (

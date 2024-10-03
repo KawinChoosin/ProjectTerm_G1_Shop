@@ -52,6 +52,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                   objectFit: 'contain',
                   maxHeight: '330px',
                   width: '100%',
+                  alignItems:"center",
+                  justifyItems:"center"
                 }} 
               />
               <CardContent sx={{ padding: "10%" }}>

@@ -9,13 +9,15 @@ const favRoutes = require("./routes/favRoutes");
 const loginRoutes = require("./routes/loginRoutes");
 const registerRoutes = require("./routes/registerRoutes");
 const profile = require("./routes/profileRoutes")
-
+const path = require('path');
 const app = express();
 const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
+
+app.use("/slip", express.static(path.join(__dirname, "./slip"))); // Adjust the path as necessary
 
 // Use the modular routes
 app.use("/address", addressRoutes);

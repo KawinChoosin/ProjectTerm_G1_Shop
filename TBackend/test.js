@@ -11,8 +11,8 @@ async function P_test() {
     // Insert the customer if it doesn't exist
     await prisma.customer.create({
       data: {
-        C_name: "Test User",
-        C_password: "password123",
+        C_name: "test",
+        C_password: "1234",
         C_email: "testuser@example.com",
         C_gender: "Male",
         C_age: 25,
@@ -172,6 +172,49 @@ async function P_test() {
       ],
     });
   }
+
+
+  const order = await prisma.order.create({
+    data: {
+      C_id: existingCustomer ? existingCustomer.C_id : 1, // Use existing customer ID
+      Q_Date_time: new Date(),
+      O_Total: 0, // This will be calculated based on order details
+      PM_id: 1, // Assuming a payment method ID, adjust as necessary
+      A_id: existingAddresses[0].A_id, // Use the first address
+      Payslip: "123456789.jpg", // Replace with actual payslip filename
+      OrderDetail: {
+        create: [
+          {
+            P_id: 1, // Adjust the product ID as needed
+            OD_quantity: 2,
+            OD_price: 100.0, // Adjust the price as needed
+          },
+          {
+            P_id: 2, // Adjust the product ID as needed
+            OD_quantity: 5,
+            OD_price: 5000.0, // Adjust the price as needed
+          },
+          {
+            P_id: 8, // Adjust the product ID as needed
+            OD_quantity: 5,
+            OD_price: 10000.0, // Adjust the price as needed
+          },
+        ],
+      },
+    },
+    include: {
+      OrderDetail: true,
+    },
+  });
+
+  // Calculate total
+  const total = order.OrderDetail.reduce((sum, item) => sum + item.OD_price * item.OD_quantity, 0);
+  await prisma.order.update({
+    where: { O_id: order.O_id },
+    data: { O_Total: total },
+  });
+
+  console.log("Order created successfully:", order);
 }
 
 // Call the function

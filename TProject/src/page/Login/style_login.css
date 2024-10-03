@@ -3,8 +3,8 @@
 
 .wrapper {
   width: 420px;
-  background: rgb(113, 67, 67);
-  color: #fff;
+  background: #000000;
+  color: #130000;
   border-radius: 10px;
   padding: 30px 40px;
 }
@@ -30,12 +30,12 @@
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 40px;
   font-size: 16px;
-  color: #fff;
+  color: #010000;
   padding: 20px 45px 20px 20px;
 }
 
 .input-box input::placeholder {
-  color: #fff;
+  color: #000000;
 }
 
 .input-box i {
@@ -54,12 +54,12 @@
 }
 
 .remember-forgot label input {
-  accent-color: #fff;
+  accent-color: #000000;
   margin-right: 3px;
 }
 
 .remember-forgot a {
-  color: #fff;
+  color: #000000;
   text-decoration: none;
 }
 
@@ -72,10 +72,10 @@
   width: 100%;
   height: 45px;
   background: #fff;
-  border: none;
+  border: 2px solid #000000; /* Gray outline */
   outline: none;
   border-radius: 40px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(197, 83, 83, 0.1);
   cursor: pointer;
   font-size: 85%;
   color: #333;
@@ -96,7 +96,7 @@
 
 .divider-text {
   padding: 0 10px;
-  color: #666;
+  color: #4b0e0e;
   font-size: 14px;
   font-weight: bold;
   white-space: nowrap;
@@ -106,7 +106,7 @@
 .button-divider-with-text::after {
   content: "";
   flex: 1;
-  border-bottom: 1px solid #ccc; /* Gray line */
+  border-bottom: 1px solid #000000; /* Gray line */
 }
 
 .button-divider-with-text::before {
@@ -122,13 +122,13 @@
   width: 100%;
   height: 45px;
   background: #ffffff; /* Black background */
-  border: 2px solid #808080; /* Gray outline */
+  border: 2px solid #a96464; /* Gray outline */
   outline: none;
   border-radius: 40px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
   cursor: pointer;
   font-size: 85%;
-  color: #fff; /* White text color */
+  color: #862020; /* White text color */
   font-weight: 600;
   margin: 5px;
   align-items: center;
@@ -143,7 +143,7 @@
 }
 
 .register-link p a {
-  color: #fff;
+  color: #000000;
   text-decoration: none;
   font-weight: 600;
 }

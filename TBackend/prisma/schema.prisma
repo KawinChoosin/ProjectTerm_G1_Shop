@@ -38,6 +38,7 @@ model Customer {
   C_gender   String   @db.VarChar(10)
   C_age      Int
   T_pnum   String @db.VarChar(11)
+  C_Role  Boolean @default(false)
   Order      Order[]
   CartDetail CartDetail[]
   Address     Address[]  
