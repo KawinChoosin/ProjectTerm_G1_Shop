@@ -192,7 +192,7 @@ const RegisterForm: React.FC = () => {
           <p className="error-message">{passwordMatchError}</p>
         )}
 
-        <div className="input-box-birth">
+        <div className="input-box">
           <input
             type="date"
             name="birthday"
@@ -217,7 +217,7 @@ const RegisterForm: React.FC = () => {
           <i className="bx bxs-phone"></i>
         </div>
 
-        <div className="input-box-birth">
+        <div className="input-box">
           <select
             name="C_gender"
             value={credentials.C_gender}

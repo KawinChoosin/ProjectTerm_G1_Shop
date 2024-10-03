@@ -8,6 +8,7 @@ import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from "react";
 import UserContext from "../../context/UserContext";
+import Loadingcompo from "../../components/loading"
 
 function User() {
   const [user, setUser] = useState<any[]>([]);
@@ -22,6 +23,7 @@ function User() {
   const [showRetypePassword, setShowRetypePassword] = useState<boolean>(false);
   const navigate = useNavigate();
   const { C_id,setC_id } = useContext<any>(UserContext);
+
 
 
   useEffect(() => {
@@ -52,7 +54,7 @@ function User() {
   console.log(C_id)
 
   if (loading) {
-    return <Typography variant="h5" sx={{ fontFamily: 'Montserrat' }}>Loading...</Typography>;
+    return <Loadingcompo/>;
   }
 
   if (error) {

@@ -10,7 +10,7 @@ import UserContext from "../../context/UserContext";
 import { useNavigate } from 'react-router-dom';
 import { Container } from "@mui/material";
 import useScreenSize from "../../components/useScreenSize"; // If you have a custom hook for screen size
-import Qrprompt from "../../components/cart/Qr"
+import OrderList  from "./OrderList"
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -99,7 +99,7 @@ function TabsMenu() {
               <User />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <Qrprompt />
+              <OrderList />
             </TabPanel>
           </Box>
         </Box>

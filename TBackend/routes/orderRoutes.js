@@ -22,12 +22,16 @@ router.get("/customer/:C_id", async (req, res) => {
         Address: true,
         OrderDetail: {
           include: {
-            Product: true, // Include the Product model to get product details
+            Product: true,
           },
         },
       },
     });
-
+    orders.forEach(order => {
+      if (order.Payment && order.Payment.PM_path) {
+        order.Payment.PM_path = `http://localhost:3000/${order.Payment.PM_path}`;
+      }
+    });
     if (orders.length === 0) {
       return res.status(404).json({ message: "No orders found for this customer" });
     }
@@ -38,6 +42,7 @@ router.get("/customer/:C_id", async (req, res) => {
     res.status(500).json({ error: "Error fetching orders" });
   }
 });
+
 
 // Get a specific order by ID
 router.get("/:O_id", async (req, res) => {
