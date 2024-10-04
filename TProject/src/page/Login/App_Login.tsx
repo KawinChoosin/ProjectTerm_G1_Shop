@@ -68,100 +68,105 @@ const LoginForm: React.FC = () => {
 
   return (
     <div
-  style={{
-    backgroundImage: `url(${bgImage})`, // Use the imported image
-    backgroundSize: "cover", // Optional: to cover the whole div
-    backgroundPosition: "center", // Optional: to center the image
-    height: "100vh", // Set the height of the div to cover the viewport
-    width: "100%", // Ensure it takes the full width
-  }}
->
-
-        <AuthForm
-      onSubmit={login}
       style={{
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-            }}
+        backgroundImage: `url(${bgImage})`, // Use the imported image
+        backgroundSize: "cover", // Optional: to cover the whole div
+        backgroundPosition: "center", // Optional: to center the image
+        height: "100vh", // Set the height of the div to cover the viewport
+        width: "100%", // Ensure it takes the full width
+      }}
     >
-      <div className="wrapper">
-        <h1>Login</h1>
+      <AuthForm
+        onSubmit={login}
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <div className="wrapper">
+          <h1>Login</h1>
 
-        {/* Display error message if there's an error */}
+          {/* Display error message if there's an error */}
 
-        <div className="input-box">
-          <input
-            type="text"
-            name="C_name"
-            placeholder="Username"
-            value={credentials.C_name}
-            onChange={handleChange}
-            required
-          />
-          <i className="bx bxs-user"></i>
+          <div className="input-box">
+            <input
+              type="text"
+              name="C_name"
+              placeholder="Username"
+              value={credentials.C_name}
+              onChange={handleChange}
+              required
+            />
+            <i className="bx bxs-user"></i>
+          </div>
+          <div className="input-box">
+            <input
+              type="password"
+              name="C_password"
+              placeholder="Password"
+              value={credentials.C_password}
+              required
+              onChange={handleChange}
+            />
+            <i className="bx bxs-lock-alt"></i>
+          </div>
+
+          {error && (
+            <Alert variant="filled" severity="error" sx={{ mb: 3, mt: -2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <div
+            className="remember-forgot"
+            style={{ marginTop: "-15px", marginBottom: "15px" }}
+          >
+            <label>
+              <input type="checkbox" style={{ marginRight: "5px" }} />
+              Remember me
+            </label>
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button
+            type="submit"
+            className="btn_login"
+            style={{ background: "#4b0e0e", color: "white" }}
+          >
+            <span>Login</span>
+          </button>
+
+          <div
+            className="button-divider-with-text"
+            style={{ marginTop: "10px", marginBottom: "10px" }}
+          >
+            <span className="divider-text">Log in with</span>
+          </div>
+
+          <button type="submit" className="btn_authG">
+            <img
+              className="google"
+              src={google}
+              alt="Google"
+              style={{ height: "25px" }}
+            />
+          </button>
+
+          <div className="register-link">
+            <p>
+              Don't have an account?{" "}
+              <a
+                href={import.meta.env.VITE_APP_FE_BASE_URL + "/register"}
+                style={{ color: "black" }}
+              >
+                Register
+              </a>
+            </p>
+          </div>
         </div>
-        <div className="input-box">
-          <input
-            type="password"
-            name="C_password"
-            placeholder="Password"
-            value={credentials.C_password}
-            required
-            onChange={handleChange}
-          />
-          <i className="bx bxs-lock-alt"></i>
-        </div>
-
-        {error && (
-          <Alert variant="filled" severity="error" sx={{ mb: 3, mt: -2 }}>
-            {error}
-          </Alert>
-        )}
-
-        <div
-          className="remember-forgot"
-          style={{ marginTop: "-15px", marginBottom: "15px" }}
-        >
-          <label>
-            <input type="checkbox" style={{ marginRight: "5px" }} />
-            Remember me
-          </label>
-          <a href="#">Forgot password?</a>
-        </div>
-
-        <button type="submit" className="btn_login">
-          <span>Login</span>
-        </button>
-
-        <div
-          className="button-divider-with-text"
-          style={{ marginTop: "10px", marginBottom: "10px" }}
-        >
-          <span className="divider-text">Log in with</span>
-        </div>
-
-        <button type="submit" className="btn_authG">
-          <img
-            className="google"
-            src={google}
-            alt="Google"
-            style={{ height: "25px" }}
-          />
-        </button>
-
-        <div className="register-link">
-          <p>
-            Don't have an account?{" "}
-            <a href={import.meta.env.VITE_APP_FE_BASE_URL + "/register"}>
-              Register
-            </a>
-          </p>
-        </div>
-      </div>
-    </AuthForm>
+      </AuthForm>
     </div>
-    
   );
 };
 
