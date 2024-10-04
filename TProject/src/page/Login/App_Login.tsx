@@ -66,6 +66,12 @@ const LoginForm: React.FC = () => {
     });
   };
 
+  // Function to handle Google login
+  const handleGoogleLogin = () => {
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=663248155967-avgv6eqfkjdr04m1jj07lbf9v3jtuma2.apps.googleusercontent.com&redirect_uri=http://localhost:5173/auth/google/callback&response_type=code&scope=openid+https://www.googleapis.com/auth/userinfo.email`;
+    window.location.href = googleAuthUrl; // Redirect to Google OAuth
+  };
+
   return (
     <div
       style={{
@@ -144,7 +150,12 @@ const LoginForm: React.FC = () => {
             <span className="divider-text">Log in with</span>
           </div>
 
-          <button type="submit" className="btn_authG">
+          {/* Google Login Button */}
+          <button
+            type="button"
+            className="btn_authG"
+            onClick={handleGoogleLogin} // Call Google login handler
+          >
             <img
               className="google"
               src={google}

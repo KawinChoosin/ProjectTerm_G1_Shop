@@ -1,7 +1,6 @@
-import { StrictMode } from "react";
+import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import React from "react";
 import "./reset.css";
 import App from "./App.tsx";
 import CartPage from "./components/cart/CartPage.tsx";
@@ -13,6 +12,7 @@ import FavPage from "./components/favourite/FavPage.tsx";
 import { UserProvider } from "./context/UserContext.tsx"; // Import UserProvider
 import Tapmenu from "./page/User/TabsMenu.tsx";
 import { ThemeContextProvider } from "./ThemeContext.tsx";
+import GoogleCallback from "./page/Login/GoogleCallback.tsx";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -29,7 +29,8 @@ root.render(
             <Route path="/login" element={<App_Login />} />
             <Route path="/register" element={<App_Register />} />
             <Route path="/favourite" element={<FavPage />} />
-
+            <Route path="/auth/google/callback" element={<GoogleCallback />} />
+            {/* Add this line */}
             {/* <Route element={<ProtectedRoute />}> */}
             <Route path="/profile" element={<Tapmenu />} />
             {/* </Route> */}
