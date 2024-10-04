@@ -111,6 +111,8 @@ model CartDetail {
 model Address {
   A_id         Int      @id @default(autoincrement())
   C_id         Int
+  A_name       String
+  A_phone      String
   A_street     String   @db.VarChar(255)
   A_city       String   @db.VarChar(100)
   A_state      String   @db.VarChar(100)

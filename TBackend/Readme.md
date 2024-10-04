@@ -52,5 +52,6 @@ npm install jsonwebtoken
 
 # upload img?
 
-```npm install multery
-
+```
+npm install multer
+```
