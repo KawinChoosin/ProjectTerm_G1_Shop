@@ -11,6 +11,8 @@ const registerRoutes = require("./routes/registerRoutes");
 const profile = require("./routes/profileRoutes")
 const uploadRoutes = require("./routes/uploadRoutes"); 
 const orderList = require("./routes/orderListRoutes")
+const categoryRoutes = require("./routes/categoryRoutes");
+
 
 const path = require('path');
 const app = express();
@@ -21,6 +23,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 app.use("/slip", express.static(path.join(__dirname, "./slip"))); 
+app.use("/upload", express.static(path.join(__dirname, "./"))); 
 
 // Use the modular routes
 app.use("/address", addressRoutes);
@@ -33,6 +36,7 @@ app.use("/register", registerRoutes);
 app.use("/profile", profile);
 app.use("/upload", uploadRoutes);
 app.use("/orderlist", orderList);
+app.use("/categories", categoryRoutes);
 
 // Default route
 app.get("/", (req, res) => {

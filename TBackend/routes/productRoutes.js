@@ -1,7 +1,7 @@
 // routes/productRoutes.js
 const express = require("express");
 const prisma = require("../prisma/client");
-
+const multer = require('multer');
 const router = express.Router();
 
 // Get all products
@@ -14,23 +14,71 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Add a product
-router.post("/", async (req, res) => {
-  const { P_name, P_description, P_quantity, P_price, P_img, CG_id } = req.body;
+// Multer storage configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Define upload directory
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname); // Unique filename generation
+  }
+});
+const upload = multer({ storage: storage });
+
+// // Add a product
+// router.post("/", async (req, res) => {
+//   const { P_name, P_description, P_quantity, P_price, P_img, CG_id } = req.body;
+//   try {
+//     const newProduct = await prisma.product.create({
+//       data: {
+//         P_name,
+//         P_description,
+//         P_quantity,
+//         P_price,
+//         P_img,
+//         CG_id,
+//       },
+//     });
+//     res.json(newProduct);
+//   } catch (error) {
+//     res.status(500).json({ error: "Error creating product" });
+//   }
+// });
+
+router.post('/', upload.single('P_img'), async (req, res) => {
   try {
+    // Extract data from request body
+    const { P_name, P_description, P_price, P_quantity, CG_id } = req.body;
+
+    // Make sure CG_id is parsed as an integer
+    const selectedCategoryId = parseInt(CG_id, 10);
+
+    // Check if selectedCategoryId is valid
+    if (!selectedCategoryId) {
+      return res.status(400).json({ error: 'Invalid category ID' });
+    }
+
+    // Create the product with Prisma
     const newProduct = await prisma.product.create({
       data: {
         P_name,
         P_description,
-        P_quantity,
-        P_price,
-        P_img,
-        CG_id,
+        P_quantity: parseInt(P_quantity, 10),
+        P_price: parseInt(P_price, 10),
+        P_img: req.file.filename, // Assuming Multer is used for image upload
+        Category: {
+          connect: {
+            CG_id: selectedCategoryId, // Use the parsed category ID
+          },
+        },
       },
     });
-    res.json(newProduct);
+
+    res.status(200).json(newProduct);
   } catch (error) {
-    res.status(500).json({ error: "Error creating product" });
+    console.error('Error creating product:', error);
+    res.status(500).json({ error: 'Error creating product' });
   }
 });
 

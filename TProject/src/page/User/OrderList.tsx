@@ -32,7 +32,7 @@ const OrderList: React.FC = () => {
       if (C_id) {
         try {
           const role = await axios.get(`http://localhost:3000/profile?C_id=${C_id}`);
-          console.log(role.data[0].C_Role)
+          // console.log(role.data[0].C_Role)
           if(role.data[0].C_Role){
             setAdmin(true);
             const response = await axios.get(`http://localhost:3000/orderlist/customer`);

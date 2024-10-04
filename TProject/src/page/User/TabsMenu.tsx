@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { Container } from "@mui/material";
 import useScreenSize from "../../components/useScreenSize"; // If you have a custom hook for screen size
 import OrderList  from "./OrderList"
+import Addproduct from "../Admin/AddProduct"
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -64,6 +65,7 @@ function TabsMenu() {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+  
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -93,6 +95,7 @@ function TabsMenu() {
           >
             <Tab label="Profile" {...a11yProps(0)} />
             <Tab label="Order" {...a11yProps(1)} />
+            <Tab label="Add Products" {...a11yProps(2)} />
           </Tabs>
           <Box sx={{ flexGrow: 1, width: '100%' }}> {/* Ensure content takes up remaining space */}
             <TabPanel value={value} index={0}>
@@ -100,6 +103,9 @@ function TabsMenu() {
             </TabPanel>
             <TabPanel value={value} index={1}>
               <OrderList />
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              <Addproduct />
             </TabPanel>
           </Box>
         </Box>
