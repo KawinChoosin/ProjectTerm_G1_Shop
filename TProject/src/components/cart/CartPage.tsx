@@ -14,6 +14,7 @@ import {
   Box,
   createTheme,
   ThemeProvider,
+  responsiveFontSizes,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useNavigate } from "react-router-dom";
@@ -42,7 +43,18 @@ const theme = createTheme({
       fontFamily: "Open Sans, sans-serif",
     },
   },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
 });
+
+const responsiveTheme = responsiveFontSizes(theme); // Wrap theme with responsive fonts
 
 const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
@@ -125,12 +137,8 @@ const CartPage: React.FC = () => {
 
   const handleCloseCheckout = () => setOpenCheckoutDialog(false);
 
-  const handleCheckoutSubmit = async (
-    addressId: number,
-    paymentMethod: string
-  ) => {
+  const handleCheckoutSubmit = async (addressId: number) => {
     console.log("Address ID:", addressId);
-    console.log("Payment Method:", paymentMethod);
     handleCloseCheckout();
   };
 
@@ -142,12 +150,18 @@ const CartPage: React.FC = () => {
   };
 
   const subtotal = calculateSubtotal();
-  const shipping = 0; // Assume free shipping for now
-  const discount = 10; // Assume a fixed discount for now
-  const total = subtotal + shipping - discount;
+  const shipping = 50;
+  let discount = 0;
+  let total = subtotal + shipping;
+
+  if (total >= 1000) {
+    discount = total * 0.1;
+  }
+
+  total = total - discount;
 
   return (
-    <>
+    <div>
       <div
         style={{
           display: "flex",
@@ -159,7 +173,7 @@ const CartPage: React.FC = () => {
       >
         <Navbar />
         <Container maxWidth="xl" sx={{ mt: 20, mb: 8 }}>
-          <ThemeProvider theme={theme}>
+          <ThemeProvider theme={responsiveTheme}>
             <Typography
               variant="h3"
               align="left"
@@ -176,7 +190,7 @@ const CartPage: React.FC = () => {
             </Typography>
 
             <Grid container spacing={5} justifyContent="center">
-              <Grid size={7}>
+              <Grid size={{ xs: 12, md: 7 }}>
                 <Box
                   className="scrollable-container"
                   sx={{
@@ -215,7 +229,7 @@ const CartPage: React.FC = () => {
                   )}
                 </Box>
               </Grid>
-              <Grid size={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <CartTotals
                   subtotal={subtotal}
                   shipping={shipping}
@@ -227,18 +241,18 @@ const CartPage: React.FC = () => {
             </Grid>
           </ThemeProvider>
         </Container>
-        <Footer />
-        {customerId !== null && (
-          <CheckoutDialog
-            customerId={customerId}
-            open={openCheckoutDialog}
-            onClose={handleCloseCheckout}
-            onSubmit={handleCheckoutSubmit}
-            total={total}
-          />
-        )}
       </div>
-    </>
+      <Footer />
+      {customerId !== null && (
+        <CheckoutDialog
+          customerId={customerId}
+          open={openCheckoutDialog}
+          onClose={handleCloseCheckout}
+          onSubmit={handleCheckoutSubmit}
+          total={total}
+        />
+      )}
+    </div>
   );
 };
 
