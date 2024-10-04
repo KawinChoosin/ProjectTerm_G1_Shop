@@ -445,7 +445,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                 >
                   {checkoutAddresses.map((addr, index) => (
                     <MenuItem key={index} value={JSON.stringify(addr)}>
-                      {`${addr.A_street}, ${addr.A_city}, ${addr.A_state}, ${addr.A_postalCode}, ${addr.A_country}`}
+                      {`${addr.A_name}, ${addr.A_phone}, ${addr.A_street}, ${addr.A_city}, ${addr.A_state}, ${addr.A_postalCode}, ${addr.A_country}`}
                     </MenuItem>
                   ))}
                 </Select>
