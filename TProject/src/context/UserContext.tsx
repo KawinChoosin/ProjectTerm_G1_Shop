@@ -1,9 +1,9 @@
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useState, ReactNode } from "react";
 
 // Define the shape of the context
 interface UserContextProps {
   C_id: number | null;
-  setC_id: (C_id: number) => void;
+  setC_id: (C_id: number | null) => void;
 }
 
 // Create the context with default values
@@ -25,9 +25,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   });
 
   // Save the C_id to sessionStorage whenever it changes
-  const handleSetC_id = (C_id: number) => {
+  const handleSetC_id = (C_id: number | null) => {
     setC_id(C_id);
-    sessionStorage.setItem("C_id", C_id.toString()); // Store it as a string in sessionStorage
+    if (C_id == null) sessionStorage.setItem("C_id", "");
+    else sessionStorage.setItem("C_id", C_id.toString()); // Store it as a string in sessionStorage
   };
 
   return (

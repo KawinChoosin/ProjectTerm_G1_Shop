@@ -19,7 +19,7 @@ const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <StrictMode>
     <UserProvider>
-    <ThemeContextProvider>
+    {/* <ThemeContextProvider> */}
       <Router>
         <Routes>
           <Route path="/" element={<App />} />
@@ -35,7 +35,7 @@ root.render(
           {/* </Route> */}
         </Routes>
       </Router>
-      </ThemeContextProvider>
+      {/* </ThemeContextProvider> */}
     </UserProvider>
   </StrictMode>
 );

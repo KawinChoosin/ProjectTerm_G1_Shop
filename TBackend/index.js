@@ -10,6 +10,7 @@ const loginRoutes = require("./routes/loginRoutes");
 const registerRoutes = require("./routes/registerRoutes");
 const profile = require("./routes/profileRoutes")
 const uploadRoutes = require("./routes/uploadRoutes"); 
+const orderList = require("./routes/orderListRoutes")
 
 const path = require('path');
 const app = express();
@@ -31,6 +32,7 @@ app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/profile", profile);
 app.use("/upload", uploadRoutes);
+app.use("/orderlist", orderList);
 
 // Default route
 app.get("/", (req, res) => {

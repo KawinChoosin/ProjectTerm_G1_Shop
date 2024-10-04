@@ -98,44 +98,113 @@ router.get("/orderdetails/:O_id", async (req, res) => {
 });
 
 // Add a new order
-router.post("/", async (req, res) => {
-  const { C_id, Date_time, Total, PM_type, PM_amount, A_id, O_Description, Payslip, orderDetails } = req.body;
+// router.post("/", async (req, res) => {
+//   const { C_id, Date_time, Total, PM_type, PM_amount, A_id, O_Description, Payslip, orderDetails } = req.body;
+
+//   try {
+//     const paymentMethod = await prisma.payment.create({
+//       data: {
+//         PM_amount: parseFloat(PM_amount),
+//         PM_type: PM_type,
+//         Date_time: new Date(Date_time), // Ensure the date format is correct
+//       },
+//     });
+
+//     // Create the new order with the payment method
+//     const newOrder = await prisma.order.create({
+//       data: {
+//         C_id: parseInt(C_id, 10),
+//         Q_Date_time: new Date(Date_time),
+//         O_Total: parseFloat(Total),
+//         PM_id: paymentMethod.PM_id,
+//         A_id: parseInt(A_id, 10), // Address ID
+//         O_Description: O_Description || null,
+//         Payslip: Payslip,
+//         OrderDetail: {
+//           create: orderDetails.map((detail) => ({
+//             P_id: parseInt(detail.P_id, 10),
+//             OD_quantity: parseInt(detail.OD_quantity, 10),
+//             OD_price: parseFloat(detail.OD_price),
+//           })),
+//         },
+//       },
+//     });
+
+//     res.status(201).json(newOrder);
+//   } catch (error) {
+//     console.error("Error creating order:", error);
+//     res.status(500).json({ error: "Error creating order" });
+//   }
+// });
+
+router.post("/", upload.single('slip'), async (req, res) => {
+  const {
+    C_id,
+    Date_time,
+    Total,
+    PM_amount,
+    A_id,
+    PM_path,
+    O_Description,
+    orderDetails, // Ensure this is passed correctly in the request body
+  } = req.body;
+
+  // Get the uploaded file path
+  // const PM_path = req.file ? req.file.path : '';
+
+  // Check if the file was uploaded successfully
+  if (!PM_path) {
+    return res.status(400).json({ error: 'Payslip upload is required.' });
+  }
 
   try {
-    const paymentMethod = await prisma.payment.create({
-      data: {
-        PM_amount: parseFloat(PM_amount),
-        PM_type: PM_type,
-        Date_time: new Date(Date_time), // Ensure the date format is correct
-      },
-    });
+    // Ensure orderDetails is an array
+    if (!Array.isArray(orderDetails)) {
+      return res.status(400).json({ error: 'orderDetails must be an array.' });
+    }
 
-    // Create the new order with the payment method
-    const newOrder = await prisma.order.create({
-      data: {
-        C_id: parseInt(C_id, 10),
-        Q_Date_time: new Date(Date_time),
-        O_Total: parseFloat(Total),
-        PM_id: paymentMethod.PM_id,
-        A_id: parseInt(A_id, 10), // Address ID
-        O_Description: O_Description || null,
-        Payslip: Payslip,
-        OrderDetail: {
-          create: orderDetails.map((detail) => ({
-            P_id: parseInt(detail.P_id, 10),
-            OD_quantity: parseInt(detail.OD_quantity, 10),
-            OD_price: parseFloat(detail.OD_price),
-          })),
+    // Start a transaction
+    const transaction = await prisma.$transaction(async (prisma) => {
+      // Create the payment record
+      const paymentMethod = await prisma.payment.create({
+        data: {
+          PM_amount: parseFloat(PM_amount),
+          Date_time: new Date(Date_time), // Ensure the date format is correct
+          PM_path, // Store the uploaded file path
         },
-      },
+      });
+
+      // Create the new order with the payment method
+      const newOrder = await prisma.order.create({
+        data: {
+          C_id: parseInt(C_id, 10),
+          O_Date_time: new Date(Date_time),
+          O_Total: parseFloat(Total),
+          PM_id: paymentMethod.PM_id, // Link to payment
+          A_id: parseInt(A_id, 10), // Address ID
+          O_Description: O_Description || null,
+          OrderDetail: {
+            create: orderDetails.map((detail) => ({
+              P_id: parseInt(detail.P_id, 10),
+              OD_quantity: parseInt(detail.OD_quantity, 10),
+              OD_price: parseFloat(detail.OD_price),
+            })),
+          },
+        },
+      });
+
+      return newOrder; // Return the new order as the result of the transaction
     });
 
-    res.status(201).json(newOrder);
+    res.status(201).json(transaction); // Respond with the created order
   } catch (error) {
-    console.error("Error creating order:", error);
-    res.status(500).json({ error: "Error creating order" });
+    console.error("Error creating order and payment:", error);
+    res.status(500).json({ error: "Error creating order and payment" });
   }
 });
+
+
+
 
 // Add a new order detail
 router.post("/orderdetails", async (req, res) => {
@@ -233,27 +302,68 @@ router.post('/generateQR', (req, res) => {
   })
 })
 
-router.post('/payments', upload.single('slip'), async (req, res) => {
-  try {
-    const { PM_amount, Date_time } = req.body;
+// router.post('/payments', upload.single('slip'), async (req, res) => {
+//   try {
+//     const { PM_amount, Date_time } = req.body;
 
-    // Get the uploaded file path
-    const PM_path = req.file ? req.file.path : '';
+//     // Get the uploaded file path
+//     const PM_path = req.file ? req.file.path : '';
 
-    // Create the payment record
-    const newPayment = await prisma.payment.create({
-      data: {
-        PM_amount: parseFloat(PM_amount),
-        PM_path, // Store the file path
-        Date_time: new Date(Date_time),
-      },
-    });
+//     // Create the payment record
+//     const newPayment = await prisma.payment.create({
+//       data: {
+//         PM_amount: parseFloat(PM_amount),
+//         PM_path, // Store the file path
+//         Date_time: new Date(Date_time),
+//       },
+//     });
 
-    res.status(201).json(newPayment);
-  } catch (error) {
-    res.status(500).json({ error: 'Error creating payment' });
-  }
-});
+//     res.status(201).json(newPayment);
+//   } catch (error) {
+//     res.status(500).json({ error: 'Error creating payment' });
+//   }
+// });
+
+// Payment Upload and Link to an Order
+
+
+// router.post('/payments', upload.single('slip'), async (req, res) => {
+//   try {
+//     const { PM_amount, Date_time, O_id } = req.body;
+
+//     // Ensure that an amount and order ID are provided
+//     if (!PM_amount || !O_id) {
+//       return res.status(400).json({ error: 'Payment amount and Order ID are required.' });
+//     }
+
+//     // Get the uploaded file path
+//     const PM_path = req.file ? req.file.path : '';
+
+//     // Check if the file was uploaded successfully
+//     if (!PM_path) {
+//       return res.status(400).json({ error: 'Payslip upload is required.' });
+//     }
+
+//     // Create the payment record and link it to an order (assumes `O_id` is the order identifier)
+//     const newPayment = await prisma.payment.create({
+//       data: {
+//         PM_amount: parseFloat(PM_amount), // Convert amount to float if it's a string
+//         PM_path,                          // Store the uploaded file path
+//         Date_time: new Date(Date_time),    // Use provided date or the current date
+//         Order: {                           // Link payment to the order
+//           connect: { O_id: parseInt(O_id) },  // Assuming `O_id` is the field for order ID in your Prisma schema
+//         },
+//       },
+//     });
+
+//     // Send a success response with the new payment record
+//     res.status(201).json(newPayment);
+//   } catch (error) {
+//     console.error('Error creating payment:', error);
+//     res.status(500).json({ error: 'Error creating payment' });
+//   }
+// });
+
 
 
 

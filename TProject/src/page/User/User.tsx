@@ -1,37 +1,61 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle,
-  IconButton,  InputAdornment} from '@mui/material';
+  IconButton, InputAdornment, Select, MenuItem, FormHelperText
+} from '@mui/material';
 import axios from 'axios';
 import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from "react";
 import UserContext from "../../context/UserContext";
-import Loadingcompo from "../../components/loading"
+import Loadingcompo from "../../components/loading";
+import { useForm, Controller } from 'react-hook-form';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
+interface Customer {
+  C_id: number;
+  C_name: string;
+  C_password: string;
+  C_email: string;
+  C_gender: string;
+  C_age: number;
+  T_pnum: string;
+  C_Role: boolean;
+}
 
 function User() {
-  const [user, setUser] = useState<any[]>([]);
+  const [user, setUser] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [changePass, setChangePass] = useState<boolean>(false);
-  const [formData, setFormData] = useState({ C_name: '', C_email: '', T_pnum: 0, C_gender: '', C_age: '' });
   const [password, setPassword] = useState({ O_pass: '', N_pass: '', RN_pass: '' });
   const [showOldPassword, setShowOldPassword] = useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
   const [showRetypePassword, setShowRetypePassword] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { C_id,setC_id } = useContext<any>(UserContext);
+  const { C_id, setC_id } = useContext<any>(UserContext);
 
-
+  // Initialize React Hook Form
+  const { control, handleSubmit, reset, trigger, watch, formState: { errors } } = useForm({
+    defaultValues: {
+      C_name: '',
+      C_email: '',
+      T_pnum: '',
+      C_gender: '',
+      C_age: '',
+    },
+  });
 
   useEffect(() => {
-    if ( C_id !== null) {
+    if (C_id !== null) {
       const fetchUser = async () => {
         try {
           const response = await axios.get(`http://localhost:3000/profile?C_id=${C_id}`);
           setUser([response.data[0]]);
+          reset(response.data[0]); // Set the fetched user data into the form
           setLoading(false);
         } catch (err) {
           setError('Error fetching user data.');
@@ -39,10 +63,10 @@ function User() {
         }
       };
       fetchUser();
-    }else{
+    } else {
       navigate('/login');
     }
-  }, [ C_id, editMode,navigate]);
+  }, [C_id, reset, navigate, editMode]);
 
   const handleLogout = () => {
     setC_id(null);
@@ -50,35 +74,17 @@ function User() {
     sessionStorage.removeItem("C_id"); // Clear the session storage
     navigate('/login');
   };
-  
-  console.log(C_id)
 
   if (loading) {
-    return <Loadingcompo/>;
+    return <Loadingcompo />;
   }
 
   if (error) {
     return <Typography variant="h5" color="error" sx={{ fontFamily: 'Montserrat' }}>{error}</Typography>;
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    if (name === 'O_pass' || name === 'N_pass' || name === 'RN_pass') {
-      setPassword((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: name === 'T_pnum' ? parseInt(value, 10) : value,
-      }));
-    }
-  };
-
   const handleEditClick = (u: any) => {
-    setFormData({
+    reset({
       C_name: u.C_name,
       C_email: u.C_email,
       T_pnum: u.T_pnum,
@@ -88,9 +94,9 @@ function User() {
     setEditMode(true);
   };
 
-  const handleSubmit = async () => {
+  const onSubmit = async (data: any) => {
     try {
-      await axios.put(`http://localhost:3000/profile?C_id=${C_id}`, formData);
+      await axios.put(`http://localhost:3000/profile?C_id=${C_id}`, data);
       setEditMode(false);
       alert('User updated successfully');
     } catch (err) {
@@ -131,15 +137,14 @@ function User() {
 
   function stringAvatar(name: string) {
     const nameParts = name.split(' ');
-  
-    // Check if there are two or more parts to the name
+
     let initials = '';
     if (nameParts.length === 1) {
-      initials = `${nameParts[0][0]}`; // If only one part, use the first letter
+      initials = `${nameParts[0][0]}`; 
     } else if (nameParts.length >= 2) {
-      initials = `${nameParts[0][0]}${nameParts[1][0]}`; // Use the first letter of the first two parts
+      initials = `${nameParts[0][0]}${nameParts[1][0]}`;
     }
-  
+
     return {
       sx: {
         bgcolor: stringToColor(name),
@@ -148,11 +153,9 @@ function User() {
         fontSize: 40,
         fontFamily: 'Montserrat',
       },
-      children: initials.toUpperCase(), // Ensure the initials are in uppercase
+      children: initials.toUpperCase(),
     };
   }
-  
-
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'left', mt: 5, fontFamily: 'Montserrat' }}>
@@ -160,11 +163,10 @@ function User() {
         <Typography variant="h6" sx={{ fontFamily: 'Montserrat' }}>No user data available</Typography>
       ) : (
         user.map((u: any) => (
-          <Paper key={u.C_email} sx={{ width: '600px', padding: 4, borderRadius: 3, fontFamily: 'Montserrat' }}>
+          <Paper key={u.C} sx={{ width: '600px', padding: 4, borderRadius: 3, fontFamily: 'Montserrat' }}>
             <Grid container spacing={2}>
               <Grid size={12} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Avatar {...stringAvatar(u.C_name)} />
-               
               </Grid>
               <Grid size={12}>
                 <Typography variant="h5" sx={{ textAlign: 'center', fontFamily: 'Montserrat', fontWeight: 600 }}>
@@ -192,11 +194,10 @@ function User() {
                 <Typography variant="h6" sx={{ fontFamily: 'Montserrat' }}>{u.C_age}</Typography>
               </Grid>
               <Grid size={12} sx={{ display: 'flex', justifyContent: 'left', gap: '5%' }}>
-                <Button variant="outlined" color="error" onClick={() => handleEditClick(u)}>Edit</Button>
+                <Button variant="contained" color="success" onClick={() => handleEditClick(u)}>Edit</Button>
                 <Button variant="contained" onClick={() => setChangePass(true)}>Change Password</Button>
                 <Button variant="contained" color="error" onClick={handleLogout}>Logout</Button>
               </Grid>
-              
             </Grid>
           </Paper>
         ))
@@ -205,16 +206,125 @@ function User() {
       {/* Edit Dialog */}
       <Dialog open={editMode} onClose={() => setEditMode(false)}>
         <DialogTitle>Edit User</DialogTitle>
-        <DialogContent >
-          <TextField sx={{mt:'20px'}} fullWidth name="C_name" label="Name" value={formData.C_name} onChange={handleInputChange} />
-          <TextField sx={{mt:'20px'}} fullWidth name="C_email" label="Email" value={formData.C_email} onChange={handleInputChange} />
-          <TextField sx={{mt:'20px'}} fullWidth name="T_pnum" label="Phone" value={formData.T_pnum} onChange={handleInputChange} />
-          <TextField sx={{mt:'20px'}} fullWidth name="C_gender" label="Gender" value={formData.C_gender} onChange={handleInputChange} />
-          <TextField sx={{mt:'20px'}} fullWidth name="C_age" label="Age" value={formData.C_age} onChange={handleInputChange} />
+        <DialogContent>
+          <Controller
+            name="C_name"
+            control={control}
+            rules={{
+              required: 'Name is required',
+              validate: (value) => !/\s/.test(value) || 'Name should not contain spaces',
+            }}
+            render={({ field }) => (
+              <>
+                <TextField
+                fullWidth
+                  sx={{ mb: 2,mt:1 }}
+                  label="Username"
+                  variant="outlined"
+                  {...field}
+                  error={Boolean(errors.C_name)}
+                  helperText={errors.C_name?.message}
+                />
+              </>
+            )}
+          />
+          {/* <Controller
+            name="C_email"
+            control={control}
+            rules={{
+              required: 'Email is required',
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: 'Invalid email format',
+              },
+            }}
+            render={({ field }) => (
+              <>
+                <TextField
+                fullWidth
+                  sx={{ mb: 2 }}
+                  label="Email"
+                  variant="outlined"
+                  {...field}
+                  error={Boolean(errors.C_email)}
+                  helperText={errors.C_email?.message}
+                />
+              </>
+            )}
+          /> */}
+          <Controller
+            name="T_pnum"
+            control={control}
+            rules={{
+              required: 'Phone number is required',
+              pattern: {
+                value: /^[0-9]*$/,
+                message: 'Phone number must be numeric',
+              },
+            }}
+            render={({ field }) => (
+              <>
+                <TextField
+                fullWidth
+                  sx={{ mb: 2 }}
+                  label="Phone"
+                  variant="outlined"
+                  {...field}
+                  error={Boolean(errors.T_pnum)}
+                  helperText={errors.T_pnum?.message}
+                />
+              </>
+            )}
+          />
+          <Controller
+            name="C_gender"
+            control={control}
+            rules={{ required: 'Gender is required' }}
+            render={({ field }) => (
+              <>
+                <Select
+                fullWidth
+                  sx={{ mb: 2 }}
+                  label="Gender"
+                  {...field}
+                  error={Boolean(errors.C_gender)}
+                >
+                  <MenuItem value="Male">Male</MenuItem>
+                  <MenuItem value="Female">Female</MenuItem>
+                  <MenuItem value="Other">Other</MenuItem>
+                </Select>
+                <FormHelperText error={Boolean(errors.C_gender)}>{errors.C_gender?.message}</FormHelperText>
+              </>
+            )}
+          />
+          <Controller
+            name="C_age"
+            control={control}
+            rules={{
+              required: 'Age is required',
+              pattern: {
+                value: /^[0-9]*$/,
+                message: 'Age must be numeric',
+              },
+            }}
+            render={({ field }) => (
+              <>
+                <TextField
+                fullWidth
+                  
+                  label="Age"
+                  variant="outlined"
+                  {...field}
+                  error={Boolean(errors.C_age)}
+                  helperText={errors.C_age?.message}
+                />
+              </>
+            )}
+          />
         </DialogContent>
         <DialogActions>
-          <Button sx={{mb:'20px'}}  onClick={() => setEditMode(false)}>Cancel</Button>
-          <Button sx={{mb:'20px',mr:"20px"}} onClick={handleSubmit}>Submit</Button>
+          <Button sx={{ mb: 2 }} onClick={() => setEditMode(false)}>Cancel</Button>
+          <Button sx={{ mb: 2 }} onClick={handleSubmit(onSubmit)}>Save</Button>
         </DialogActions>
       </Dialog>
 
@@ -223,54 +333,54 @@ function User() {
         <DialogTitle>Change Password</DialogTitle>
         <DialogContent>
           <TextField
-            sx={{mb:'20px'}}
-            fullWidth
+          fullWidth
+            sx={{ mb: 2,mt:1 }}
             label="Old Password"
             type={showOldPassword ? 'text' : 'password'}
-            name="O_pass"
+            variant="outlined"
             value={password.O_pass}
-            onChange={handleInputChange}
+            onChange={(e) => setPassword({ ...password, O_pass: e.target.value })}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton sx={{fontSize:'14px'}} onClick={() => setShowOldPassword(!showOldPassword)}>
-                    {showOldPassword ? 'Hide' : 'Show'}
+                  <IconButton onClick={() => setShowOldPassword((prev) => !prev)}>
+                    {showOldPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
           />
           <TextField
-            sx={{mb:'20px'}}
             fullWidth
+            sx={{ mb: 2,mt:1 }}
             label="New Password"
             type={showNewPassword ? 'text' : 'password'}
-            name="N_pass"
+            variant="outlined"
             value={password.N_pass}
-            onChange={handleInputChange}
+            onChange={(e) => setPassword({ ...password, N_pass: e.target.value })}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton sx={{fontSize:'14px'}} onClick={() => setShowNewPassword(!showNewPassword)}>
-                    {showNewPassword ? 'Hide' : 'Show'}
+                  <IconButton onClick={() => setShowNewPassword((prev) => !prev)}>
+                    {showNewPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
           />
           <TextField
- 
-            fullWidth
+          fullWidth
+            sx={{ mt:1 }}
             label="Retype New Password"
             type={showRetypePassword ? 'text' : 'password'}
-            name="RN_pass"
+            variant="outlined"
             value={password.RN_pass}
-            onChange={handleInputChange}
+            onChange={(e) => setPassword({ ...password, RN_pass: e.target.value })}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton sx={{fontSize:'14px'}}  onClick={() => setShowRetypePassword(!showRetypePassword)}>
-                    {showRetypePassword ? 'Hide' : 'Show'}
+                  <IconButton onClick={() => setShowRetypePassword((prev) => !prev)}>
+                    {showRetypePassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
@@ -278,8 +388,8 @@ function User() {
           />
         </DialogContent>
         <DialogActions>
-          <Button sx={{mb:'20px'}} onClick={() => setChangePass(false)}>Cancel</Button>
-          <Button sx={{mb:'20px',mr:"20px"}} onClick={handleChangePass}>Submit</Button>
+          <Button sx={{ mb: 2 }} onClick={() => setChangePass(false)}>Cancel</Button>
+          <Button sx={{ mb: 2}} onClick={handleChangePass}>Change Password</Button>
         </DialogActions>
       </Dialog>
     </Box>

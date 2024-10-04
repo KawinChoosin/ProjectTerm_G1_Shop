@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
 
-
 .wrapper {
   width: 420px;
   background: #000000;
@@ -72,7 +71,7 @@
   width: 100%;
   height: 45px;
   background: #fff;
-  border: 2px solid #000000; /* Gray outline */
+  border: 2px solid #000000;
   outline: none;
   border-radius: 40px;
   box-shadow: 0 0 10px rgba(197, 83, 83, 0.1);

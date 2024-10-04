@@ -3,23 +3,23 @@ const prisma = new PrismaClient();
 
 async function P_test() {
   // Check if customer already exists
-  const existingCustomer = await prisma.customer.findUnique({
-    where: { C_email: "testuser@example.com" },
-  });
+  // const existingCustomer = await prisma.customer.findUnique({
+  //   where: { C_email: "testuser@example.com" },
+  // });
 
-  if (!existingCustomer) {
-    // Insert the customer if it doesn't exist
-    await prisma.customer.create({
-      data: {
-        C_name: "test",
-        C_password: "1234",
-        C_email: "testuser@example.com",
-        C_gender: "Male",
-        C_age: 25,
-        T_pnum: "0976543210"
-      },
-    });
-  }
+  // if (!existingCustomer) {
+  //   // Insert the customer if it doesn't exist
+  //   await prisma.customer.create({
+  //     data: {
+  //       C_name: "test",
+  //       C_password: "1234",
+  //       C_email: "testuser@example.com",
+  //       C_gender: "Male",
+  //       C_age: 25,
+  //       T_pnum: "0976543210"
+  //     },
+  //   });
+  // }
 
   // Check if categories already exist
   const existingCategories = await prisma.category.findMany();
@@ -145,76 +145,86 @@ async function P_test() {
   }
 
   // Check if addresses already exist for the customer
-  const existingAddresses = await prisma.address.findMany({
-    where: { C_id: existingCustomer ? existingCustomer.C_id : 1 }, // Use the existing customer ID
-  });
+  // const existingAddresses = await prisma.address.findMany({
+  //   where: { C_id: existingCustomer ? existingCustomer.C_id : 1 }, // Use the existing customer ID
+  // });
 
-  if (existingAddresses.length === 0) {
-    // Insert addresses if they don't exist
-    await prisma.address.createMany({
-      data: [
-        {
-          A_street: "123 Main St",
-          A_city: "Hometown",
-          A_state: "CA",
-          A_postalCode: "12345",
-          A_country: "USA",
-          C_id: 1,
-        },
-        {
-          A_street: "456 Elm St",
-          A_city: "Big City",
-          A_state: "NY",
-          A_postalCode: "67890",
-          A_country: "USA",
-          C_id: 1,
-        },
-      ],
-    });
-  }
+  // if (existingAddresses.length === 0) {
+  //   // Insert addresses if they don't exist
+  //   await prisma.address.createMany({
+  //     data: [
+  //       {
+  //         A_street: "123 Main St",
+  //         A_city: "Hometown",
+  //         A_state: "CA",
+  //         A_postalCode: "12345",
+  //         A_country: "USA",
+  //         C_id: 1,
+  //       },
+  //       {
+  //         A_street: "456 Elm St",
+  //         A_city: "Big City",
+  //         A_state: "NY",
+  //         A_postalCode: "67890",
+  //         A_country: "USA",
+  //         C_id: 1,
+  //       },
+  //     ],
+  //   });
+  // }
+
+  // Create a payment method if it doesn't exist
+// const paymentMethod = await prisma.payment.create({
+//   data: {
+//     PM_amount: 3325, // Set an appropriate initial amount
+//     PM_path: "1235453.png", // Provide a path if needed
+//     Date_time: new Date(), // Current time
+//   },
+// });
 
 
-  const order = await prisma.order.create({
-    data: {
-      C_id: existingCustomer ? existingCustomer.C_id : 1, // Use existing customer ID
-      Q_Date_time: new Date(),
-      O_Total: 0, // This will be calculated based on order details
-      PM_id: 1, // Assuming a payment method ID, adjust as necessary
-      A_id: existingAddresses[0].A_id, // Use the first address
-      Payslip: "123456789.jpg", // Replace with actual payslip filename
-      OrderDetail: {
-        create: [
-          {
-            P_id: 1, // Adjust the product ID as needed
-            OD_quantity: 2,
-            OD_price: 100.0, // Adjust the price as needed
-          },
-          {
-            P_id: 2, // Adjust the product ID as needed
-            OD_quantity: 5,
-            OD_price: 5000.0, // Adjust the price as needed
-          },
-          {
-            P_id: 8, // Adjust the product ID as needed
-            OD_quantity: 5,
-            OD_price: 10000.0, // Adjust the price as needed
-          },
-        ],
-      },
-    },
-    include: {
-      OrderDetail: true,
-    },
-  });
 
-  // Calculate total
-  const total = order.OrderDetail.reduce((sum, item) => sum + item.OD_price * item.OD_quantity, 0);
-  await prisma.order.update({
-    where: { O_id: order.O_id },
-    data: { O_Total: total },
-  });
+  // const order = await prisma.order.create({
+  //   data: {
+  //     C_id: existingCustomer ? existingCustomer.C_id : 1, // Use existing customer ID
+  //     Q_Date_time: new Date(),
+  //     O_Total: 0, // This will be calculated based on order details
+  //     PM_id: 1, // Assuming a payment method ID, adjust as necessary
+  //     A_id: existingAddresses[0].A_id, // Use the first address
+  //     Payslip: "123456789.jpg", // Replace with actual payslip filename
+  //     OrderDetail: {
+  //       create: [
+  //         {
+  //           P_id: 1, // Adjust the product ID as needed
+  //           OD_quantity: 2,
+  //           OD_price: 200.0, // Adjust the price as needed
+  //         },
+  //         {
+  //           P_id: 2, // Adjust the product ID as needed
+  //           OD_quantity: 5,
+  //           OD_price: 125.0, // Adjust the price as needed
+  //         },
+  //         {
+  //           P_id: 8, // Adjust the product ID as needed
+  //           OD_quantity: 5,
+  //           OD_price: 3000.0, // Adjust the price as needed
+  //         },
+  //       ],
+  //     },
+  //   },
+  //   include: {
+  //     OrderDetail: true,
+  //   },
+  // });
 
-  console.log("Order created successfully:", order);
+  // // Calculate total
+  // const total = order.OrderDetail.reduce((sum, item) => sum + item.OD_price * item.OD_quantity, 0);
+  // await prisma.order.update({
+  //   where: { O_id: order.O_id },
+  //   data: { O_Total: total },
+  // });
+
+  // console.log("Order created successfully:");
 }
 
 // Call the function
