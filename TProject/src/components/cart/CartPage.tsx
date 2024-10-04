@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useNavigate } from "react-router-dom";
+import useScreenSize from "../useScreenSize";
 
 interface CartItemType {
   CA_id: number;
@@ -54,7 +55,7 @@ const theme = createTheme({
   },
 });
 
-const responsiveTheme = responsiveFontSizes(theme); // Wrap theme with responsive fonts
+const responsiveTheme = responsiveFontSizes(theme);
 
 const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
@@ -64,6 +65,8 @@ const CartPage: React.FC = () => {
   const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false);
   const { C_id } = useContext(UserContext);
   const navigate = useNavigate();
+  const screenSize = useScreenSize();
+  const isMobile = screenSize.width < 900;
 
   useEffect(() => {
     if (C_id !== null) {
@@ -161,7 +164,6 @@ const CartPage: React.FC = () => {
   total = total - discount;
 
   return (
-    <div>
       <div
         style={{
           display: "flex",
@@ -172,7 +174,7 @@ const CartPage: React.FC = () => {
         }}
       >
         <Navbar />
-        <Container maxWidth="xl" sx={{ mt: 20, mb: 8 }}>
+        <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8 }}>
           <ThemeProvider theme={responsiveTheme}>
             <Typography
               variant="h3"
@@ -241,18 +243,18 @@ const CartPage: React.FC = () => {
             </Grid>
           </ThemeProvider>
         </Container>
+        {/* </div> */}
+        <Footer />
+        {customerId !== null && (
+          <CheckoutDialog
+            customerId={customerId}
+            open={openCheckoutDialog}
+            onClose={handleCloseCheckout}
+            onSubmit={handleCheckoutSubmit}
+            total={total}
+          />
+        )}
       </div>
-      <Footer />
-      {customerId !== null && (
-        <CheckoutDialog
-          customerId={customerId}
-          open={openCheckoutDialog}
-          onClose={handleCloseCheckout}
-          onSubmit={handleCheckoutSubmit}
-          total={total}
-        />
-      )}
-    </div>
   );
 };
 

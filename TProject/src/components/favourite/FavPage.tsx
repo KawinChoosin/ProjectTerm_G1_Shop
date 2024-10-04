@@ -9,6 +9,9 @@ import {
   CircularProgress,
   Alert,
   Box,
+  responsiveFontSizes,
+  createTheme,
+  ThemeProvider,
 } from "@mui/material";
 import useScreenSize from "../useScreenSize";
 import UserContext from "../../context/UserContext";
@@ -102,26 +105,61 @@ const FavPage: React.FC = () => {
     </Box>
   );
 
+  const theme = createTheme({
+    typography: {
+      fontFamily: "Montserrat, sans-serif",
+      h6: {
+        fontFamily: "Montserrat, sans-serif",
+      },
+      body2: {
+        fontFamily: "Open Sans, sans-serif",
+      },
+    },
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 900,
+        lg: 1200,
+        xl: 1536,
+      },
+    },
+  });
+  
+  const responsiveTheme = responsiveFontSizes(theme);
+  
   return (
+    // <div
+    //   style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+    // >
     <div
-      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        maxWidth: "100%",
+        padding: "0",
+        margin: "0",
+      }}
     >
       <Navbar />
-      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8 }}>
-        <Typography
-          variant="h3"
-          align="left"
-          gutterBottom
-          sx={{
-            fontFamily: "Syncopate",
-            textAlign: "left",
-            fontSize: "2.5rem",
-            mt: 4,
-          }}
-        >
-          Your Favourites
-        </Typography>
-        {renderFavItems()}
+      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 16}}>
+        <ThemeProvider theme={responsiveTheme}>
+          <Typography
+            variant="h3"
+            align="left"
+            gutterBottom
+            sx={{
+              fontFamily: "Syncopate",
+              textAlign: "left",
+              flex: "1 0 100%",
+              fontSize: "2.5rem",
+              mt: 4,
+            }}
+          >
+            Your Favourites
+          </Typography>
+          {renderFavItems()}
+        </ThemeProvider>
       </Container>
       <Footer />
     </div>

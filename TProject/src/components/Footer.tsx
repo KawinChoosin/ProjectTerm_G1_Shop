@@ -11,7 +11,8 @@ function Footer() {
         background: '#0c0d0e',
         boxSizing: 'border-box',
         padding: '0 20px',
-        mt:"10%",
+        mt:'5%',
+        mb:0,
         display: 'flex',
         flexDirection: 'column', // Stack children vertically
         justifyContent: 'flex-end', // Align children at the bottom
