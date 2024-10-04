@@ -2,12 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import MainBanner from "./components/MainBanner";
 import ProductGrid from "./components/ProductGrid";
-import {
-  Container,
-  Typography,
-  Button,
-  Fab,
-} from "@mui/material";
+import { Container, Typography, Button, Fab } from "@mui/material";
 import Footer from "./components/Footer";
 import axios from "axios";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -39,8 +34,6 @@ const App: React.FC = () => {
     fetchProducts();
   }, []);
 
-  
-
   const handleClick = (category: string) => {
     setSelectedCategory(category);
   };
@@ -63,14 +56,8 @@ const App: React.FC = () => {
   };
 
   if (loading) {
-    return (
-
-        <LoadingCompo />
-    
-    );
+    return <LoadingCompo />;
   }
-  
-  
 
   if (error) {
     return (
