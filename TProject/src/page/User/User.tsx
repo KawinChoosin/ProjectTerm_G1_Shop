@@ -80,7 +80,7 @@ function User() {
   }
 
   if (error) {
-    return <Typography variant="h5" color="error" sx={{ fontFamily: 'Montserrat' }}>{error}</Typography>;
+    return <Typography variant="h4" color="error" sx={{ fontFamily: 'Montserrat',padding:10 }}>{error}</Typography>;
   }
 
   const handleEditClick = (u: any) => {
@@ -158,12 +158,13 @@ function User() {
   }
 
   return (
+    <Grid sx={{ width: { lg: "60%", sm: "100%" } }}>
     <Box sx={{ display: 'flex', justifyContent: 'left', mt: 5, fontFamily: 'Montserrat' }}>
       {user.length === 0 ? (
         <Typography variant="h6" sx={{ fontFamily: 'Montserrat' }}>No user data available</Typography>
       ) : (
         user.map((u: any) => (
-          <Paper key={u.C} sx={{ width: '600px', padding: 4, borderRadius: 3, fontFamily: 'Montserrat' }}>
+          <Paper key={u.C} sx={{ width: '100%', padding: 4, borderRadius: 3, fontFamily: 'Montserrat' }}>
             <Grid container spacing={2}>
               <Grid size={12} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Avatar {...stringAvatar(u.C_name)} />
@@ -175,23 +176,23 @@ function User() {
               </Grid>
               <Grid size={12}>
                 <Typography variant="body1" sx={{ fontFamily: 'Montserrat' }}>Username:</Typography>
-                <Typography variant="h6" sx={{ fontFamily: 'Montserrat' }}>{u.C_name}</Typography>
+                <Typography variant="h6" sx={{ fontFamily: 'Montserrat' , overflowWrap: 'break-word'}}>{u.C_name}</Typography>
               </Grid>
               <Grid size={6}>
                 <Typography variant="body1" sx={{ fontFamily: 'Montserrat' }}>Email:</Typography>
-                <Typography variant="h6" sx={{ fontFamily: 'Montserrat' }}>{u.C_email}</Typography>
+                <Typography variant="h6" sx={{ fontFamily: 'Montserrat', overflowWrap: 'break-word'}}>{u.C_email}</Typography>
               </Grid>
               <Grid size={6}>
                 <Typography variant="body1" sx={{ fontFamily: 'Montserrat' }}>Phone:</Typography>
-                <Typography variant="h6" sx={{ fontFamily: 'Montserrat' }}>{u.T_pnum}</Typography>
+                <Typography variant="h6" sx={{ fontFamily: 'Montserrat', overflowWrap: 'break-word' }}>{u.T_pnum}</Typography>
               </Grid>
               <Grid size={6}>
                 <Typography variant="body1" sx={{ fontFamily: 'Montserrat' }}>Gender:</Typography>
-                <Typography variant="h6" sx={{ fontFamily: 'Montserrat' }}>{u.C_gender}</Typography>
+                <Typography variant="h6" sx={{ fontFamily: 'Montserrat' , overflowWrap: 'break-word'}}>{u.C_gender}</Typography>
               </Grid>
               <Grid size={6}>
                 <Typography variant="body1" sx={{ fontFamily: 'Montserrat' }}>Age:</Typography>
-                <Typography variant="h6" sx={{ fontFamily: 'Montserrat' }}>{u.C_age}</Typography>
+                <Typography variant="h6" sx={{ fontFamily: 'Montserrat' , overflowWrap: 'break-word'}}>{u.C_age}</Typography>
               </Grid>
               <Grid size={12} sx={{ display: 'flex', justifyContent: 'left', gap: '5%' }}>
                 <Button variant="contained" color="success" onClick={() => handleEditClick(u)}>Edit</Button>
@@ -393,6 +394,7 @@ function User() {
         </DialogActions>
       </Dialog>
     </Box>
+    </Grid>
   );
 }
 

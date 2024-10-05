@@ -23,8 +23,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 app.use("/slip", express.static(path.join(__dirname, "./slip"))); 
-app.use("/upload", express.static(path.join(__dirname, "./"))); 
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Use the modular routes
 app.use("/address", addressRoutes);
 app.use("/products", productRoutes);

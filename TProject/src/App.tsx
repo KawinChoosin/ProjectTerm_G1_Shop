@@ -2,12 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import MainBanner from "./components/MainBanner";
 import ProductGrid from "./components/ProductGrid";
-import {
-  Container,
-  Typography,
-  Button,
-  Fab,
-} from "@mui/material";
+import { Container, Typography, Button, Fab } from "@mui/material";
 import Footer from "./components/Footer";
 import axios from "axios";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -16,11 +11,12 @@ import LoadingCompo from "./components/loading";
 
 const App: React.FC = () => {
   const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]); // Add state for categories
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<number | string>("all"); // Change to store category ID
   const location = useLocation();
-  const { C_id } = location.state || {}; // user C_id **HERE**
+  const { C_id } = location.state || {};
 
   // Fetch products from the backend API
   useEffect(() => {
@@ -39,21 +35,29 @@ const App: React.FC = () => {
     fetchProducts();
   }, []);
 
-  
+  // Fetch categories from the backend API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/categories");
+        setCategories([{ CG_id: "all", CG_name: "ALL" }, ...response.data]); // Include "ALL" category
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+        setError("Error fetching categories");
+      }
+    };
 
-  const handleClick = (category: string) => {
-    setSelectedCategory(category);
+    fetchCategories();
+  }, [selectedCategory]);
+
+  const handleClick = (categoryId: number | string) => {
+    setSelectedCategory(categoryId);
   };
 
   const filteredProducts =
     selectedCategory === "all"
       ? products
-      : products.filter((product) => {
-          if (selectedCategory === "sports") return product.CG_id === 1;
-          if (selectedCategory === "cloths") return product.CG_id === 2;
-          if (selectedCategory === "electronics") return product.CG_id === 3;
-          return false;
-        });
+      : products.filter((product) => product.CG_id === selectedCategory);
 
   const handleScrollTop = () => {
     window.scrollTo({
@@ -63,14 +67,8 @@ const App: React.FC = () => {
   };
 
   if (loading) {
-    return (
-
-        <LoadingCompo />
-    
-    );
+    return <LoadingCompo />;
   }
-  
-  
 
   if (error) {
     return (
@@ -92,7 +90,6 @@ const App: React.FC = () => {
         margin: "0",
       }}
     >
-      {/* <div>{C_id}</div> */}
       <Navbar />
       <MainBanner keyType={selectedCategory} />
       <Container>
@@ -105,89 +102,31 @@ const App: React.FC = () => {
             gap: "30px",
           }}
         >
-          <Button
-            variant="text"
-            sx={{
-              fontFamily: "Ruda",
-              color: "#161A30",
-              fontSize: "25px",
-              textDecoration: selectedCategory === "all" ? "underline" : "none",
-              textDecorationColor:
-                selectedCategory === "all" ? "#161A30" : "transparent",
-              textDecorationThickness: "2px",
-              textUnderlineOffset: "8px",
-              "&:hover": {
-                textDecorationThickness: "3px",
-                textUnderlineOffset: "10px",
-              },
-            }}
-            onClick={() => handleClick("all")}
-          >
-            ALL
-          </Button>
-          <Button
-            variant="text"
-            sx={{
-              fontFamily: "Ruda",
-              color: "#161A30",
-              fontSize: "25px",
-              textDecoration:
-                selectedCategory === "sports" ? "underline" : "none",
-              textDecorationColor:
-                selectedCategory === "sports" ? "#161A30" : "transparent",
-              textDecorationThickness: "2px",
-              textUnderlineOffset: "8px",
-              "&:hover": {
-                textDecorationThickness: "3px",
-                textUnderlineOffset: "10px",
-              },
-            }}
-            onClick={() => handleClick("sports")}
-          >
-            SPORTS
-          </Button>
-          <Button
-            variant="text"
-            sx={{
-              fontFamily: "Ruda",
-              color: "#161A30",
-              fontSize: "25px",
-              textDecoration:
-                selectedCategory === "cloths" ? "underline" : "none",
-              textDecorationColor:
-                selectedCategory === "cloths" ? "#161A30" : "transparent",
-              textDecorationThickness: "2px",
-              textUnderlineOffset: "8px",
-              "&:hover": {
-                textDecorationThickness: "3px",
-                textUnderlineOffset: "10px",
-              },
-            }}
-            onClick={() => handleClick("cloths")}
-          >
-            CLOTHS
-          </Button>
-          <Button
-            variant="text"
-            sx={{
-              fontFamily: "Ruda",
-              color: "#161A30",
-              fontSize: "25px",
-              textDecoration:
-                selectedCategory === "electronics" ? "underline" : "none",
-              textDecorationColor:
-                selectedCategory === "electronics" ? "#161A30" : "transparent",
-              textDecorationThickness: "2px",
-              textUnderlineOffset: "8px",
-              "&:hover": {
-                textDecorationThickness: "3px",
-                textUnderlineOffset: "10px",
-              },
-            }}
-            onClick={() => handleClick("electronics")}
-          >
-            ELECTRONICS
-          </Button>
+          {/* Map categories dynamically */}
+          {categories.map((category) => (
+            <Button
+              key={category.CG_id}
+              variant="text"
+              sx={{
+                fontFamily: "Ruda",
+                color: "#161A30",
+                fontSize: "25px",
+                textDecoration:
+                  selectedCategory === category.CG_id ? "underline" : "none",
+                textDecorationColor:
+                  selectedCategory === category.CG_id ? "#161A30" : "transparent",
+                textDecorationThickness: "2px",
+                textUnderlineOffset: "8px",
+                "&:hover": {
+                  textDecorationThickness: "3px",
+                  textUnderlineOffset: "10px",
+                },
+              }}
+              onClick={() => handleClick(category.CG_id)}
+            >
+              {category.CG_name.toUpperCase()}
+            </Button>
+          ))}
         </div>
 
         {/* Product Grid */}

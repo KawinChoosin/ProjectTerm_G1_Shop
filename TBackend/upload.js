@@ -14,6 +14,8 @@ const storage = multer.diskStorage({
   },
 });
 
+
+
 // File upload limits and filters (optional)
 const upload = multer({
   storage: storage,
@@ -30,5 +32,17 @@ const upload = multer({
     }
   },
 });
+
+const uploadfile = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'uploads/'); // Define upload directory
+  },
+  filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + '-' + file.originalname); // Unique filename generation
+  }
+});
+
+const uploadpath = multer({ storage: uploadfile });
 
 module.exports = upload;

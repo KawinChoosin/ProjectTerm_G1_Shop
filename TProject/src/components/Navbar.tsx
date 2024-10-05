@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
-import { Button, IconButton } from "@mui/material";
+import React, { useContext, useState } from "react";
+import { Button, IconButton , Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import useScreenSize from "./useScreenSize";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { Brightness4, Brightness7 } from '@mui/icons-material';
 import { ColorModeContext } from '../ThemeContext';
 
 
@@ -11,7 +10,7 @@ const Navbar: React.FC = () => {
   const isMobile = screenSize.width < 900;
   const navigate = useNavigate();
   const colorMode = useContext(ColorModeContext);
-  const isDarkMode = colorMode.mode === 'dark';
+  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
 
 
   const handleLogoClick = () => {
@@ -29,6 +28,14 @@ const Navbar: React.FC = () => {
 
   const handleFavClick = () => {
     navigate("/favourite"); // Navigate to favourite page
+  };
+
+  const handleContactClick = () => {
+    setIsContactDialogOpen(true); // Open contact dialog
+  };
+
+  const handleContactDialogClose = () => {
+    setIsContactDialogOpen(false); // Close contact dialog
   };
 
   if (!isMobile) {
@@ -113,7 +120,7 @@ const Navbar: React.FC = () => {
               <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15" />
             </svg>
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleContactClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="26px"
@@ -129,6 +136,21 @@ const Navbar: React.FC = () => {
             {isDarkMode ? <Brightness7 /> : <Brightness4 />}
           </IconButton> */}
         </div>
+        <Dialog open={isContactDialogOpen} onClose={handleContactDialogClose}>
+        <DialogTitle>Contact Us</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Phone: +123-456-7890
+            <br />
+            Email: support@kad-ent.com
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleContactDialogClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
       </div>
     );
   } else {
@@ -218,7 +240,7 @@ const Navbar: React.FC = () => {
               <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15" />
             </svg>
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleContactClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="26px"
@@ -235,9 +257,26 @@ const Navbar: React.FC = () => {
             {isDarkMode ? <Brightness7 /> : <Brightness4 />}
           </IconButton> */}
         </div>
+        <Dialog open={isContactDialogOpen} onClose={handleContactDialogClose}>
+        <DialogTitle>Contact Us</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Phone: +123-456-7890
+            <br />
+            Email: support@kad-ent.com
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleContactDialogClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
       </>
     );
   }
 };
 
 export default Navbar;
+
+
