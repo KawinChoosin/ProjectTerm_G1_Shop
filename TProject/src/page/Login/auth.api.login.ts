@@ -15,7 +15,7 @@ export const onLogin = async (data: Credentials) => {
   try {
     const { data: response } = await Axios.request(requestConfig);
     return response; // Return the response if the request is successful
-  } catch (e) {
+  } catch (e: any) {
     console.error("Error details:", e);
     const errorMessage = e.response
       ? e.response.data.message

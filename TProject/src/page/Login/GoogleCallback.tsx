@@ -27,6 +27,7 @@ const GoogleCallback: React.FC = () => {
           );
 
           const result = await res.json();
+          console.log(result.email);
 
           if (res.ok) {
             setC_id(result.C_id); // Set C_id in UserContext

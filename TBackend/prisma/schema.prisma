@@ -32,17 +32,17 @@ model Product {
 
 model Customer {
   C_id       Int      @id @default(autoincrement())
-  C_name     String   @db.VarChar(255)
-  C_password String   @db.VarChar(255)
-  C_email    String   @db.VarChar(255) @unique
-  C_gender   String   @db.VarChar(10)
-  C_age      Int
-  T_pnum   String @db.VarChar(11)
-  C_Role  Boolean @default(false)
-  Order      Order[]
-  CartDetail CartDetail[]
-  Address     Address[]  
-  Favourite     Favourite[]
+  C_name     String?  @db.VarChar(255)  // Nullable
+  C_password String?  @db.VarChar(255)  // Nullable
+  C_email    String   @db.VarChar(255) @unique  // Not nullable (remains as is)
+  C_gender   String?  @db.VarChar(10)   // Nullable
+  C_age      Int?     // Nullable
+  T_pnum     String?  @db.VarChar(11)   // Nullable
+  C_Role     Boolean? @default(false)   // Nullable
+  Order      Order[]  // Relation stays as is
+  CartDetail CartDetail[]  // Relation stays as is
+  Address    Address[]  // Relation stays as is
+  Favourite  Favourite[]  // Relation stays as is
 }
 
 model Order {

@@ -8,6 +8,15 @@ import Alert from "@mui/material/Alert";
 import UserContext from "../../context/UserContext";
 import bgImage from "../bg.avif"; // Import the background image
 
+// Debounce function
+function debounce(func: (...args: any[]) => void, wait: number) {
+  let timeout: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
 const LoginForm: React.FC = () => {
   const { setC_id } = useContext(UserContext); // Access the setC_id function
   const navigate = useNavigate();
@@ -68,7 +77,7 @@ const LoginForm: React.FC = () => {
 
   // Function to handle Google login
   const handleGoogleLogin = () => {
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=663248155967-avgv6eqfkjdr04m1jj07lbf9v3jtuma2.apps.googleusercontent.com&redirect_uri=http://localhost:5173/auth/google/callback&response_type=code&scope=openid+https://www.googleapis.com/auth/userinfo.email`;
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=663248155967-avgv6eqfkjdr04m1jj07lbf9v3jtuma2.apps.googleusercontent.com&redirect_uri=http://localhost:5173/auth/google/callback&response_type=code&scope=openid+https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile`;
     window.location.href = googleAuthUrl; // Redirect to Google OAuth
   };
 
@@ -83,7 +92,7 @@ const LoginForm: React.FC = () => {
       }}
     >
       <AuthForm
-        onSubmit={login}
+        onSubmit={debounce(login, 500)} // Debounce login button click
         style={{
           justifyContent: "center",
           alignItems: "center",
@@ -154,7 +163,7 @@ const LoginForm: React.FC = () => {
           <button
             type="button"
             className="btn_authG"
-            onClick={handleGoogleLogin} // Call Google login handler
+            onClick={debounce(handleGoogleLogin, 500)} // Debounce Google login button click
           >
             <img
               className="google"
