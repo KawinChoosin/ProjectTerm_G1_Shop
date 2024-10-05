@@ -15,6 +15,7 @@ import {
   createTheme,
   ThemeProvider,
   responsiveFontSizes,
+  Snackbar,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useNavigate } from "react-router-dom";
@@ -67,6 +68,11 @@ const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<
+    "success" | "error" | "warning" | "info"
+  >("success");
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     if (C_id !== null) {
@@ -94,7 +100,21 @@ const CartPage: React.FC = () => {
 
       fetchCartDetails();
     }
-  }, [customerId]);
+  }, [customerId, openCheckoutDialog]);
+
+  const triggerAlert = (
+    message: string,
+    severity: "success" | "error" | "warning" | "info"
+  ) => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setShowAlert(true);
+
+    // set time out = 3 sec for alert
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
 
   const handleQuantityChange = async (id: number, newQuantity: number) => {
     setCartItems((prevItems) =>
@@ -138,11 +158,14 @@ const CartPage: React.FC = () => {
     setOpenCheckoutDialog(true);
   };
 
-  const handleCloseCheckout = () => setOpenCheckoutDialog(false);
+  const handleCloseCheckout = () => {
+    setOpenCheckoutDialog(false);
+  };
 
   const handleCheckoutSubmit = async (addressId: number) => {
     console.log("Address ID:", addressId);
     handleCloseCheckout();
+    triggerAlert("Order successfully placed and cart cleared!", "success");
   };
 
   const calculateSubtotal = () => {
@@ -164,97 +187,105 @@ const CartPage: React.FC = () => {
   total = total - discount;
 
   return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          maxWidth: "100%",
-          padding: "0",
-          margin: "0",
-        }}
-      >
-        <Navbar />
-        <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8 }}>
-          <ThemeProvider theme={responsiveTheme}>
-            <Typography
-              variant="h3"
-              align="left"
-              gutterBottom
-              sx={{
-                fontFamily: "Syncopate",
-                textAlign: "left",
-                flex: "1 0 100%",
-                fontSize: "2.5rem",
-                mt: 4,
-              }}
-            >
-              Your Cart
-            </Typography>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        maxWidth: "100%",
+        padding: "0",
+        margin: "0",
+      }}
+    >
+      <Navbar />
+      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8 }}>
+        <ThemeProvider theme={responsiveTheme}>
+          <Typography
+            variant="h3"
+            align="left"
+            gutterBottom
+            sx={{
+              fontFamily: "Syncopate",
+              textAlign: "left",
+              flex: "1 0 100%",
+              fontSize: "2.5rem",
+              mt: 4,
+            }}
+          >
+            Your Cart
+          </Typography>
 
-            <Grid container spacing={5} justifyContent="center">
-              <Grid size={{ xs: 12, md: 7 }}>
-                <Box
-                  className="scrollable-container"
-                  sx={{
-                    p: 4,
-                    borderRadius: "8px",
-                    maxHeight: "600px",
-                    overflowY: "auto",
-                  }}
-                >
-                  {loading ? (
-                    <CircularProgress />
-                  ) : error ? (
-                    <Alert severity="error">{error}</Alert>
-                  ) : cartItems.length > 0 ? (
-                    cartItems.map((item) => {
-                      const price = parseFloat(item.Product.P_price); // Ensure price is a number
-                      return (
-                        <CartItem
-                          key={item.P_id}
-                          item={{
-                            ...item.Product,
-                            CA_quantity: item.CA_quantity,
-                            P_price: price.toFixed(2), // Convert to string
-                          }}
-                          onQuantityChange={(newQuantity) =>
-                            handleQuantityChange(item.P_id, newQuantity)
-                          }
-                          onDelete={() => handleDelete(item.P_id, item.C_id)}
-                        />
-                      );
-                    })
-                  ) : (
-                    <Typography variant="body1" align="center">
-                      Your cart is empty.
-                    </Typography>
-                  )}
-                </Box>
-              </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
-                <CartTotals
-                  subtotal={subtotal}
-                  shipping={shipping}
-                  discount={discount}
-                  total={total}
-                  onCheckout={handleOpenCheckout} // Pass handleOpenCheckout to CartTotals
-                />
-              </Grid>
+          <Grid container spacing={5} justifyContent="center">
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Box
+                className="scrollable-container"
+                sx={{
+                  p: 4,
+                  borderRadius: "8px",
+                  maxHeight: "600px",
+                  overflowY: "auto",
+                }}
+              >
+                {loading ? (
+                  <CircularProgress />
+                ) : error ? (
+                  <Alert severity="error">{error}</Alert>
+                ) : cartItems.length > 0 ? (
+                  cartItems.map((item) => {
+                    const price = parseFloat(item.Product.P_price); // Ensure price is a number
+                    return (
+                      <CartItem
+                        key={item.P_id}
+                        item={{
+                          ...item.Product,
+                          CA_quantity: item.CA_quantity,
+                          P_price: price.toFixed(2), // Convert to string
+                        }}
+                        onQuantityChange={(newQuantity) =>
+                          handleQuantityChange(item.P_id, newQuantity)
+                        }
+                        onDelete={() => handleDelete(item.P_id, item.C_id)}
+                      />
+                    );
+                  })
+                ) : (
+                  <Typography variant="body1" align="center">
+                    Your cart is empty.
+                  </Typography>
+                )}
+              </Box>
             </Grid>
-          </ThemeProvider>
-        </Container>
-        {/* </div> */}
-        <Footer />
-        {customerId !== null && (
-          <CheckoutDialog
-            customerId={customerId}
-            open={openCheckoutDialog}
-            onClose={handleCloseCheckout}
-            onSubmit={handleCheckoutSubmit}
-            total={total}
-          />
-        )}
-      </div>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <CartTotals
+                subtotal={subtotal}
+                shipping={shipping}
+                discount={discount}
+                total={total}
+                onCheckout={handleOpenCheckout} // Pass handleOpenCheckout to CartTotals
+              />
+            </Grid>
+          </Grid>
+        </ThemeProvider>
+      </Container>
+      {/* </div> */}
+      <Snackbar
+        open={showAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
+      <Footer />
+      {customerId !== null && (
+        <CheckoutDialog
+          customerId={customerId}
+          open={openCheckoutDialog}
+          onClose={handleCloseCheckout}
+          onSubmit={handleCheckoutSubmit}
+          total={total}
+        />
+      )}
+    </div>
   );
 };
 

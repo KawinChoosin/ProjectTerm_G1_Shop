@@ -13,12 +13,14 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import { Grid2 } from "@mui/material"; // Importing Grid2
+import { Grid2 } from "@mui/material";
 import axios from "axios";
 import QR from "./Qr";
-import PaymentForm from "./uploadfile"; // Ensure this is the correct import for your upload component
+import PaymentForm from "./uploadfile";
 
 interface CheckoutDialogProps {
   open: boolean;
@@ -94,6 +96,11 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   const [checkoutAddresses, setCheckoutAddresses] = useState<Address[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false); // State to manage upload success
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<
+    "success" | "error" | "warning" | "info"
+  >("success");
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -136,10 +143,25 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       setCheckoutAddresses(addresses);
     } catch (error) {
       console.error("Error fetching addresses:", error);
-      alert("Failed to fetch addresses.");
+      triggerAlert("Failed to fetch addresses.", "error");
     }
   };
 
+  const triggerAlert = (
+    message: string,
+    severity: "success" | "error" | "warning" | "info"
+  ) => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setShowAlert(true);
+
+    // set time out = 3 sec for alert
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
+  // Start handle
   const handleFileUpload = (file: File | null) => {
     setSelectedFile(file);
     setUploadSuccess(false); // Reset upload success state
@@ -155,7 +177,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       newAddress.name === "" ||
       newAddress.phoneNumber === ""
     ) {
-      alert("Please fill all fields to save the new address.");
+      triggerAlert("Please fill all fields to save the new address.", "error");
       return;
     }
 
@@ -183,14 +205,14 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       setShowNewAddressForm(false);
     } catch (error) {
       console.error("Error saving new address:", error);
-      alert("Failed to save the new address.");
+      triggerAlert("Failed to save the new address.", "error");
     }
   };
 
   const handleCheckoutSubmit = async () => {
     // Validate address selection or addition
     if (!address && !newAddress.street) {
-      alert("Please select or add an address!");
+      triggerAlert("Please select or add an address!", "error");
       return;
     }
 
@@ -199,7 +221,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       const cartItems = await fetchCartItems(customerId);
 
       if (!cartItems || cartItems.length === 0) {
-        alert("No items found in cart.");
+        triggerAlert("No items found in cart.", "error");
         return;
       }
 
@@ -225,7 +247,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       if (selectedFile) {
         payslipPath = await uploadPayslip(selectedFile); // Get the file path
       } else {
-        alert("Please upload a payslip.");
+        triggerAlert("Please upload a payslip.", "error");
         return;
       }
 
@@ -233,8 +255,8 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
 
       // Check if payslipPath is null
       if (payslipPath === null) {
-        alert("Failed to upload payslip. Please try again.");
-        return; // Or handle this error as needed
+        triggerAlert("Failed to upload payslip. Please try again.", "error");
+        return;
       }
 
       // Submit the order with payment information
@@ -251,11 +273,11 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       // Clear the cart after a successful order
       await clearCart(cartItems);
 
-      alert("Order successfully placed and cart cleared!");
+      // triggerAlert("Order successfully placed and cart cleared!", "success");
       onSubmit(addressId); // Pass selected address and payment method
     } catch (error) {
       console.error("Error during checkout:", error);
-      alert("Failed to complete checkout. Please try again.");
+      triggerAlert("Failed to complete checkout. Please try again.", "error");
     }
   };
 
@@ -273,71 +295,11 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       PM_amount: total,
       A_id: addressId,
       PM_path: payslipPath,
-      O_Description: "test",
+      O_Description: null,
       orderDetails,
     };
 
     await axios.post("http://localhost:3000/order", orderData);
-    // console.log("Customer ID:", customerId);
-    // console.log("Total:", total);
-    // console.log("Address ID:", addressId);
-    // console.log("Order Details:", orderDetails);
-    // console.log("Payslip Path:", payslipPath); // Log the payslip path
-
-    // Create FormData instance
-    // const formData = new FormData();
-
-    // // Check if the parameters are defined
-    // if (
-    //   typeof customerId === "undefined" ||
-    //   typeof total === "undefined" ||
-    //   typeof addressId === "undefined" ||
-    //   !payslipPath // Check if payslipPath is provided
-    // ) {
-    //   console.error("One of the parameters is undefined");
-    //   return;
-    // }
-
-    // // Append data to FormData
-    // formData.append("C_id", customerId.toString());
-    // formData.append("Date_time", new Date().toISOString());
-    // formData.append("O_Total", total.toString());
-    // formData.append("PM_amount", total.toString());
-    // formData.append("A_id", addressId.toString());
-    // formData.append("O_Description", "Optional description here"); // If you have a description
-    // formData.append("PM_path", payslipPath); // Append the payslip path
-
-    // // Check if orderDetails is an array and not empty
-    // if (!Array.isArray(orderDetails) || orderDetails.length === 0) {
-    //   console.error("Order details are invalid");
-    //   return;
-    // }
-
-    // Append orderDetails as JSON strings
-    // orderDetails.forEach((detail) => {
-    //   formData.append("orderDetails", JSON.stringify(detail));
-    // });
-
-    // try {
-    //   const response = await axios.post(
-    //     "http://localhost:3000/order",
-    //     formData,
-    //     {
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     }
-    //   );
-    //   console.log("Order placed successfully:", response.data);
-    //   return response.data;
-    // } catch (error) {
-    //   if (axios.isAxiosError(error)) {
-    //     console.error("Error response:", error.response?.data);
-    //   } else {
-    //     console.error("Error:", error);
-    //   }
-    //   throw error; // Rethrow error for upstream handling
-    // }
   };
 
   const uploadPayslip = async (file: File) => {
@@ -582,6 +544,17 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                 {/* </div> */}
               </Grid2>
             )}
+            <Snackbar
+              open={showAlert}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+              <Alert
+                severity={alertSeverity}
+                onClose={() => setShowAlert(false)}
+              >
+                {alertMessage}
+              </Alert>
+            </Snackbar>
           </div>
         </DialogContent>
         <DialogActions>
