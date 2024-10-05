@@ -5,8 +5,8 @@ const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
 
 const client = new OAuth2Client(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_CID,
+  process.env.GOOGLE_CS,
   "http://localhost:5173/auth/google/callback"
 );
 
@@ -34,7 +34,7 @@ router.post("/callback", async (req, res) => {
     // Verify the ID token
     const ticket = await client.verifyIdToken({
       idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: process.env.GOOGLE_CID,
     });
 
     const payload = ticket.getPayload();
