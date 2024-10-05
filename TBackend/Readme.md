@@ -54,3 +54,10 @@ npm install jsonwebtoken
 
 ```npm install multery
 
+```
+
+# Google Library install
+
+```
+npm i google-auth-library
+```
