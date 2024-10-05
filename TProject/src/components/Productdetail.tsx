@@ -242,7 +242,7 @@ const ProductDetail: React.FC = () => {
         >
           <div style={{ flex: 2, display: "flex" }}>
             <img
-              src={product.P_img}
+              src={`http://localhost:3000/uploads/${product.P_img}`}
               alt={product?.P_name}
               style={{
                 width: "100%",

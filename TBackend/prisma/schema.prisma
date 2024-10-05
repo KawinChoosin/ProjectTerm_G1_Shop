@@ -48,11 +48,12 @@ model Customer {
 model Order {
   O_id      Int      @id @default(autoincrement())
   C_id      Int
-  Q_Date_time DateTime
+  O_Date_time DateTime
   O_Total     Decimal     // Changed to integer
   PM_id     Int
   A_id      Int
   O_Description  String?  @db.Text
+  O_status  Boolean @default(false)
   Customer  Customer @relation(fields: [C_id], references: [C_id])
   Payment   Payment  @relation(fields: [PM_id], references: [PM_id])
   Address     Address @relation(fields: [A_id], references: [A_id])
@@ -111,6 +112,8 @@ model CartDetail {
 model Address {
   A_id         Int      @id @default(autoincrement())
   C_id         Int
+  A_name       String   @db.VarChar(100)
+  A_phone      String   @db.VarChar(11)
   A_street     String   @db.VarChar(255)
   A_city       String   @db.VarChar(100)
   A_state      String   @db.VarChar(100)

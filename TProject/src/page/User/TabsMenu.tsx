@@ -5,12 +5,14 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Navbar from '../../components/Navbar';
 import User from './User';
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
 import { useNavigate } from 'react-router-dom';
 import { Container } from "@mui/material";
 import useScreenSize from "../../components/useScreenSize"; // If you have a custom hook for screen size
 import OrderList  from "./OrderList"
+import Addproduct from "../Admin/AddProduct"
+import axios from 'axios';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -18,9 +20,11 @@ interface TabPanelProps {
   value: number;
 }
 
+
+
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
-
+  
   return (
     <div
       role="tabpanel"
@@ -48,18 +52,32 @@ function a11yProps(index: number) {
 
 function TabsMenu() {
   const [value, setValue] = React.useState(0);
-
-  // Use hooks inside the functional component
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [admin, setAdmin] = useState<boolean>(false); // Admin state
   const { C_id } = useContext(UserContext);
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
 
   useEffect(() => {
-    if (C_id === null) {
+    if (C_id !== null) {
+      const fetchUser = async () => {
+        try {
+          const response = await axios.get(`http://localhost:3000/profile?C_id=${C_id}`);
+          setAdmin(response.data[0].C_Role);
+        } catch (err) {
+          setError('Error fetching user data.');
+        }
+      };
+      fetchUser();
+    } else {
       navigate('/login');
     }
   }, [C_id, navigate]);
+
+  if (error) {
+    return <Typography variant="h4" color="error" sx={{ fontFamily: 'Montserrat', padding: 10 }}>{error}</Typography>;
+  }
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -68,14 +86,13 @@ function TabsMenu() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Navbar />
-      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8 }}> {/* Apply your container styles here */}
+      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8 }}>
         <Box
           sx={{
             flexGrow: 1,
             display: 'flex',
-           
-            ml: { lg: "300px"},
-            flexDirection: { xs: 'column', sm: 'row' }, // Stack for smaller screens
+            ml: { lg: "300px" },
+            flexDirection: { xs: 'column', sm: 'row' },
           }}
         >
           <Tabs
@@ -87,20 +104,28 @@ function TabsMenu() {
             sx={{
               borderRight: 1,
               borderColor: 'divider',
-              width: { xs: '100%', sm: 200 }, // Full width on small screens
-              mb: { xs: 2, sm: 0 }, // Add margin on small screens
+              width: { xs: '100%', sm: 200 },
+              mb: { xs: 2, sm: 0 },
             }}
           >
+            {/* Show tabs conditionally based on admin status */}
             <Tab label="Profile" {...a11yProps(0)} />
             <Tab label="Order" {...a11yProps(1)} />
+            {admin && <Tab label="Add Products" {...a11yProps(2)} />} {/* Only show Add Products if admin */}
           </Tabs>
-          <Box sx={{ flexGrow: 1, width: '100%' }}> {/* Ensure content takes up remaining space */}
+          
+          <Box sx={{ flexGrow: 1, width: '100%' }}>
             <TabPanel value={value} index={0}>
               <User />
             </TabPanel>
             <TabPanel value={value} index={1}>
               <OrderList />
             </TabPanel>
+            {admin && (
+              <TabPanel value={value} index={2}>
+                <Addproduct />
+              </TabPanel>
+            )}
           </Box>
         </Box>
       </Container>
@@ -109,3 +134,4 @@ function TabsMenu() {
 }
 
 export default TabsMenu;
+

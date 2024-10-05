@@ -92,7 +92,7 @@ const LoginForm: React.FC = () => {
       }}
     >
       <AuthForm
-        onSubmit={debounce(login, 500)} // Debounce login button click
+        onSubmit={login}
         style={{
           justifyContent: "center",
           alignItems: "center",
@@ -159,12 +159,7 @@ const LoginForm: React.FC = () => {
             <span className="divider-text">Log in with</span>
           </div>
 
-          {/* Google Login Button */}
-          <button
-            type="button"
-            className="btn_authG"
-            onClick={debounce(handleGoogleLogin, 500)} // Debounce Google login button click
-          >
+          <button type="submit" className="btn_authG">
             <img
               className="google"
               src={google}

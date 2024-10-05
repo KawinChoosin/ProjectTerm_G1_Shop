@@ -2,11 +2,10 @@ const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const _ = require('lodash');
-const QRCode = require('qrcode');
-const generatePayload =  require('promptpay-qr');
-const upload = require('../upload');
-
+const _ = require("lodash");
+const QRCode = require("qrcode");
+const generatePayload = require("promptpay-qr");
+const upload = require("../upload");
 
 // Get all orders for a customer
 router.get("/customer/:C_id", async (req, res) => {
@@ -27,13 +26,15 @@ router.get("/customer/:C_id", async (req, res) => {
         },
       },
     });
-    orders.forEach(order => {
+    orders.forEach((order) => {
       if (order.Payment && order.Payment.PM_path) {
         order.Payment.PM_path = `http://localhost:3000/${order.Payment.PM_path}`;
       }
     });
     if (orders.length === 0) {
-      return res.status(404).json({ message: "No orders found for this customer" });
+      return res
+        .status(404)
+        .json({ message: "No orders found for this customer" });
     }
 
     res.json(orders);
@@ -42,7 +43,6 @@ router.get("/customer/:C_id", async (req, res) => {
     res.status(500).json({ error: "Error fetching orders" });
   }
 });
-
 
 // Get a specific order by ID
 router.get("/:O_id", async (req, res) => {
@@ -137,7 +137,7 @@ router.get("/orderdetails/:O_id", async (req, res) => {
 //   }
 // });
 
-router.post("/", upload.single('slip'), async (req, res) => {
+router.post("/", upload.single("slip"), async (req, res) => {
   const {
     C_id,
     Date_time,
@@ -154,13 +154,13 @@ router.post("/", upload.single('slip'), async (req, res) => {
 
   // Check if the file was uploaded successfully
   if (!PM_path) {
-    return res.status(400).json({ error: 'Payslip upload is required.' });
+    return res.status(400).json({ error: "Payslip upload is required." });
   }
 
   try {
     // Ensure orderDetails is an array
     if (!Array.isArray(orderDetails)) {
-      return res.status(400).json({ error: 'orderDetails must be an array.' });
+      return res.status(400).json({ error: "orderDetails must be an array." });
     }
 
     // Start a transaction
@@ -178,7 +178,7 @@ router.post("/", upload.single('slip'), async (req, res) => {
       const newOrder = await prisma.order.create({
         data: {
           C_id: parseInt(C_id, 10),
-          Q_Date_time: new Date(Date_time),
+          O_Date_time: new Date(Date_time),
           O_Total: parseFloat(Total),
           PM_id: paymentMethod.PM_id, // Link to payment
           A_id: parseInt(A_id, 10), // Address ID
@@ -202,9 +202,6 @@ router.post("/", upload.single('slip'), async (req, res) => {
     res.status(500).json({ error: "Error creating order and payment" });
   }
 });
-
-
-
 
 // Add a new order detail
 router.post("/orderdetails", async (req, res) => {
@@ -273,34 +270,32 @@ router.delete("/:O_id", async (req, res) => {
 });
 
 // Generate QR code
-router.post('/generateQR', (req, res) => {
+router.post("/generateQR", (req, res) => {
   const amount = parseFloat(_.get(req, ["body", "amount"]));
-  const mobileNumber = '0980798171';
+  const mobileNumber = "0980798171";
   const payload = generatePayload(mobileNumber, { amount });
   const option = {
     color: {
-      dark: '#000',
-      light: '#fff'
-    }
+      dark: "#000",
+      light: "#fff",
+    },
   };
   QRCode.toDataURL(payload, option, (err, url) => {
-      if(err) {
-          console.log('generate fail')
-          return res.status(400).json({
-              RespCode: 400,
-              RespMessage: 'bad : ' + err
-          })  
-      } 
-      else {
-          return res.status(200).json({
-              RespCode: 200,
-              RespMessage: 'good',
-              Result: url
-          })  
-      }
-
-  })
-})
+    if (err) {
+      console.log("generate fail");
+      return res.status(400).json({
+        RespCode: 400,
+        RespMessage: "bad : " + err,
+      });
+    } else {
+      return res.status(200).json({
+        RespCode: 200,
+        RespMessage: "good",
+        Result: url,
+      });
+    }
+  });
+});
 
 // router.post('/payments', upload.single('slip'), async (req, res) => {
 //   try {
@@ -325,7 +320,6 @@ router.post('/generateQR', (req, res) => {
 // });
 
 // Payment Upload and Link to an Order
-
 
 // router.post('/payments', upload.single('slip'), async (req, res) => {
 //   try {
@@ -363,9 +357,5 @@ router.post('/generateQR', (req, res) => {
 //     res.status(500).json({ error: 'Error creating payment' });
 //   }
 // });
-
-
-
-
 
 module.exports = router;

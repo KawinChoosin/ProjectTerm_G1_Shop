@@ -19,24 +19,23 @@ const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <StrictMode>
     <UserProvider>
-      <ThemeContextProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/products/:id" element={<ProductDetail />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/summary" element={<SummaryPage />} />
-            <Route path="/login" element={<App_Login />} />
-            <Route path="/register" element={<App_Register />} />
-            <Route path="/favourite" element={<FavPage />} />
-            <Route path="/auth/google/callback" element={<GoogleCallback />} />
-            {/* Add this line */}
-            {/* <Route element={<ProtectedRoute />}> */}
-            <Route path="/profile" element={<Tapmenu />} />
-            {/* </Route> */}
-          </Routes>
-        </Router>
-      </ThemeContextProvider>
+      {/* <ThemeContextProvider> */}
+      <Router>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/summary" element={<SummaryPage />} />
+          <Route path="/login" element={<App_Login />} />
+          <Route path="/register" element={<App_Register />} />
+          <Route path="/favourite" element={<FavPage />} />
+
+          {/* <Route element={<ProtectedRoute />}> */}
+          <Route path="/profile" element={<Tapmenu />} />
+          {/* </Route> */}
+        </Routes>
+      </Router>
+      {/* </ThemeContextProvider> */}
     </UserProvider>
   </StrictMode>
 );

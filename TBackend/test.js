@@ -3,23 +3,23 @@ const prisma = new PrismaClient();
 
 async function P_test() {
   // Check if customer already exists
-  const existingCustomer = await prisma.customer.findUnique({
-    where: { C_email: "testuser@example.com" },
-  });
+  // const existingCustomer = await prisma.customer.findUnique({
+  //   where: { C_email: "testuser@example.com" },
+  // });
 
-  if (!existingCustomer) {
-    // Insert the customer if it doesn't exist
-    await prisma.customer.create({
-      data: {
-        C_name: "test",
-        C_password: "1234",
-        C_email: "testuser@example.com",
-        C_gender: "Male",
-        C_age: 25,
-        T_pnum: "0976543210"
-      },
-    });
-  }
+  // if (!existingCustomer) {
+  //   // Insert the customer if it doesn't exist
+  //   await prisma.customer.create({
+  //     data: {
+  //       C_name: "test",
+  //       C_password: "1234",
+  //       C_email: "testuser@example.com",
+  //       C_gender: "Male",
+  //       C_age: 25,
+  //       T_pnum: "0976543210"
+  //     },
+  //   });
+  // }
 
   // Check if categories already exist
   const existingCategories = await prisma.category.findMany();
@@ -148,6 +148,9 @@ async function P_test() {
   // const existingAddresses = await prisma.address.findMany({
   //   where: { C_id: existingCustomer ? existingCustomer.C_id : 1 }, // Use the existing customer ID
   // });
+  // const existingAddresses = await prisma.address.findMany({
+  //   where: { C_id: existingCustomer ? existingCustomer.C_id : 1 }, // Use the existing customer ID
+  // });
 
   // if (existingAddresses.length === 0) {
   //   // Insert addresses if they don't exist
@@ -172,7 +175,6 @@ async function P_test() {
   //     ],
   //   });
   // }
-
 
   // const order = await prisma.order.create({
   //   data: {
@@ -214,7 +216,7 @@ async function P_test() {
   //   data: { O_Total: total },
   // });
 
-  // console.log("Order created successfully:", order);
+  // // console.log("Order created successfully:");
 }
 
 // Call the function

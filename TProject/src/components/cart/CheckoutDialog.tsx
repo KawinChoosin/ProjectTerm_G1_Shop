@@ -41,9 +41,13 @@ interface Address {
   A_state: string;
   A_postalCode: string;
   A_country: string;
+  A_name: string;
+  A_phone: string;
 }
 
 interface NewAddress {
+  name: string;
+  phoneNumber: string;
   street: string;
   city: string;
   state: string;
@@ -78,6 +82,8 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
 }) => {
   const [address, setAddress] = useState<Address | null>(null);
   const [newAddress, setNewAddress] = useState<NewAddress>({
+    name: "",
+    phoneNumber: "",
     street: "",
     city: "",
     state: "",
@@ -99,6 +105,8 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   const resetForm = () => {
     setAddress(null);
     setNewAddress({
+      name: "",
+      phoneNumber: "",
       street: "",
       city: "",
       state: "",
@@ -122,6 +130,8 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         A_state: addr.A_state,
         A_postalCode: addr.A_postalCode,
         A_country: addr.A_country,
+        A_name: addr.A_name,
+        A_phone: addr.A_phone,
       }));
       setCheckoutAddresses(addresses);
     } catch (error) {
@@ -141,7 +151,9 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       newAddress.city === "" ||
       newAddress.state === "" ||
       newAddress.postalCode === "" ||
-      newAddress.country === ""
+      newAddress.country === "" ||
+      newAddress.name === "" ||
+      newAddress.phoneNumber === ""
     ) {
       alert("Please fill all fields to save the new address.");
       return;
@@ -155,6 +167,8 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         A_postalCode: newAddress.postalCode,
         A_country: newAddress.country,
         C_id: customerId,
+        A_name: newAddress.name,
+        A_phone: newAddress.phoneNumber,
       });
 
       const savedAddress = response.data; // Ensure this matches your API's response
@@ -214,7 +228,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         alert("Please upload a payslip.");
         return;
       }
-      
+
       console.log("pay:", payslipPath);
 
       // Check if payslipPath is null
@@ -252,7 +266,6 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     total: number, // Ensure total is passed correctly
     payslipPath: string // New parameter for the payslip path
   ) => {
-
     const orderData = {
       C_id: customerId,
       Date_time: new Date().toISOString(),
@@ -260,10 +273,9 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       PM_amount: total,
       A_id: addressId,
       PM_path: payslipPath,
-      O_Description: "test",
+      O_Description: null,
       orderDetails,
     };
-    
 
     await axios.post("http://localhost:3000/order", orderData);
     // console.log("Customer ID:", customerId);
@@ -271,10 +283,10 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     // console.log("Address ID:", addressId);
     // console.log("Order Details:", orderDetails);
     // console.log("Payslip Path:", payslipPath); // Log the payslip path
-  
+
     // Create FormData instance
     // const formData = new FormData();
-  
+
     // // Check if the parameters are defined
     // if (
     //   typeof customerId === "undefined" ||
@@ -285,7 +297,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     //   console.error("One of the parameters is undefined");
     //   return;
     // }
-  
+
     // // Append data to FormData
     // formData.append("C_id", customerId.toString());
     // formData.append("Date_time", new Date().toISOString());
@@ -294,18 +306,18 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     // formData.append("A_id", addressId.toString());
     // formData.append("O_Description", "Optional description here"); // If you have a description
     // formData.append("PM_path", payslipPath); // Append the payslip path
-  
+
     // // Check if orderDetails is an array and not empty
     // if (!Array.isArray(orderDetails) || orderDetails.length === 0) {
     //   console.error("Order details are invalid");
     //   return;
     // }
-  
+
     // Append orderDetails as JSON strings
     // orderDetails.forEach((detail) => {
     //   formData.append("orderDetails", JSON.stringify(detail));
     // });
-  
+
     // try {
     //   const response = await axios.post(
     //     "http://localhost:3000/order",
@@ -327,8 +339,6 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     //   throw error; // Rethrow error for upstream handling
     // }
   };
-  
-  
 
   const uploadPayslip = async (file: File) => {
     const formData = new FormData();
@@ -369,6 +379,8 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
           A_postalCode: newAddress.postalCode,
           A_country: newAddress.country,
           C_id: customerId,
+          A_name: newAddress.name,
+          A_phone: newAddress.phoneNumber,
         }
       );
       addressId = addressResponse.data.A_id; // Get the new address ID from the response
@@ -382,6 +394,8 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
           A_state: newAddress.state,
           A_postalCode: newAddress.postalCode,
           A_country: newAddress.country,
+          A_name: newAddress.name,
+          A_phone: newAddress.phoneNumber,
         },
       ]);
     } else if (address && "A_id" in address) {
@@ -431,7 +445,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                 >
                   {checkoutAddresses.map((addr, index) => (
                     <MenuItem key={index} value={JSON.stringify(addr)}>
-                      {`${addr.A_street}, ${addr.A_city}, ${addr.A_state}, ${addr.A_postalCode}, ${addr.A_country}`}
+                      {`${addr.A_name}, ${addr.A_phone}, ${addr.A_street}, ${addr.A_city}, ${addr.A_state}, ${addr.A_postalCode}, ${addr.A_country}`}
                     </MenuItem>
                   ))}
                 </Select>
@@ -461,6 +475,33 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
               </FormControl>
             ) : (
               <Grid2 container spacing={2}>
+                <Grid2 size={12}>
+                  <TextField
+                    label="Name"
+                    fullWidth
+                    value={newAddress.name}
+                    onChange={(e) =>
+                      setNewAddress({ ...newAddress, name: e.target.value })
+                    }
+                    margin="normal"
+                    variant="outlined"
+                  />
+                </Grid2>
+                <Grid2 size={12}>
+                  <TextField
+                    label="Phone Number"
+                    fullWidth
+                    value={newAddress.phoneNumber}
+                    onChange={(e) =>
+                      setNewAddress({
+                        ...newAddress,
+                        phoneNumber: e.target.value,
+                      })
+                    }
+                    margin="normal"
+                    variant="outlined"
+                  />
+                </Grid2>
                 <Grid2 size={12}>
                   <TextField
                     label="Street"

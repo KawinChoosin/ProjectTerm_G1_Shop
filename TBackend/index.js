@@ -10,6 +10,9 @@ const loginRoutes = require("./routes/loginRoutes");
 const registerRoutes = require("./routes/registerRoutes");
 const profile = require("./routes/profileRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
+const orderList = require("./routes/orderListRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
+
 const authenRoutes = require("./routes/authenRoutes");
 
 const path = require("path");
@@ -22,6 +25,7 @@ app.use(bodyParser.json());
 
 app.use("/slip", express.static(path.join(__dirname, "./slip")));
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Use the modular routes
 app.use("/address", addressRoutes);
 app.use("/products", productRoutes);
@@ -32,6 +36,8 @@ app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/profile", profile);
 app.use("/upload", uploadRoutes);
+app.use("/orderlist", orderList);
+app.use("/categories", categoryRoutes);
 app.use("/auth/google", authenRoutes);
 
 // Default route
