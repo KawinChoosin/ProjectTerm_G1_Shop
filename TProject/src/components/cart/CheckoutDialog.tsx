@@ -156,7 +156,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       setCheckoutAddresses(addresses);
     } catch (error) {
       console.error("Error fetching addresses:", error);
-      alert("Failed to fetch addresses.");
+      triggerAlert("Failed to fetch addresses.", "error");
     }
   };
 
@@ -184,7 +184,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     // Check for form validation here
     const isValid = await trigger(); // Trigger validation for all fields
     if (!isValid) {
-      alert("Please fill all fields to save the new address.");
+      triggerAlert("Please fill all fields to save the new address.", "error");
       return;
     }
   
@@ -223,7 +223,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       setShowNewAddressForm(false);
     } catch (error) {
       console.error("Error saving new address:", error);
-      alert("Failed to save the new address.");
+      triggerAlert("Failed to save the new address.", "error");
     }
   };
   
@@ -309,7 +309,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       // Clear the cart after a successful order
       await clearCart(cartItems);
 
-      alert("Order successfully placed and cart cleared!");
+      // alert("Order successfully placed and cart cleared!");
       onSubmit(addressId); // Pass selected address and payment method
     } catch (error) {
       console.error("Error during checkout:", error);

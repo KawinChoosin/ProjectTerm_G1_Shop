@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { CircularProgress, Typography, createSvgIcon } from "@mui/material";
+import {
+  CircularProgress,
+  Snackbar,
+  Typography,
+  createSvgIcon,
+  Alert,
+} from "@mui/material";
 import axios from "axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -25,6 +31,11 @@ const ProductDetail: React.FC = () => {
   const isMobile = screenSize.width < 900;
   const navigate = useNavigate(); // Use useNavigate for redirection
   const location = useLocation(); // To get the current URL
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<
+    "success" | "error" | "warning" | "info"
+  >("success");
+  const [showAlert, setShowAlert] = useState(false); //set time to show alert
 
   // Fetch the product details by product ID
   useEffect(() => {
@@ -111,19 +122,53 @@ const ProductDetail: React.FC = () => {
     }
   };
 
+  const triggerAlert = (
+    message: string,
+    severity: "success" | "error" | "warning" | "info"
+  ) => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setShowAlert(true);
+
+    // set time out = 3 sec for alert
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
+  // const checkStock = async () => {
+  //   try {
+  //     const response = await axios.get(`http://localhost:3000/check-stock/${product.P_id}`);
+  //     return response.data.P_quantity;
+  //   } catch (error) {
+  //     console.error("Error checking stock:", error);
+  //     return null;
+  //   }
+  // };
+
   const handleAddToCart = async () => {
     if (!C_id) {
-      alert("Please log in to add items to your cart");
       navigate("/login", { state: { from: location } });
       return;
     }
 
     if (quantity < 1) {
-      alert("Please select a valid quantity");
       return;
     }
 
     try {
+      // const stock = await checkStock();
+
+      // if (stock === null) {
+      //   triggerAlert("Unable to check stock", "error");
+      //   return;
+      // }
+  
+      // if (quantity > stock) {
+      //   triggerAlert(`Cannot add more than ${stock} items to cart`, "error");
+      //   return;
+      // }
+
       const response = await axios.post("http://localhost:3000/cart/add", {
         C_id: C_id,
         P_id: product.P_id,
@@ -132,22 +177,23 @@ const ProductDetail: React.FC = () => {
       });
 
       if (response.status === 200) {
-        alert(`Added ${quantity} ${product?.P_name} to cart!`);
+        triggerAlert(
+          `Added ${quantity} ${product?.P_name} to cart!`,
+          "success"
+        );
       }
     } catch (error) {
       console.error("Error adding to your cart:", error);
-      alert("Failed to add product to your cart");
+      triggerAlert("Failed to add product to your cart", "error");
     }
   };
 
   const handleToggleFav = async () => {
     if (!C_id) {
-      alert("Please log in to manage your favourites");
       navigate("/login", { state: { from: location } });
       return;
     }
 
-    // Optimistically update the state
     const newIsLiked = !isLiked;
     setIsLiked(newIsLiked);
     setFabColor(newIsLiked ? "secondary" : "default");
@@ -162,7 +208,10 @@ const ProductDetail: React.FC = () => {
           }
         );
         if (response.status === 200) {
-          alert(`Added ${product.P_name} to your favourites!`);
+          triggerAlert(
+            `Added ${product.P_name} to your favourites!`,
+            "success"
+          );
         }
       } else {
         const response = await axios.delete(
@@ -175,15 +224,17 @@ const ProductDetail: React.FC = () => {
           }
         );
         if (response.status === 200) {
-          alert(`Removed ${product.P_name} from your favourites!`);
+          triggerAlert(
+            `Removed ${product.P_name} from your favourites!`,
+            "success"
+          );
         }
       }
     } catch (error) {
       console.error("Error managing favourites:", error);
-      alert("Failed to manage your favourites");
+      triggerAlert("Failed to manage your favourites", "error");
 
-      // Rollback state if there was an error
-      setIsLiked(!newIsLiked); // Revert to the previous state
+      setIsLiked(!newIsLiked); // Revert to previous state
       setFabColor(newIsLiked ? "default" : "secondary");
     }
   };
@@ -240,7 +291,7 @@ const ProductDetail: React.FC = () => {
             alignItems: "stretch",
           }}
         >
-          <div style={{ flex: 2, display: "flex" }}>
+          <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
             <img
               src={`http://localhost:3000/uploads/${product.P_img}`}
               alt={product?.P_name}
@@ -252,7 +303,7 @@ const ProductDetail: React.FC = () => {
               }}
             />
           </div>
-          <div style={{ flex: 0.5 }}></div>
+          <div style={{ flex: 0.4, height: "auto" }}></div>
           <div
             style={{
               flex: 2,
@@ -386,6 +437,15 @@ const ProductDetail: React.FC = () => {
           </div>
         </section>
 
+        <Snackbar
+          open={showAlert}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
+            {alertMessage}
+          </Alert>
+        </Snackbar>
+
         {/* footer */}
         <Footer />
       </div>
@@ -410,11 +470,11 @@ const ProductDetail: React.FC = () => {
           }}
         >
           <img
-            src={product.P_img}
+            src={`http://localhost:3000/uploads/${product.P_img}`}
             alt={product?.P_name}
             style={{
-              width: "90%",
-              height: "90%",
+              width: "70%",
+              height: "70%",
               objectFit: "contain",
               borderRadius: "0.5rem",
             }}
@@ -548,6 +608,15 @@ const ProductDetail: React.FC = () => {
             </Button>
           </div>
         </div>
+
+        <Snackbar
+          open={showAlert}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
+            {alertMessage}
+          </Alert>
+        </Snackbar>
 
         {/* footer */}
         <Footer />

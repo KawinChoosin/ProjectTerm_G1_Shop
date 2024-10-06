@@ -6,7 +6,7 @@ interface CartTotalsProps {
   shipping: number;
   discount: number;
   total: number;
-  onCheckout: () => void; // Prop for handling checkout button click
+  onCheckout: () => void; 
 }
 
 const CartTotals: React.FC<CartTotalsProps> = ({ subtotal, shipping, discount, total, onCheckout }) => {

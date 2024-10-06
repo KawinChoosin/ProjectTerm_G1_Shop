@@ -37,6 +37,7 @@ function User() {
   const [showRetypePassword, setShowRetypePassword] = useState<boolean>(false);
   const navigate = useNavigate();
   const { C_id, setC_id } = useContext<any>(UserContext);
+  const [passnull,setPassnull] = useState<boolean>(false);
 
   // Initialize React Hook Form
   const { control, handleSubmit, reset, trigger, watch, formState: { errors } } = useForm({
@@ -58,6 +59,12 @@ function User() {
         try {
           const response = await axios.get(`http://localhost:3000/profile?C_id=${C_id}`);
           setUser([response.data[0]]);
+          if(response.data[0].C_password == null){
+            setPassnull(true)
+          }else{
+            setPassnull(false)
+          }
+          console.log(response.data[0].C_password);
           reset(response.data[0]); // Set the fetched user data into the form
           setLoading(false);
         } catch (err) {
@@ -199,7 +206,7 @@ function User() {
               </Grid>
               <Grid size={12} sx={{ display: 'flex', justifyContent: 'left', gap: '5%' }}>
                 <Button variant="contained" color="success" onClick={() => handleEditClick(u)}>Edit</Button>
-                <Button variant="contained" onClick={() => setChangePass(true)}>Change Password</Button>
+                {!passnull && (<Button variant="contained" onClick={() => setChangePass(true)}>Change Password</Button>)}
                 <Button variant="contained" color="error" onClick={handleLogout}>Logout</Button>
               </Grid>
             </Grid>
@@ -293,7 +300,7 @@ function User() {
                 <Select
                 fullWidth
                   sx={{ mb: 2 }}
-                  label="Gender"
+                
                   {...field}
                   error={Boolean(errors.C_gender)}
                 >
@@ -314,7 +321,7 @@ function User() {
                 value: /^[0-9]*$/,
                 message: 'Age must be numeric',
               },
-              validate: (value) => value < 150 || 'Are you sure, Make sure the age is valid',
+              validate: (value) => parseInt(value) < 150 || 'Are you sure, Make sure the age is valid',
 
             }}
             render={({ field }) => (

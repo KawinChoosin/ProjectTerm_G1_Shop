@@ -97,46 +97,7 @@ router.get("/orderdetails/:O_id", async (req, res) => {
   }
 });
 
-// Add a new order
-// router.post("/", async (req, res) => {
-//   const { C_id, Date_time, Total, PM_type, PM_amount, A_id, O_Description, Payslip, orderDetails } = req.body;
-
-//   try {
-//     const paymentMethod = await prisma.payment.create({
-//       data: {
-//         PM_amount: parseFloat(PM_amount),
-//         PM_type: PM_type,
-//         Date_time: new Date(Date_time), // Ensure the date format is correct
-//       },
-//     });
-
-//     // Create the new order with the payment method
-//     const newOrder = await prisma.order.create({
-//       data: {
-//         C_id: parseInt(C_id, 10),
-//         Q_Date_time: new Date(Date_time),
-//         O_Total: parseFloat(Total),
-//         PM_id: paymentMethod.PM_id,
-//         A_id: parseInt(A_id, 10), // Address ID
-//         O_Description: O_Description || null,
-//         Payslip: Payslip,
-//         OrderDetail: {
-//           create: orderDetails.map((detail) => ({
-//             P_id: parseInt(detail.P_id, 10),
-//             OD_quantity: parseInt(detail.OD_quantity, 10),
-//             OD_price: parseFloat(detail.OD_price),
-//           })),
-//         },
-//       },
-//     });
-
-//     res.status(201).json(newOrder);
-//   } catch (error) {
-//     console.error("Error creating order:", error);
-//     res.status(500).json({ error: "Error creating order" });
-//   }
-// });
-
+// New order
 router.post("/", upload.single('slip'), async (req, res) => {
   const {
     C_id,
@@ -146,11 +107,8 @@ router.post("/", upload.single('slip'), async (req, res) => {
     A_id,
     PM_path,
     O_Description,
-    orderDetails, // Ensure this is passed correctly in the request body
+    orderDetails,
   } = req.body;
-
-  // Get the uploaded file path
-  // const PM_path = req.file ? req.file.path : '';
 
   // Check if the file was uploaded successfully
   if (!PM_path) {
@@ -192,6 +150,22 @@ router.post("/", upload.single('slip'), async (req, res) => {
           },
         },
       });
+
+      // Update product quantities
+      for (const detail of orderDetails) {
+        const productId = parseInt(detail.P_id, 10);
+        const orderedQuantity = parseInt(detail.OD_quantity, 10);
+
+        // Decrease the product quantity
+        await prisma.product.update({
+          where: { P_id: productId },
+          data: {
+            P_quantity: {
+              decrement: orderedQuantity,
+            },
+          },
+        });
+      }
 
       return newOrder; // Return the new order as the result of the transaction
     });
