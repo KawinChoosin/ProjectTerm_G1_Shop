@@ -116,4 +116,25 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Check stock of a product by ID
+router.get("/check-stock/:id", async (req, res) => {
+  const productId = parseInt(req.params.id, 10);
+  try {
+    const product = await prisma.product.findUnique({
+      where: { P_id: productId },
+      select: { P_quantity: true }, 
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Return the product's quantity
+    res.json({ P_quantity: product.P_quantity });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;
+

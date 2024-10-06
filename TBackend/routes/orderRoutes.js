@@ -146,11 +146,8 @@ router.post("/", upload.single("slip"), async (req, res) => {
     A_id,
     PM_path,
     O_Description,
-    orderDetails, // Ensure this is passed correctly in the request body
+    orderDetails,
   } = req.body;
-
-  // Get the uploaded file path
-  // const PM_path = req.file ? req.file.path : '';
 
   // Check if the file was uploaded successfully
   if (!PM_path) {
@@ -192,6 +189,22 @@ router.post("/", upload.single("slip"), async (req, res) => {
           },
         },
       });
+
+      // Update product quantities
+      for (const detail of orderDetails) {
+        const productId = parseInt(detail.P_id, 10);
+        const orderedQuantity = parseInt(detail.OD_quantity, 10);
+
+        // Decrease the product quantity
+        await prisma.product.update({
+          where: { P_id: productId },
+          data: {
+            P_quantity: {
+              decrement: orderedQuantity,
+            },
+          },
+        });
+      }
 
       return newOrder; // Return the new order as the result of the transaction
     });

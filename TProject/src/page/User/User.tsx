@@ -53,6 +53,7 @@ function User() {
   const [showRetypePassword, setShowRetypePassword] = useState<boolean>(false);
   const navigate = useNavigate();
   const { C_id, setC_id } = useContext<any>(UserContext);
+  const [passnull, setPassnull] = useState<boolean>(false);
 
   // Initialize React Hook Form
   const {
@@ -69,6 +70,9 @@ function User() {
       T_pnum: "",
       C_gender: "",
       C_age: "",
+      O_pass: "",
+      N_pass: "",
+      RN_pass: "",
     },
   });
 
@@ -80,6 +84,12 @@ function User() {
             `http://localhost:3000/profile?C_id=${C_id}`
           );
           setUser([response.data[0]]);
+          if (response.data[0].C_password == null) {
+            setPassnull(true);
+          } else {
+            setPassnull(false);
+          }
+          console.log(response.data[0].C_password);
           reset(response.data[0]); // Set the fetched user data into the form
           setLoading(false);
         } catch (err) {
@@ -318,12 +328,14 @@ function User() {
                   >
                     Edit
                   </Button>
-                  <Button
-                    variant="contained"
-                    onClick={() => setChangePass(true)}
-                  >
-                    Change Password
-                  </Button>
+                  {!passnull && (
+                    <Button
+                      variant="contained"
+                      onClick={() => setChangePass(true)}
+                    >
+                      Change Password
+                    </Button>
+                  )}
                   <Button
                     variant="contained"
                     color="error"
@@ -350,17 +362,16 @@ function User() {
                   !/\s/.test(value) || "Name should not contain spaces",
               }}
               render={({ field }) => (
-                <>
-                  <TextField
-                    fullWidth
-                    sx={{ mb: 2, mt: 1 }}
-                    label="Username"
-                    variant="outlined"
-                    {...field}
-                    error={Boolean(errors.C_name)}
-                    helperText={errors.C_name?.message}
-                  />
-                </>
+                <TextField
+                  fullWidth
+                  sx={{ mb: 2, mt: 1 }}
+                  label="Username"
+                  variant="outlined"
+                  {...field}
+                  error={Boolean(errors.C_name)}
+                  helperText={errors.C_name?.message}
+                  onBlur={() => trigger("C_name")}
+                />
               )}
             />
             {/* <Controller
@@ -393,34 +404,35 @@ function User() {
               rules={{
                 required: "Phone number is required",
                 pattern: {
-                  value: /^[0-9]*$/,
-                  message: "Phone number must be numeric",
+                  value: /^0[0-9]{9}$/, // Ensure number starts with 0 and has 10 digits
+                  message:
+                    "Phone number must start with 0 and be 10 digits long",
                 },
               }}
               render={({ field }) => (
-                <>
-                  <TextField
-                    fullWidth
-                    sx={{ mb: 2 }}
-                    label="Phone"
-                    variant="outlined"
-                    {...field}
-                    error={Boolean(errors.T_pnum)}
-                    helperText={errors.T_pnum?.message}
-                  />
-                </>
+                <TextField
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  label="Phone"
+                  variant="outlined"
+                  {...field}
+                  error={Boolean(errors.T_pnum)}
+                  helperText={errors.T_pnum?.message}
+                  onBlur={() => trigger("T_pnum")}
+                />
               )}
             />
             <Controller
               name="C_gender"
               control={control}
-              rules={{ required: "Gender is required" }}
+              rules={{
+                required: "Gender is required",
+              }}
               render={({ field }) => (
                 <>
                   <Select
                     fullWidth
                     sx={{ mb: 2 }}
-                    label="Gender"
                     {...field}
                     error={Boolean(errors.C_gender)}
                   >
@@ -443,6 +455,9 @@ function User() {
                   value: /^[0-9]*$/,
                   message: "Age must be numeric",
                 },
+                validate: (value) =>
+                  parseInt(value) < 150 ||
+                  "Are you sure, Make sure the age is valid",
               }}
               render={({ field }) => (
                 <>
@@ -453,6 +468,7 @@ function User() {
                     {...field}
                     error={Boolean(errors.C_age)}
                     helperText={errors.C_age?.message}
+                    onBlur={() => trigger("C_age")}
                   />
                 </>
               )}
@@ -469,81 +485,125 @@ function User() {
         </Dialog>
 
         {/* Change Password Dialog */}
+        {/* Change Password Dialog */}
         <Dialog open={changePass} onClose={() => setChangePass(false)}>
           <DialogTitle>Change Password</DialogTitle>
           <DialogContent>
-            <TextField
-              fullWidth
-              sx={{ mb: 2, mt: 1 }}
-              label="Old Password"
-              type={showOldPassword ? "text" : "password"}
-              variant="outlined"
-              value={password.O_pass}
-              onChange={(e) =>
-                setPassword({ ...password, O_pass: e.target.value })
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowOldPassword((prev) => !prev)}
-                    >
-                      {showOldPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+            {/* Old Password */}
+            <Controller
+              name="O_pass"
+              control={control}
+              rules={{
+                required: "Old password is required",
               }}
+              render={({ field }) => (
+                <TextField
+                  fullWidth
+                  sx={{ mb: 2, mt: 1 }}
+                  label="Old Password"
+                  type={showOldPassword ? "text" : "password"}
+                  variant="outlined"
+                  {...field}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowOldPassword((prev) => !prev)}
+                        >
+                          {showOldPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  error={Boolean(errors.O_pass)}
+                  helperText={errors.O_pass?.message}
+                  onBlur={() => trigger("O_pass")} // Trigger validation on blur
+                />
+              )}
             />
-            <TextField
-              fullWidth
-              sx={{ mb: 2, mt: 1 }}
-              label="New Password"
-              type={showNewPassword ? "text" : "password"}
-              variant="outlined"
-              value={password.N_pass}
-              onChange={(e) =>
-                setPassword({ ...password, N_pass: e.target.value })
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowNewPassword((prev) => !prev)}
-                    >
-                      {showNewPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+
+            {/* New Password */}
+            <Controller
+              name="N_pass"
+              control={control}
+              rules={{
+                required: "New password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters long",
+                },
               }}
+              render={({ field }) => (
+                <TextField
+                  fullWidth
+                  sx={{ mb: 2, mt: 1 }}
+                  label="New Password"
+                  type={showNewPassword ? "text" : "password"}
+                  variant="outlined"
+                  {...field}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowNewPassword((prev) => !prev)}
+                        >
+                          {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  error={Boolean(errors.N_pass)}
+                  helperText={errors.N_pass?.message}
+                  onBlur={() => trigger("N_pass")} // Trigger validation on blur
+                />
+              )}
             />
-            <TextField
-              fullWidth
-              sx={{ mt: 1 }}
-              label="Retype New Password"
-              type={showRetypePassword ? "text" : "password"}
-              variant="outlined"
-              value={password.RN_pass}
-              onChange={(e) =>
-                setPassword({ ...password, RN_pass: e.target.value })
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowRetypePassword((prev) => !prev)}
-                    >
-                      {showRetypePassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+
+            {/* Retype New Password */}
+            <Controller
+              name="RN_pass"
+              control={control}
+              rules={{
+                required: "Please retype the new password",
+                validate: (value) =>
+                  value === watch("N_pass") || "Passwords do not match",
               }}
+              render={({ field }) => (
+                <TextField
+                  fullWidth
+                  sx={{ mt: 1 }}
+                  label="Retype New Password"
+                  type={showRetypePassword ? "text" : "password"}
+                  variant="outlined"
+                  {...field}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowRetypePassword((prev) => !prev)}
+                        >
+                          {showRetypePassword ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  error={Boolean(errors.RN_pass)}
+                  helperText={errors.RN_pass?.message}
+                  onBlur={() => trigger("RN_pass")} // Trigger validation on blur
+                />
+              )}
             />
           </DialogContent>
+
           <DialogActions>
             <Button sx={{ mb: 2 }} onClick={() => setChangePass(false)}>
               Cancel
             </Button>
-            <Button sx={{ mb: 2 }} onClick={handleChangePass}>
+            <Button sx={{ mb: 2 }} onClick={handleSubmit(handleChangePass)}>
               Change Password
             </Button>
           </DialogActions>
