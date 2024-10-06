@@ -13,12 +13,15 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import { Grid2 } from "@mui/material"; // Importing Grid2
+import  Grid  from "@mui/material/Grid2"; // Importing Grid
 import axios from "axios";
 import QR from "./Qr";
 import PaymentForm from "./uploadfile"; // Ensure this is the correct import for your upload component
+import { useForm, Controller } from 'react-hook-form';
 
 interface CheckoutDialogProps {
   open: boolean;
@@ -94,6 +97,23 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   const [checkoutAddresses, setCheckoutAddresses] = useState<Address[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false); // State to manage upload success
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<
+    "success" | "error" | "warning" | "info"
+  >("success");
+  const [showAlert, setShowAlert] = useState(false);
+  const { control, handleSubmit, formState: { errors }, trigger } = useForm({
+    mode: "onBlur", // Trigger validation onBlur
+    defaultValues: {
+      name: '',
+      phoneNumber: '',
+      street: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: ''
+    },
+  });
 
   useEffect(() => {
     if (open) {
@@ -140,25 +160,34 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     }
   };
 
+  const triggerAlert = (
+    message: string,
+    severity: "success" | "error" | "warning" | "info"
+  ) => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setShowAlert(true);
+
+    // set time out = 3 sec for alert
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
   const handleFileUpload = (file: File | null) => {
     setSelectedFile(file);
     setUploadSuccess(false); // Reset upload success state
   };
 
   const handleSaveNewAddress = async () => {
-    if (
-      newAddress.street === "" ||
-      newAddress.city === "" ||
-      newAddress.state === "" ||
-      newAddress.postalCode === "" ||
-      newAddress.country === "" ||
-      newAddress.name === "" ||
-      newAddress.phoneNumber === ""
-    ) {
+    
+    // Check for form validation here
+    const isValid = await trigger(); // Trigger validation for all fields
+    if (!isValid) {
       alert("Please fill all fields to save the new address.");
       return;
     }
-
+  
     try {
       const response = await axios.post("http://localhost:3000/address", {
         A_street: newAddress.street,
@@ -170,15 +199,26 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         A_name: newAddress.name,
         A_phone: newAddress.phoneNumber,
       });
-
+  
       const savedAddress = response.data; // Ensure this matches your API's response
-
+  
       // Update checkout addresses to include the newly added address
       setCheckoutAddresses((prevAddresses) => [...prevAddresses, savedAddress]);
-
+  
       // Automatically select the newly added address
       setAddress(savedAddress);
-
+  
+      // Clear the newAddress state if you want to reset the form
+      setNewAddress({
+        name: "",
+        phoneNumber: "",
+        street: "",
+        city: "",
+        state: "",
+        postalCode: "",
+        country: "",
+      });
+  
       // Hide the new address form and go back to the address selection view
       setShowNewAddressForm(false);
     } catch (error) {
@@ -186,11 +226,29 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       alert("Failed to save the new address.");
     }
   };
+  
+  
+  // Add this in the component to set newAddress when toggling form
+  const handleShowNewAddressForm = () => {
+ 
+    // Optionally, reset newAddress if you want a fresh form
+    setNewAddress({
+      name: "",
+      phoneNumber: "",
+      street: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
+    });
+    setShowNewAddressForm(true);
+  };
+  
 
   const handleCheckoutSubmit = async () => {
     // Validate address selection or addition
     if (!address && !newAddress.street) {
-      alert("Please select or add an address!");
+      triggerAlert("Please select or add an address!", "error");
       return;
     }
 
@@ -199,7 +257,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       const cartItems = await fetchCartItems(customerId);
 
       if (!cartItems || cartItems.length === 0) {
-        alert("No items found in cart.");
+        triggerAlert("No items found in cart.", "error");
         return;
       }
 
@@ -225,7 +283,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       if (selectedFile) {
         payslipPath = await uploadPayslip(selectedFile); // Get the file path
       } else {
-        alert("Please upload a payslip.");
+        triggerAlert("Please upload a payslip.", "error");
         return;
       }
 
@@ -233,7 +291,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
 
       // Check if payslipPath is null
       if (payslipPath === null) {
-        alert("Failed to upload payslip. Please try again.");
+        triggerAlert("Failed to upload payslip. Please try again.", "error");
         return; // Or handle this error as needed
       }
 
@@ -255,7 +313,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       onSubmit(addressId); // Pass selected address and payment method
     } catch (error) {
       console.error("Error during checkout:", error);
-      alert("Failed to complete checkout. Please try again.");
+      triggerAlert("Failed to complete checkout. Please try again.", "error");
     }
   };
 
@@ -278,66 +336,6 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     };
 
     await axios.post("http://localhost:3000/order", orderData);
-    // console.log("Customer ID:", customerId);
-    // console.log("Total:", total);
-    // console.log("Address ID:", addressId);
-    // console.log("Order Details:", orderDetails);
-    // console.log("Payslip Path:", payslipPath); // Log the payslip path
-
-    // Create FormData instance
-    // const formData = new FormData();
-
-    // // Check if the parameters are defined
-    // if (
-    //   typeof customerId === "undefined" ||
-    //   typeof total === "undefined" ||
-    //   typeof addressId === "undefined" ||
-    //   !payslipPath // Check if payslipPath is provided
-    // ) {
-    //   console.error("One of the parameters is undefined");
-    //   return;
-    // }
-
-    // // Append data to FormData
-    // formData.append("C_id", customerId.toString());
-    // formData.append("Date_time", new Date().toISOString());
-    // formData.append("O_Total", total.toString());
-    // formData.append("PM_amount", total.toString());
-    // formData.append("A_id", addressId.toString());
-    // formData.append("O_Description", "Optional description here"); // If you have a description
-    // formData.append("PM_path", payslipPath); // Append the payslip path
-
-    // // Check if orderDetails is an array and not empty
-    // if (!Array.isArray(orderDetails) || orderDetails.length === 0) {
-    //   console.error("Order details are invalid");
-    //   return;
-    // }
-
-    // Append orderDetails as JSON strings
-    // orderDetails.forEach((detail) => {
-    //   formData.append("orderDetails", JSON.stringify(detail));
-    // });
-
-    // try {
-    //   const response = await axios.post(
-    //     "http://localhost:3000/order",
-    //     formData,
-    //     {
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     }
-    //   );
-    //   console.log("Order placed successfully:", response.data);
-    //   return response.data;
-    // } catch (error) {
-    //   if (axios.isAxiosError(error)) {
-    //     console.error("Error response:", error.response?.data);
-    //   } else {
-    //     console.error("Error:", error);
-    //   }
-    //   throw error; // Rethrow error for upstream handling
-    // }
   };
 
   const uploadPayslip = async (file: File) => {
@@ -450,11 +448,12 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                   ))}
                 </Select>
                 <Button
-                  onClick={() => setShowNewAddressForm(true)}
+                  onClick={handleShowNewAddressForm}
                   sx={{ mt: 2, color: "#596fb7", alignSelf: "center" }}
                 >
                   Add New Address
                 </Button>
+
                 <div
                   style={{
                     display: "flex",
@@ -474,99 +473,183 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                 </div>
               </FormControl>
             ) : (
-              <Grid2 container spacing={2}>
-                <Grid2 size={12}>
-                  <TextField
-                    label="Name"
-                    fullWidth
-                    value={newAddress.name}
-                    onChange={(e) =>
-                      setNewAddress({ ...newAddress, name: e.target.value })
-                    }
-                    margin="normal"
-                    variant="outlined"
-                  />
-                </Grid2>
-                <Grid2 size={12}>
-                  <TextField
-                    label="Phone Number"
-                    fullWidth
-                    value={newAddress.phoneNumber}
-                    onChange={(e) =>
-                      setNewAddress({
-                        ...newAddress,
-                        phoneNumber: e.target.value,
-                      })
-                    }
-                    margin="normal"
-                    variant="outlined"
-                  />
-                </Grid2>
-                <Grid2 size={12}>
-                  <TextField
-                    label="Street"
-                    fullWidth
-                    value={newAddress.street}
-                    onChange={(e) =>
-                      setNewAddress({ ...newAddress, street: e.target.value })
-                    }
-                    margin="normal"
-                    variant="outlined"
-                  />
-                </Grid2>
-                <Grid2 size={12}>
-                  <TextField
-                    label="City"
-                    fullWidth
-                    value={newAddress.city}
-                    onChange={(e) =>
-                      setNewAddress({ ...newAddress, city: e.target.value })
-                    }
-                    margin="normal"
-                    variant="outlined"
-                  />
-                </Grid2>
-                <Grid2 size={12}>
-                  <TextField
-                    label="State"
-                    fullWidth
-                    value={newAddress.state}
-                    onChange={(e) =>
-                      setNewAddress({ ...newAddress, state: e.target.value })
-                    }
-                    margin="normal"
-                    variant="outlined"
-                  />
-                </Grid2>
-                <Grid2 size={12}>
-                  <TextField
-                    label="Postal Code"
-                    fullWidth
-                    value={newAddress.postalCode}
-                    onChange={(e) =>
-                      setNewAddress({
-                        ...newAddress,
-                        postalCode: e.target.value,
-                      })
-                    }
-                    margin="normal"
-                    variant="outlined"
-                  />
-                </Grid2>
-                <Grid2 size={12}>
-                  <TextField
-                    label="Country"
-                    fullWidth
-                    value={newAddress.country}
-                    onChange={(e) =>
-                      setNewAddress({ ...newAddress, country: e.target.value })
-                    }
-                    margin="normal"
-                    variant="outlined"
-                  />
-                </Grid2>
-                {/* <div style={{ display: 'flex', flexDirection: 'column'}}> */}
-                <Button
+              <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth TransitionComponent={Transition}>
+              <DialogTitle>CHECKOUT</DialogTitle>
+              <DialogContent>
+                <form onSubmit={handleSubmit(handleCheckoutSubmit)}>
+                  <Grid container spacing={2}>
+                    <Grid size={12}>
+                      <Controller
+                        name="name"
+                        
+                        control={control}
+                        rules={{ required: 'Name is required' }}
+                        render={({ field }) => (
+                          <TextField
+                            label="Name"
+                            fullWidth
+                            variant="outlined"
+                            
+                            // {...field}
+                            error={!!errors.name}
+                            helperText={errors.name?.message}
+                            onBlur={() => trigger('name')}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setNewAddress((prev) => ({ ...prev, name: e.target.value })); // Update newAddress state
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+      
+                    <Grid size={12}>
+                      <Controller
+                        name="phoneNumber"
+                        control={control}
+                        rules={{
+                          required: 'Phone number is required',
+                          pattern: {
+                            value: /^0[0-9]{9}$/, // Example: phone must start with 0 and have 10 digits
+                            message: 'Phone number must start with 0 and be 10 digits long',
+                          },
+                        }}
+                        render={({ field }) => (
+                          <TextField
+                            label="Phone"
+                            fullWidth
+                            variant="outlined"
+                            // {...field}
+                            error={!!errors.phoneNumber}
+                            helperText={errors.phoneNumber?.message}
+                            onBlur={() => trigger('phoneNumber')}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setNewAddress((prev) => ({ ...prev, phoneNumber: e.target.value })); // Update newAddress state
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+      
+                    <Grid size={12}>
+                      <Controller
+                        name="street"
+                        control={control}
+                        rules={{ required: 'Street is required' }}
+                        render={({ field }) => (
+                          <TextField
+                            label="Street"
+                            fullWidth
+                            variant="outlined"
+                            // {...field}
+                            error={!!errors.street}
+                            helperText={errors.street?.message}
+                            onBlur={() => trigger('street')}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setNewAddress((prev) => ({ ...prev, street: e.target.value })); // Update newAddress state
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+      
+                    <Grid size={12}>
+                      <Controller
+                        name="city"
+                        control={control}
+                        rules={{ required: 'City is required' }}
+                        render={({ field }) => (
+                          <TextField
+                            label="City"
+                            fullWidth
+                            variant="outlined"
+                            // {...field}
+                            error={!!errors.city}
+                            helperText={errors.city?.message}
+                            onBlur={() => trigger('city')}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setNewAddress((prev) => ({ ...prev, city: e.target.value })); // Update newAddress state
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+      
+                    <Grid size={12}>
+                      <Controller
+                        name="state"
+                        control={control}
+                        rules={{ required: 'State is required' }}
+                        render={({ field }) => (
+                          <TextField
+                            label="State"
+                            fullWidth
+                            variant="outlined"
+                            // {...field}
+                            error={!!errors.state}
+                            helperText={errors.state?.message}
+                            onBlur={() => trigger('state')}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setNewAddress((prev) => ({ ...prev, state: e.target.value })); // Update newAddress state
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+      
+                    <Grid size={12}>
+                      <Controller
+                        name="postalCode"
+                        control={control}
+                        rules={{ required: 'Postal code is required' }}
+                        render={({ field }) => (
+                          <TextField
+                            label="Postal Code"
+                            fullWidth
+                            variant="outlined"
+                            // {...field}
+                            error={!!errors.postalCode}
+                            helperText={errors.postalCode?.message}
+                            onBlur={() => trigger('postalCode')}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setNewAddress((prev) => ({ ...prev, postalCode: e.target.value })); // Update newAddress state
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+      
+                    <Grid size={12}>
+                      <Controller
+                        name="country"
+                        control={control}
+                        rules={{ required: 'Country is required' }}
+                        render={({ field }) => (
+                          <TextField
+                            label="Country"
+                            fullWidth
+                            variant="outlined"
+                            // {...field}
+                            error={!!errors.country}
+                            helperText={errors.country?.message}
+                            onBlur={() => trigger('country')}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setNewAddress((prev) => ({ ...prev, country: e.target.value })); // Update newAddress state
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+      
+                  <DialogActions>
+                  <Button
                   onClick={() => setShowNewAddressForm(false)}
                   sx={{ mt: 2, color: "#db4237" }}
                 >
@@ -579,9 +662,23 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                   Save New Address
                 </Button>
 
-                {/* </div> */}
-              </Grid2>
+                  </DialogActions>
+                </form>
+              </DialogContent>
+            </Dialog>
             )}
+            <Snackbar
+              open={showAlert}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+              <Alert
+                severity={alertSeverity}
+                onClose={() => setShowAlert(false)}
+              >
+                {alertMessage}
+              </Alert>
+            </Snackbar>
+          
           </div>
         </DialogContent>
         <DialogActions>
