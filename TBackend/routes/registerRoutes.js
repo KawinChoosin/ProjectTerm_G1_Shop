@@ -20,10 +20,7 @@ router.post("/", async (req, res) => {
     // Check if customer with the same C_name or C_email already exists
     const existingCustomer = await prisma.customer.findMany({
       where: {
-        OR: [
-          { C_name },
-          { C_email },
-        ],
+        OR: [{ C_name }, { C_email }],
       },
     });
 
@@ -67,7 +64,7 @@ router.post("/", async (req, res) => {
 });
 
 // Delete a Customer
-router.delete("/register/:C_id", async (req, res) => {
+router.delete("/:C_id", async (req, res) => {
   const { C_id } = req.params;
   console.log(`Received DELETE request for C_id: ${C_id}`);
 

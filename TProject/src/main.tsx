@@ -29,7 +29,7 @@ root.render(
           <Route path="/login" element={<App_Login />} />
           <Route path="/register" element={<App_Register />} />
           <Route path="/favourite" element={<FavPage />} />
-
+          <Route path="/auth/google/callback" element={<GoogleCallback />} />
           {/* <Route element={<ProtectedRoute />}> */}
           <Route path="/profile" element={<Tapmenu />} />
           {/* </Route> */}

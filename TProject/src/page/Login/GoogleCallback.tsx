@@ -1,4 +1,3 @@
-// GoogleCallback.tsx
 import React, { useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import UserContext from "../../context/UserContext";
@@ -12,7 +11,7 @@ const GoogleCallback: React.FC = () => {
     const fetchGoogleUser = async () => {
       const params = new URLSearchParams(window.location.search);
       const code = params.get("code"); // Extract the 'code' from the URL
-      // console.log(code);
+
       if (code) {
         try {
           const res = await fetch(
@@ -27,19 +26,23 @@ const GoogleCallback: React.FC = () => {
           );
 
           const result = await res.json();
-          console.log(result.email);
 
-          if (res.ok) {
+          if (result.C_id) {
             setC_id(result.C_id); // Set C_id in UserContext
             sessionStorage.setItem("C_id", result.C_id); // Save C_id to sessionStorage
 
-            // Check if a "from" location is provided (i.e., where the user came from)
+            // Redirect to the page they tried to visit, or home
             const from = location.state?.from?.pathname || "/";
-            navigate(from); // Redirect back to the page they tried to visit, or home
+            navigate(from);
           } else {
-            console.log(`User needs to register: ${result.email}`);
-            // Redirect to registration flow or handle accordingly
-            navigate(`/register`);
+            // If OAuth user is not registered yet
+            navigate(`/register`, {
+              state: {
+                C_name: result.C_name, // Pass OAuth-provided name
+                C_email: result.C_email, // Pass OAuth-provided email
+                isOauth: true, // Flag to indicate OAuth registration
+              },
+            });
           }
         } catch (error) {
           console.error("Error fetching user:", error);
@@ -52,11 +55,7 @@ const GoogleCallback: React.FC = () => {
     fetchGoogleUser();
   }, [navigate]);
 
-  return (
-    <div>
-      <h1>Loading...</h1> {/* Or a loading spinner */}
-    </div>
-  );
+  return <h1>Loading...</h1>; // Add loading spinner or placeholder
 };
 
 export default GoogleCallback;

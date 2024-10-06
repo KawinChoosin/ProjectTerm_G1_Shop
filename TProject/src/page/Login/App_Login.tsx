@@ -75,11 +75,13 @@ const LoginForm: React.FC = () => {
     });
   };
 
+  const [isGoogleLoginDisabled, setGoogleLoginDisabled] = useState(false);
+
   // Function to handle Google login
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = debounce(() => {
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=663248155967-avgv6eqfkjdr04m1jj07lbf9v3jtuma2.apps.googleusercontent.com&redirect_uri=http://localhost:5173/auth/google/callback&response_type=code&scope=openid+https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile`;
     window.location.href = googleAuthUrl; // Redirect to Google OAuth
-  };
+  }, 300); // Debounce with a 300ms delay
 
   return (
     <div
@@ -92,7 +94,7 @@ const LoginForm: React.FC = () => {
       }}
     >
       <AuthForm
-        onSubmit={login}
+        onSubmit={login} // No debounce here
         style={{
           justifyContent: "center",
           alignItems: "center",
@@ -103,7 +105,6 @@ const LoginForm: React.FC = () => {
           <h1>Login</h1>
 
           {/* Display error message if there's an error */}
-
           <div className="input-box">
             <input
               type="text"
@@ -159,7 +160,13 @@ const LoginForm: React.FC = () => {
             <span className="divider-text">Log in with</span>
           </div>
 
-          <button type="submit" className="btn_authG">
+          {/* Google Login Button */}
+          <button
+            type="button"
+            className="btn_authG"
+            onClick={handleGoogleLogin} // Debounced Google login button click
+            disabled={isGoogleLoginDisabled} // Disable after first click
+          >
             <img
               className="google"
               src={google}
