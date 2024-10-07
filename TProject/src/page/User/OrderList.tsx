@@ -24,12 +24,13 @@ const OrderList: React.FC = () => {
   const [orderDescriptions, setOrderDescriptions] = useState<{ [key: number]: string | null  }>({});
   const [descripupdate, setdescripupdate] = useState<boolean>(false);
   const [admin, setAdmin] = useState<boolean>(false);
-  const [selectedStatus, setSelectedStatus] = useState('waiting');
   const [status, setStatus] = useState<boolean>(false);
-  const [orderStatuses, setOrderStatuses] = useState<{ [key: number]: boolean }>({});
+  const [orderStatuses, setOrderStatuses] = useState<{ [key: number]: 'waiting' | 'Delivery on the way' | 'Problem' }>({});
+
   const [customers, setCustomers] = useState<string[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<string>('');
   const [visibleOrders, setVisibleOrders] = useState<number>(5); // Track how many orders are visible
+  
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -88,27 +89,41 @@ const OrderList: React.FC = () => {
   const handleDescriptionSubmit = async (O_id: number) => {
     try {
       setdescripupdate(true);
+  
+      // Map the frontend status to the backend enum values
+      const statusMapping = {
+        'waiting': 'DEFAULT',
+        'Delivery on the way': 'SUCCESS',
+        'Problem': 'ERROR',
+      };
+  
+      // Get the user-selected status and map it to the backend value
+      const userStatus = orderStatuses[O_id] || 'waiting'; // Default to 'waiting'
+      const statusToUpdate = statusMapping[userStatus]; // Convert to backend status
+  
       await axios.put(`http://localhost:3000/orderlist/descrip`, {
         O_id,
         O_Description: orderDescriptions[O_id] || null, // Send the specific description for the order
-        O_status: orderStatuses[O_id] || false // Send the specific status for the order
+        O_status: statusToUpdate, // Send the mapped status
       });
+  
       alert('Description updated successfully');
       setdescripupdate(false);
     } catch (err) {
       alert('Error updating description');
     }
   };
+  
+  
+
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>, orderId: number) => {
     const value = event.target.value;
-    setSelectedStatus(value);
-
-    // Set the status for the specific order
-    const newStatus = value === 'Delivery on the way';
+  
+    // Set the status for the specific order directly as a string (waiting, Delivery on the way, Problem)
     setOrderStatuses(prevState => ({
       ...prevState,
-      [orderId]: newStatus
+      [orderId]: value as 'waiting' | 'Delivery on the way' | 'Problem'
     }));
   };
 
@@ -139,6 +154,19 @@ const OrderList: React.FC = () => {
     : orders;
 
   const displayedOrders = filteredOrders.slice(0, visibleOrders); // Show limited orders based on visibleOrders
+
+  const getOrderStatusColor = (status: string) => {
+    switch (status) {
+      case 'Problem':
+        return 'error'; // Red color for Problem
+      case 'Delivery on the way':
+        return 'success'; // Green color for delivery
+      case 'waiting':
+      default:
+        return 'info'; // Grey color for waiting (default)
+    }
+  };
+  
 
   return (
     <Grid container spacing={3}>
@@ -216,13 +244,36 @@ const OrderList: React.FC = () => {
                   
                 </Grid>
                 <Grid size={6}>
-                  <Box sx={{ display: "flex", justifyContent: 'flex-end' }}>
-                    <Chip
-                      label={order.O_status ? 'Delivery on the way' : 'WAITING'}
-                      color={order.O_status ? 'success' : 'error'}
-                      sx={{ fontFamily: 'Montserrat' }}
-                    />
-                  </Box>
+                <Box sx={{ display: "flex", justifyContent: 'flex-end' }}>
+  <Chip
+    label={
+      orderStatuses[order.O_id] // Use updated status if available
+        ? orderStatuses[order.O_id] === 'Delivery on the way'
+          ? 'Delivery on the way'
+          : orderStatuses[order.O_id] === 'Problem'
+          ? 'Problem'
+          : 'Waiting'
+        : order.O_status === 'SUCCESS'
+        ? 'Delivery on the way'
+        : order.O_status === 'ERROR'
+        ? 'Problem'
+        : 'Waiting'
+    }
+    color={
+      orderStatuses[order.O_id] // Use updated status color if available
+        ? getOrderStatusColor(orderStatuses[order.O_id])
+        : getOrderStatusColor(
+            order.O_status === 'SUCCESS'
+              ? 'Delivery on the way'
+              : order.O_status === 'ERROR'
+              ? 'Problem'
+              : 'waiting'
+          )
+    }
+    sx={{ fontFamily: 'Montserrat' }}
+  />
+</Box>
+
                 </Grid>
 
                 {/* Additional Order Details */}
@@ -230,12 +281,12 @@ const OrderList: React.FC = () => {
                   <Box sx={{ display: "flex", flexDirection: "column" }}>
                   <Typography variant="body2" sx={{ fontFamily: 'Montserrat' }}>Date: {new Date(order.O_Date_time).toLocaleString()}</Typography>
                     <Typography variant="body2" sx={{ fontFamily: 'Montserrat' }}>
-                      Address: {order.Address.A_name} {order.Address.A_street}, {order.Address.A_city}, {order.Address.A_state} {order.Address.A_postalCode}, {order.Address.A_country} {order.Address.A_phone
+                    Address: {order.Address.A_name} {order.Address.A_street}, {order.Address.A_city}, {order.Address.A_state} {order.Address.A_postalCode}, {order.Address.A_country} {order.Address.A_phone
                       }
                     </Typography>
                   </Box>
                   {order.Payment.PM_path && (
-                      <Typography
+                      <Typography  
                         variant="body2"
                         component="a"
                         href={order.Payment.PM_path}
@@ -310,15 +361,26 @@ const OrderList: React.FC = () => {
 
                       {/* Order Status */}
                       <FormControl component="fieldset">
-                        <FormLabel component="legend" >Order Status</FormLabel>
-                        <RadioGroup
-                          value={orderStatuses[order.O_id] ? 'Delivery on the way' : 'waiting'}
-                          onChange={(e) => handleStatusChange(e, order.O_id)}
-                        >
-                          <FormControlLabel value="waiting" control={<Radio />} label="Waiting" />
-                          <FormControlLabel value="Delivery on the way" control={<Radio />} label="Delivery on the way" />
-                        </RadioGroup>
-                      </FormControl>
+  <FormLabel component="legend">Order Status</FormLabel>
+  <RadioGroup
+    value={
+      orderStatuses[order.O_id] // Use updated status if available
+        ? orderStatuses[order.O_id]
+        : order.O_status === 'SUCCESS'
+        ? 'Delivery on the way'
+        : order.O_status === 'ERROR'
+        ? 'Problem'
+        : 'waiting'
+    } // Default to 'waiting' if backend status is not provided
+    onChange={(e) => handleStatusChange(e, order.O_id)}
+  >
+    <FormControlLabel value="waiting" control={<Radio />} label="Waiting" />
+    <FormControlLabel value="Delivery on the way" control={<Radio />} label="Delivery on the way" />
+    <FormControlLabel value="Problem" control={<Radio />} label="Problem" />
+  </RadioGroup>
+</FormControl>
+
+
 
                       {/* Submit Button */}
                       <Button
