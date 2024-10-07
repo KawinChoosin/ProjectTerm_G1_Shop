@@ -37,16 +37,15 @@ const FavItem: React.FC<FavItemProps> = ({ item }) => {
         }}
       >
         <CardMedia
-          component="img"
-          height="100%"
-          image={item.P_img}
-          alt={item.P_name}
-          sx={{
-            objectFit: "contain",
-            maxHeight: "330px",
-            width: "100%",
-          }}
-        />
+                  component="img"
+                  image={`http://localhost:3000/uploads/${item.P_img}`}
+                  alt={item.P_name}
+                  sx={{
+                    height: '220px', // Image takes up 70% of card height
+                    objectFit: 'cover',
+                    width: '100%',
+                  }}
+                />
         <CardContent sx={{ padding: "10%" }}>
           <Typography variant="h6" sx={{ mb: 1 }}>
             {item.P_name}

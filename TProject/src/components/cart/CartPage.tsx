@@ -274,7 +274,7 @@ const CartPage: React.FC = () => {
   };
 
   const subtotal = calculateSubtotal();
-  const shipping = 50;
+  const shipping = 0;
   let discount = 0;
   let total = subtotal + shipping;
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
 import { Link } from 'react-router-dom'; // Import Link from React Router
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid2'; // Use Grid from @mui/material
 
-// Define product type (already defined)
+// Define product type
 export interface Product {
   P_id: number; // Unique Product ID
   P_name: string;
@@ -14,7 +14,7 @@ export interface Product {
   P_img: string;
 }
 
-// Define props type (already defined)
+// Define props type
 interface ProductGridProps {
   products: Product[];
 }
@@ -23,62 +23,129 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   return (
     <Grid
       container
-      spacing={2} // Reduced spacing between items
+      spacing={2} // Spacing between items
       sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }} // Center the grid items
     >
-      {products.map((product) => (
-        <Grid
-         
-          size={{xs:12,sm:6,md:4,lg:3}} // Correct use of Grid item
-          // Adjust column sizes based on screen width
-          key={product.P_id}
-          sx={{ display: 'flex', justifyContent: 'center' }} // Ensure products are centered within their grid item
-        >
-          {/* Wrap Card in Link to product detail page */}
-          <Link to={`/products/${product.P_id}`} style={{ textDecoration: 'none' }}>
-            <Card
-              sx={{
-                width: '270px',
-                height: '400px',
-                border: '2px solid #ddd',
-                borderRadius: '10px',
-                boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
-                transition: 'transform 0.3s ease-in-out',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-
-                '&:hover': {
-                  transform: 'scale(1.03)',
-                  boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.3)',
-                },
-              }}
-            >
-              <CardMedia
-                component="img"
-                image={`http://localhost:3000/uploads/${product.P_img}`}
-                alt={product.P_name}
+      {/* Available Products */}
+      {products
+        .filter(product => product.P_quantity > 0) // Only include products with quantity > 0
+        .map((product) => (
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            key={product.P_id}
+            sx={{ display: 'flex', justifyContent: 'center' }} // Center products within their grid item
+          >
+            {/* Wrap Card in Link to product detail page */}
+            <Link to={`/products/${product.P_id}`} style={{ textDecoration: 'none' }}>
+              <Card
                 sx={{
-                  height: '70%', // Image takes up 70% of card height
-                  objectFit: 'cover', // Ensures the image fits within the card's width without distortion
-                  width: '100%', // Make sure the image covers the width of the card
+                  width: '270px',
+                  height: '400px',
+                  border: '2px solid #ddd',
+                  borderRadius: '10px',
+                  boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
+                  transition: 'transform 0.3s ease-in-out',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  '&:hover': {
+                    transform: 'scale(1.03)',
+                    boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.3)',
+                  },
                 }}
-              />
-              <CardContent sx={{ padding: '10%' }}>
-                <Typography variant="h6" sx={{ mb: 1 }}>
-                  {product.P_name}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                  {product.P_description}
-                </Typography>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  ${product.P_price}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Link>
-        </Grid>
-      ))}
+              >
+                <CardMedia
+                  component="img"
+                  image={`http://localhost:3000/uploads/${product.P_img}`}
+                  alt={product.P_name}
+                  sx={{
+                    height: '220px', // Image takes up 70% of card height
+                    objectFit: 'cover',
+                    width: '100%',
+                  }}
+                />
+                <CardContent sx={{ padding: '10%' }}>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    {product.P_name}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                    {product.P_description}
+                  </Typography>
+                  <Typography variant="h6" sx={{ mb: 2 }}>
+                    ฿{product.P_price}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Link>
+          </Grid>
+        ))}
+
+      {/* Out of Stock Header */}
+      {products.some(product => product.P_quantity <= 0) && (
+        <Typography variant="h5" sx={{ mt: 4, mb: 2, textAlign: 'center', width: '100%' }}>
+          Now Out of Stock
+        </Typography>
+      )}
+
+      {/* Out of Stock Products */}
+      {products
+        .filter(product => product.P_quantity <= 0) // Only include products with quantity <= 0
+        .map((product) => (
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            key={product.P_id}
+            sx={{ display: 'flex', justifyContent: 'center' }} // Center products within their grid item
+          >
+            {/* Wrap Card in Link to product detail page */}
+            <Link to={`/products/${product.P_id}`} style={{ textDecoration: 'none' }}>
+              <Card
+                sx={{
+                  width: '270px',
+                  height: '400px',
+                  border: '2px solid #ddd',
+                  borderRadius: '10px',
+                  boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
+                  transition: 'transform 0.3s ease-in-out',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  opacity: 0.5, // Diminished opacity for out-of-stock items
+                  pointerEvents: 'none', // Disable pointer events
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  image={`http://localhost:3000/uploads/${product.P_img}`}
+                  alt={product.P_name}
+                  sx={{
+                    height: '70%', // Image takes up 70% of card height
+                    objectFit: 'cover',
+                    width: '100%',
+                  }}
+                />
+                <CardContent sx={{ padding: '10%' }}>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    {product.P_name}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                    {product.P_description}
+                  </Typography>
+                  <Typography variant="h6" sx={{ mb: 2 }}>
+                    ฿{product.P_price}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Link>
+          </Grid>
+        ))}
     </Grid>
   );
 };
