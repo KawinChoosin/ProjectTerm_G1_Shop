@@ -48,12 +48,14 @@ const GoogleCallback: React.FC = () => {
           console.error("Error fetching user:", error);
         }
       } else {
-        console.log("No authorization code found.");
+        // If no code is present, likely the user canceled the login
+        console.log("No authorization code found or login canceled.");
+        navigate("/login"); // Redirect to login
       }
     };
 
     fetchGoogleUser();
-  }, [navigate]);
+  }, [navigate, setC_id, location.state]);
 
   return <h1>Loading...</h1>; // Add loading spinner or placeholder
 };

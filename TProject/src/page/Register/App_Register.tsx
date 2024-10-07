@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext, useCallback } from "react";
 import "./style_register.css";
 import { AuthForm } from "./components/Auth.component.register";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -13,7 +13,6 @@ const RegisterForm: React.FC = () => {
 
   // Extract OAuth-provided data if available
   const oauthData = location.state || {}; // Contains C_name, C_email, isOauth
-  console.log(oauthData);
 
   const [credentials, setCredentials] = useState({
     C_name: oauthData.C_name || "", // Pre-fill if available
@@ -27,6 +26,7 @@ const RegisterForm: React.FC = () => {
   const [birthday, setBirthday] = useState("");
   const [repassword, setRepassword] = useState({ re_password: "" });
   const [error, setError] = useState("");
+  const [phoneError, setPhoneError] = useState(""); // State for phone number validation
   const [passwordMatchError, setPasswordMatchError] = useState("");
 
   // Calculate age based on birthday
@@ -47,48 +47,76 @@ const RegisterForm: React.FC = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const register = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const register = useCallback(
+    async (event: React.FormEvent) => {
+      event.preventDefault();
 
-    if (isSubmitting) return;
-    setIsSubmitting(true);
+      // Debug log to track form submissions
+      console.log("Register form submitted");
 
-    if (credentials.C_password !== repassword.re_password) {
-      setError("Passwords do not match");
-      setIsSubmitting(false);
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(credentials),
-        }
-      );
-
-      const result = await response.json();
-
-      if (response.ok) {
-        setC_id(result.C_id); // Set C_id in UserContext
-        sessionStorage.setItem("C_id", result.C_id); // Save C_id to sessionStorage
-        console.log(result.C_email);
-        // Check if a "from" location is provided (i.e., where the user came from)
-        const from = location.state?.from?.pathname || "/";
-        navigate(from);
-      } else {
-        setError(result.error || "Failed to register");
+      // Prevent double submission
+      if (isSubmitting) {
+        console.log("Form is already submitting, skipping...");
+        return;
       }
-    } catch (error) {
-      setError("An unexpected error occurred.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+
+      setIsSubmitting(true);
+
+      // Validate phone number
+      if (
+        credentials.T_pnum.length !== 10 ||
+        !/^\d{10}$/.test(credentials.T_pnum)
+      ) {
+        setPhoneError("Phone number must contain 10 digits");
+        setIsSubmitting(false);
+        return;
+      } else {
+        setPhoneError("");
+      }
+
+      // Validate password match
+      if (credentials.C_password !== repassword.re_password) {
+        setError("Passwords do not match");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Debug log to confirm we're about to send the request
+      console.log("Sending register request...");
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/register`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(credentials),
+          }
+        );
+
+        const result = await response.json();
+
+        if (response.ok) {
+          setC_id(result.C_id); // Set C_id in UserContext
+          sessionStorage.setItem("C_id", result.C_id); // Save C_id to sessionStorage
+
+          console.log("Registration successful, redirecting...");
+          const from = location.state?.from?.pathname || "/";
+          navigate(from);
+        } else {
+          setError(result.error || "Failed to register");
+        }
+      } catch (error) {
+        console.error("An error occurred during registration:", error);
+        setError("An unexpected error occurred.");
+      } finally {
+        setIsSubmitting(false); // Re-enable the button
+      }
+    },
+    [isSubmitting, credentials]
+  );
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -226,6 +254,13 @@ const RegisterForm: React.FC = () => {
             <i className="bx bxs-phone"></i>
           </div>
 
+          {/* Show phone number validation error */}
+          {phoneError && (
+            <Alert variant="filled" severity="error" sx={{ mb: 3, mt: 2 }}>
+              {phoneError}
+            </Alert>
+          )}
+
           <div className="input-box">
             <select
               name="C_gender"
@@ -241,8 +276,8 @@ const RegisterForm: React.FC = () => {
             <i className="bx bxs-user"></i>
           </div>
 
-          <button type="submit" className="btn_login">
-            <span>Register</span>
+          <button type="submit" className="btn_login" disabled={isSubmitting}>
+            <span>{isSubmitting ? "Submitting..." : "Register"}</span>
           </button>
         </div>
       </AuthForm>

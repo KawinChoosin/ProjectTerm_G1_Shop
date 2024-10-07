@@ -8,15 +8,6 @@ import Alert from "@mui/material/Alert";
 import UserContext from "../../context/UserContext";
 import bgImage from "../bg.avif"; // Import the background image
 
-// Debounce function
-function debounce(func: (...args: any[]) => void, wait: number) {
-  let timeout: NodeJS.Timeout;
-  return (...args: any[]) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-}
-
 const LoginForm: React.FC = () => {
   const { setC_id } = useContext(UserContext); // Access the setC_id function
   const navigate = useNavigate();
@@ -27,13 +18,18 @@ const LoginForm: React.FC = () => {
   });
 
   const [error, setError] = useState(""); // State for storing the error
+  const [isSubmitting, setIsSubmitting] = useState(false); // State to track submission
 
   const login = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    if (isSubmitting) return; // Prevent multiple submissions
+    setIsSubmitting(true); // Disable the button by setting isSubmitting to true
+
     const response = await onLogin(credentials);
     if (response && response.error) {
       setError(response.error); // Set error message if response contains error
+      setIsSubmitting(false); // Enable the button after an error
     } else {
       try {
         const serverResponse = await fetch(
@@ -61,6 +57,8 @@ const LoginForm: React.FC = () => {
         }
       } catch (error) {
         setError("An unexpected error occurred.");
+      } finally {
+        setIsSubmitting(false); // Re-enable the button after response
       }
     }
   };
@@ -75,13 +73,11 @@ const LoginForm: React.FC = () => {
     });
   };
 
-  const [isGoogleLoginDisabled, setGoogleLoginDisabled] = useState(false);
-
   // Function to handle Google login
-  const handleGoogleLogin = debounce(() => {
+  const handleGoogleLogin = () => {
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=663248155967-avgv6eqfkjdr04m1jj07lbf9v3jtuma2.apps.googleusercontent.com&redirect_uri=http://localhost:5173/auth/google/callback&response_type=code&scope=openid+https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile`;
     window.location.href = googleAuthUrl; // Redirect to Google OAuth
-  }, 300); // Debounce with a 300ms delay
+  };
 
   return (
     <div
@@ -94,7 +90,7 @@ const LoginForm: React.FC = () => {
       }}
     >
       <AuthForm
-        onSubmit={login} // No debounce here
+        onSubmit={login}
         style={{
           justifyContent: "center",
           alignItems: "center",
@@ -149,8 +145,9 @@ const LoginForm: React.FC = () => {
             type="submit"
             className="btn_login"
             style={{ background: "#4b0e0e", color: "white" }}
+            disabled={isSubmitting} // Disable button when submitting
           >
-            <span>Login</span>
+            <span>{isSubmitting ? "Logging in..." : "Login"}</span>
           </button>
 
           <div
@@ -164,8 +161,7 @@ const LoginForm: React.FC = () => {
           <button
             type="button"
             className="btn_authG"
-            onClick={handleGoogleLogin} // Debounced Google login button click
-            disabled={isGoogleLoginDisabled} // Disable after first click
+            onClick={handleGoogleLogin}
           >
             <img
               className="google"
