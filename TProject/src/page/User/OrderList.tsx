@@ -37,14 +37,20 @@ const OrderList: React.FC = () => {
   // Get the current index range for the displayed orders
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selected status
 
   // Filter and slice orders based on pagination
-  const filteredOrders = selectedCustomer
-    ? orders.filter(order => order.Customer?.C_name === selectedCustomer)
-    : orders;
+  const filteredOrders = orders
+  .filter(order => selectedCustomer ? order.Customer?.C_name === selectedCustomer : true) // Filter by customer
+  .filter(order => {
+    const currentStatus = orderStatuses[order.O_id] || 
+      (order.O_status === 'SUCCESS' ? 'Delivery on the way' : order.O_status === 'ERROR' ? 'Problem' : 'waiting');
+    return selectedStatus ? currentStatus === selectedStatus : true; // Filter by selected status
+  });
+
 
   const displayedOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder); // Show orders based on pagination
-
+  
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -180,17 +186,16 @@ const OrderList: React.FC = () => {
     <Grid container spacing={3}>
       {/* Customer Selection Dropdown */}
       {customers.length > 0 && admin &&(
-        <Grid size={{ xs: 12 }} >
-            <Typography variant="h6" sx={{ fontFamily: 'Montserrat',mb:1 }}>
-                    Select Customers
-                  </Typography>
+        <>
+        <Grid size={{ xs: 8 ,sm:6,md:6}} >
+            <Typography variant="body1" sx={{ fontFamily: 'Montserrat',mb:1 }}>
+                Select Customers
+            </Typography>
             <MuiFormControl fullWidth >
-            {/* <InputLabel id="customer-select-label" shrink={!!selectedCustomer} >Select Customer</InputLabel> */}
             <Select
-              labelId="customer-select-label"
               value={selectedCustomer}
               onChange={handleCustomerChange}
-              sx={{ width: { lg: "80%", sm: "80%" } }}
+              sx={{ width: '100%' }}
               displayEmpty
               onFocus={() => setSelectedCustomer(selectedCustomer || '')} // To handle focus
             >
@@ -205,11 +210,60 @@ const OrderList: React.FC = () => {
             </Select>
           </MuiFormControl>
         </Grid>
+        <Grid   size={{ xs: 4 ,sm:3.7,md:3.7}}>
+        <Typography variant="body1" sx={{ fontFamily: 'Montserrat',mb:1 }}>
+          Order_Status
+        </Typography>
+        <MuiFormControl fullWidth>
+        <FormControl fullWidth>
+          <Select
+            value={selectedStatus}
+            onChange={(event) => setSelectedStatus(event.target.value)}
+            displayEmpty
+            sx={{ width: '100%' }}
+            onFocus={() => setSelectedStatus(selectedStatus || '')} 
+          >
+            <MenuItem value="">
+              <em>All Statuses</em>
+            </MenuItem>
+            <MenuItem value="waiting">Waiting</MenuItem>
+            <MenuItem value="Delivery on the way">Delivery on the way</MenuItem>
+            <MenuItem value="Problem">Problem</MenuItem>
+          </Select>
+        </FormControl>
+        </MuiFormControl>
+      </Grid>
+      </>
       )}
 
+      {customers.length > 0 && !admin &&(
+        <Grid   size={9.8}>
+        <Typography variant="body1" sx={{ fontFamily: 'Montserrat',mb:1 }}>
+          Order_Status
+        </Typography>
+        <MuiFormControl fullWidth>
+        <FormControl fullWidth>
+          <Select
+            value={selectedStatus}
+            onChange={(event) => setSelectedStatus(event.target.value)}
+            displayEmpty
+            sx={{ width: '100%' }}
+            onFocus={() => setSelectedStatus(selectedStatus || '')} 
+          >
+            <MenuItem value="">
+              <em>All Statuses</em>
+            </MenuItem>
+            <MenuItem value="waiting">Waiting</MenuItem>
+            <MenuItem value="Delivery on the way">Delivery on the way</MenuItem>
+            <MenuItem value="Problem">Problem</MenuItem>
+          </Select>
+        </FormControl>
+        </MuiFormControl>
+      </Grid>
+      )}
       {displayedOrders.length === 0 ? (
-        <Grid>
-          <Typography variant="h6">No orders found.</Typography>
+        <Grid size={12}>
+          <Typography variant="h5" sx={{display:'flex',textAlign:'center',justifyContent:'center',width:'80%',mt:8,color:'GrayText',fontFamily: 'Montserrat'}}>No orders found.</Typography>
         </Grid>
       ) : (
         displayedOrders.map((order, index)=> (
@@ -433,13 +487,13 @@ const OrderList: React.FC = () => {
                             />
                           </Grid>
                           <Grid size={6}>
-                            <Typography variant="h6" fontWeight="500">
+                            <Typography variant="h6" fontWeight="500" sx={{fontFamily: 'Montserrat'}}>
                               {detail.Product.P_name}
                             </Typography>
-                            <Typography variant="body2" color="textSecondary">
+                            <Typography variant="body2" color="textSecondary" sx={{fontFamily: 'Montserrat'}}>
                               {detail.Product.P_description}
                             </Typography>
-                            <Typography className="price" fontWeight="500">
+                            <Typography className="price" fontWeight="500" sx={{fontFamily: 'Montserrat'}}>
                               ${detail.Product.P_price} x {detail.OD_quantity}
                             </Typography>
                           </Grid>
@@ -447,7 +501,7 @@ const OrderList: React.FC = () => {
                             <Typography
                               variant="h6"
                               fontWeight="500"
-                              sx={{ display: "flex", justifyContent: "flex-end" }}
+                              sx={{ display: "flex", justifyContent: "flex-end" ,fontFamily: 'Montserrat'}}
                             >
                               ฿ {parseFloat(detail.OD_price).toFixed(2)}
                             </Typography>
@@ -456,7 +510,8 @@ const OrderList: React.FC = () => {
                       </Box>
                     ))
                   ) : (
-                    <Typography variant="body2">No products found for this order.</Typography>
+                    <Typography variant="h5" sx={{display:'flex',textAlign:'center',justifyContent:'center',width:'80%',mt:8,color:'GrayText',fontFamily: 'Montserrat'}}>No products found for this order.</Typography>
+          
                   )}
                 </CardContent>
               </Collapse>
