@@ -14,6 +14,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import Pagination from '@mui/material/Pagination';
 
 const OrderList: React.FC = () => {
   const { C_id } = useContext<any>(UserContext); // Get C_id from context
@@ -26,11 +27,24 @@ const OrderList: React.FC = () => {
   const [admin, setAdmin] = useState<boolean>(false);
   const [status, setStatus] = useState<boolean>(false);
   const [orderStatuses, setOrderStatuses] = useState<{ [key: number]: 'waiting' | 'Delivery on the way' | 'Problem' }>({});
-
   const [customers, setCustomers] = useState<string[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<string>('');
   const [visibleOrders, setVisibleOrders] = useState<number>(5); // Track how many orders are visible
-  
+  const [currentPage, setCurrentPage] = useState<number>(1); // Current page number
+  // Define the number of orders to display per page
+  const ordersPerPage = 5;
+
+  // Get the current index range for the displayed orders
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+
+  // Filter and slice orders based on pagination
+  const filteredOrders = selectedCustomer
+    ? orders.filter(order => order.Customer?.C_name === selectedCustomer)
+    : orders;
+
+  const displayedOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder); // Show orders based on pagination
+
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -129,11 +143,11 @@ const OrderList: React.FC = () => {
 
   const handleCustomerChange = (event: SelectChangeEvent) => {
     setSelectedCustomer(event.target.value as string);
+    setCurrentPage(1); // Reset to first page when changing customers
   };
+  
 
-  const handleShowMore = () => {
-    setVisibleOrders((prev) => prev + 5); // Show 5 more orders when "Show More" is clicked
-  };
+ 
 
   const groupOrdersByCustomer = (orders: any[]) => {
     return orders.reduce((acc, order) => {
@@ -148,12 +162,6 @@ const OrderList: React.FC = () => {
   
   const groupedOrders = groupOrdersByCustomer(orders);
 
-  // Filter orders by selected customer
-  const filteredOrders = selectedCustomer
-    ? orders.filter(order => order.Customer?.C_name === selectedCustomer)
-    : orders;
-
-  const displayedOrders = filteredOrders.slice(0, visibleOrders); // Show limited orders based on visibleOrders
 
   const getOrderStatusColor = (status: string) => {
     switch (status) {
@@ -458,14 +466,24 @@ const OrderList: React.FC = () => {
         ))
       )}
 
-      {/* Show More Button */}
-      {filteredOrders.length > visibleOrders && (
-        <Grid size={{ xs: 12 }}>
-          <Button variant="outlined" onClick={handleShowMore}>
-            Show More
-          </Button>
+     
+
+      {/* Show More Button  */}
+     {/* Show More Button with Pagination */}
+      {filteredOrders.length > ordersPerPage && (
+        <Grid size={12}>
+          <Pagination
+            count={Math.ceil(filteredOrders.length / ordersPerPage)} // Calculate the total number of pages
+            page={currentPage}
+            onChange={(event, value) => {
+              setCurrentPage(value); // Update current page on change
+              setVisibleOrders(ordersPerPage); // Reset visible orders for each new page
+            }}
+            color="primary"
+          />
         </Grid>
       )}
+
     </Grid>
   );
 };
