@@ -423,24 +423,24 @@ const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selec
 
                       {/* Order Status */}
                       <FormControl component="fieldset">
-  <FormLabel component="legend">Order Status</FormLabel>
-  <RadioGroup
-    value={
-      orderStatuses[order.O_id] // Use updated status if available
-        ? orderStatuses[order.O_id]
-        : order.O_status === 'SUCCESS'
-        ? 'Delivery on the way'
-        : order.O_status === 'ERROR'
-        ? 'Problem'
-        : 'waiting'
-    } // Default to 'waiting' if backend status is not provided
-    onChange={(e) => handleStatusChange(e, order.O_id)}
-  >
-    <FormControlLabel value="waiting" control={<Radio />} label="Waiting" />
-    <FormControlLabel value="Delivery on the way" control={<Radio />} label="Delivery on the way" />
-    <FormControlLabel value="Problem" control={<Radio />} label="Problem" />
-  </RadioGroup>
-</FormControl>
+        <FormLabel component="legend">Order Status</FormLabel>
+        <RadioGroup
+          value={
+            orderStatuses[order.O_id] // Use updated status if available
+              ? orderStatuses[order.O_id]
+              : order.O_status === 'SUCCESS'
+              ? 'Delivery on the way'
+              : order.O_status === 'ERROR'
+              ? 'Problem'
+              : 'waiting'
+          } // Default to 'waiting' if backend status is not provided
+          onChange={(e) => handleStatusChange(e, order.O_id)}
+        >
+          <FormControlLabel value="waiting" control={<Radio />} label="Waiting" />
+          <FormControlLabel value="Delivery on the way" control={<Radio />} label="Delivery on the way" />
+          <FormControlLabel value="Problem" control={<Radio />} label="Problem" />
+        </RadioGroup>
+      </FormControl>
 
 
 
@@ -476,7 +476,8 @@ const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selec
                         <Box display="flex" alignItems="center" width="100%" sx={{ padding: "10px" }}>
                           <Grid size={4}>
                             <img
-                              src={detail.Product.P_img || "/placeholder.png"}
+                              src={`http://localhost:3000/uploads/${detail.Product.P_img}`|| "/placeholder.png"}
+                        
                               alt={`${detail.Product.P_name} image`}
                               style={{
                                 width: "80px",
