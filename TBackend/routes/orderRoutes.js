@@ -6,6 +6,12 @@ const _ = require("lodash");
 const QRCode = require("qrcode");
 const generatePayload = require("promptpay-qr");
 const upload = require("../upload");
+const {
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  format,
+} = require("date-fns");
 
 // Get all orders for a customer
 router.get("/customer/:C_id", async (req, res) => {
@@ -370,5 +376,115 @@ router.post("/generateQR", (req, res) => {
 //     res.status(500).json({ error: 'Error creating payment' });
 //   }
 // });
+
+router.get("/weekly-summary", async (req, res) => {
+  try {
+    // Get the start and end of the current week (assuming week starts on Monday)
+    const today = new Date();
+    const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday start
+    const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
+
+    // Query the database for orders within this week, grouped by date
+    const orders = await prisma.order.groupBy({
+      by: ["O_Date_time"],
+      _sum: { O_Total: true },
+      _count: { O_id: true },
+      where: {
+        O_Date_time: {
+          gte: weekStart,
+          lte: weekEnd,
+        },
+      },
+    });
+
+    // Format the results by each day of the week
+    const daysOfWeek = eachDayOfInterval({
+      start: weekStart,
+      end: weekEnd,
+    }).map((date) => ({
+      date: format(date, "yyyy-MM-dd"),
+      totalSum: 0,
+      orderCount: 0,
+    }));
+
+    // Fill in the actual order data into the formatted results
+    orders.forEach((order) => {
+      const orderDate = format(order.O_Date_time, "yyyy-MM-dd");
+      const dayEntry = daysOfWeek.find((day) => day.date === orderDate);
+      if (dayEntry) {
+        dayEntry.totalSum = order._sum.O_Total || 0;
+        dayEntry.orderCount = order._count.O_id || 0;
+      }
+    });
+
+    res.json({
+      weekStart: format(weekStart, "yyyy-MM-dd"),
+      weekEnd: format(weekEnd, "yyyy-MM-dd"),
+      days: daysOfWeek,
+    });
+  } catch (error) {
+    console.error("Error fetching weekly order summary:", error);
+    res.status(500).json({ error: "Error fetching weekly order summary" });
+  }
+});
+
+// getting sales by hour
+router.get("/total-sales-by-hour", async (req, res) => {
+  try {
+    const salesData = await db.query(`
+          SELECT DATE_TRUNC('hour', O_Date_time) AS hour, SUM(O_Total) AS totalSales
+          FROM orders
+          WHERE O_Date_time >= CURRENT_DATE -- Adjust this as necessary
+          GROUP BY hour
+          ORDER BY hour
+      `);
+
+    const formattedData = salesData.rows.map((row) => ({
+      hour: row.hour.toISOString().substring(11, 16), // Get hour in HH:MM format
+      totalSales: parseFloat(row.totalSales) || 0, // Ensure totalSales is a number
+    }));
+
+    res.json(formattedData);
+  } catch (error) {
+    console.error("Error fetching total sales by hour:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// Get monthly sales data
+router.get("/total-sales-month", async (req, res) => {
+  try {
+    const monthlySales = await prisma.order.groupBy({
+      by: [
+        {
+          // Assuming O_Date_time is the date field in your Order table
+          _month: {
+            O_Date_time: true,
+          },
+        },
+      ],
+      _sum: {
+        O_Total: true, // This should be the field containing sales amounts
+      },
+      orderBy: {
+        _month: "asc", // Order by month ascending
+      },
+    });
+
+    // Format the data to map month index to its name and total sales
+    const monthlySalesData = monthlySales.map((sale) => {
+      const monthIndex = new Date(sale._month).getMonth(); // Get month index (0-11)
+      return {
+        month: monthNames[monthIndex], // monthNames is an array of month names
+        totalSales: sale._sum.O_Total || 0, // Use 0 if no sales
+      };
+    });
+
+    res.json(monthlySalesData);
+  } catch (error) {
+    console.error("Error fetching monthly sales data:", error);
+    res.status(500).json({ error: "Error fetching monthly sales data" });
+  }
+});
 
 module.exports = router;

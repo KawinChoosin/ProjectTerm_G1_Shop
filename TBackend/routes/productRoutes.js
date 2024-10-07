@@ -136,5 +136,55 @@ router.get("/check-stock/:id", async (req, res) => {
   }
 });
 
+router.put('/:id', upload.single('P_img'), async (req, res) => {
+  const productId = parseInt(req.params.id, 10);
+
+  try {
+      const { P_name, P_description, P_price, P_quantity, CG_id } = req.body;
+
+      const updatedData = {
+          P_name,
+          P_description,
+          P_price: parseFloat(P_price), // Ensure price is a float
+          P_quantity: parseInt(P_quantity, 10), // Ensure quantity is an integer
+          CG_id: parseInt(CG_id, 10),
+      };
+
+      // Update image if provided
+      if (req.file) {
+          updatedData.P_img = req.file.filename; // Save new image filename
+      }
+
+      const updatedProduct = await prisma.product.update({
+          where: { P_id: productId },
+          data: updatedData,
+      });
+
+      res.status(200).json(updatedProduct);
+  } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).json({ error: 'Error updating product' });
+  }
+});
+
+// Delete a product by ID
+router.delete("/:id", async (req, res) => {
+  const productId = parseInt(req.params.id, 10);
+  try {
+    const deletedProduct = await prisma.product.delete({
+      where: { P_id: productId },
+    });
+    res.status(200).json({ message: "Product deleted successfully", deletedProduct });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
 module.exports = router;
 

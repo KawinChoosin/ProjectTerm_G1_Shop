@@ -64,7 +64,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, onQuantityChange, onDelete })
             {item.P_description}
           </Typography>
           <Typography className="price" fontWeight="500">
-            ${parseFloat(item.P_price)}
+            ฿{parseFloat(item.P_price)}
           </Typography>
         </Box>
       </Box>

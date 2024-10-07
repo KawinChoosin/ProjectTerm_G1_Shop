@@ -11,8 +11,10 @@ import { useNavigate } from 'react-router-dom';
 import { Container } from "@mui/material";
 import useScreenSize from "../../components/useScreenSize"; // If you have a custom hook for screen size
 import OrderList  from "./OrderList"
-import Addproduct from "../Admin/AddProduct"
+import Addproduct from "../Admin/AddProduct";
 import axios from 'axios';
+import SalesChart from '../Admin/chart/Chart'; 
+import ProductList from "../Admin/ProductList";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -111,7 +113,12 @@ function TabsMenu() {
             {/* Show tabs conditionally based on admin status */}
             <Tab label="Profile" {...a11yProps(0)} />
             <Tab label="Order" {...a11yProps(1)} />
-            {admin && <Tab label="Add Products" {...a11yProps(2)} />} {/* Only show Add Products if admin */}
+            {admin && (<Tab label="Add Products" {...a11yProps(2)} />)}
+            {admin && (<Tab label="Product List" {...a11yProps(3)} />)}
+            {admin && (<Tab label="Sales Analytics" {...a11yProps(4)} /> )}
+          
+           {/* Only show Add Products if admin */}
+          
           </Tabs>
           
           <Box sx={{ flexGrow: 1, width: '100%' }}>
@@ -122,10 +129,20 @@ function TabsMenu() {
               <OrderList />
             </TabPanel>
             {admin && (
+              <>
               <TabPanel value={value} index={2}>
                 <Addproduct />
               </TabPanel>
+              <TabPanel value={value} index={3}>
+                  <ProductList /> {/* Ensure ProductList is correctly imported */}
+                </TabPanel> 
+                <TabPanel value={value} index={4}>
+                  <SalesChart />
+                </TabPanel>
+                </>
             )}
+            
+            
           </Box>
         </Box>
       </Container>

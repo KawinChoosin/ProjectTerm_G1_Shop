@@ -212,7 +212,7 @@ const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selec
         </Grid>
         <Grid   size={{ xs: 4 ,sm:3.7,md:3.7}}>
         <Typography variant="body1" sx={{ fontFamily: 'Montserrat',mb:1 }}>
-          Order_Status
+          Order Status
         </Typography>
         <MuiFormControl fullWidth>
         <FormControl fullWidth>
@@ -239,7 +239,7 @@ const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selec
       {customers.length > 0 && !admin &&(
         <Grid   size={9.8}>
         <Typography variant="body1" sx={{ fontFamily: 'Montserrat',mb:1 }}>
-          Order_Status
+          Order Status
         </Typography>
         <MuiFormControl fullWidth>
         <FormControl fullWidth>
