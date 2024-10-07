@@ -76,10 +76,10 @@ const RegisterForm: React.FC = () => {
       if (response.ok) {
         setC_id(result.C_id); // Set C_id in UserContext
         sessionStorage.setItem("C_id", result.C_id); // Save C_id to sessionStorage
-
+        console.log(result.C_email);
         // Check if a "from" location is provided (i.e., where the user came from)
         const from = location.state?.from?.pathname || "/";
-        navigate("/");
+        navigate(from);
       } else {
         setError(result.error || "Failed to register");
       }
