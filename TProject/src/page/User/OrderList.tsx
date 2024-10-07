@@ -14,6 +14,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import Pagination from '@mui/material/Pagination';
 
 const OrderList: React.FC = () => {
   const { C_id } = useContext<any>(UserContext); // Get C_id from context
@@ -24,12 +25,32 @@ const OrderList: React.FC = () => {
   const [orderDescriptions, setOrderDescriptions] = useState<{ [key: number]: string | null  }>({});
   const [descripupdate, setdescripupdate] = useState<boolean>(false);
   const [admin, setAdmin] = useState<boolean>(false);
-  const [selectedStatus, setSelectedStatus] = useState('waiting');
   const [status, setStatus] = useState<boolean>(false);
-  const [orderStatuses, setOrderStatuses] = useState<{ [key: number]: boolean }>({});
+  const [orderStatuses, setOrderStatuses] = useState<{ [key: number]: 'waiting' | 'Delivery on the way' | 'Problem' }>({});
   const [customers, setCustomers] = useState<string[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<string>('');
   const [visibleOrders, setVisibleOrders] = useState<number>(5); // Track how many orders are visible
+  const [currentPage, setCurrentPage] = useState<number>(1); // Current page number
+  // Define the number of orders to display per page
+  const ordersPerPage = 5;
+
+  // Get the current index range for the displayed orders
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selected status
+
+  // Filter and slice orders based on pagination
+  const filteredOrders = orders
+  .filter(order => selectedCustomer ? order.Customer?.C_name === selectedCustomer : true) // Filter by customer
+  .filter(order => {
+    const currentStatus = orderStatuses[order.O_id] || 
+      (order.O_status === 'SUCCESS' ? 'Delivery on the way' : order.O_status === 'ERROR' ? 'Problem' : 'waiting');
+    return selectedStatus ? currentStatus === selectedStatus : true; // Filter by selected status
+  });
+
+
+  const displayedOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder); // Show orders based on pagination
+  
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -88,37 +109,51 @@ const OrderList: React.FC = () => {
   const handleDescriptionSubmit = async (O_id: number) => {
     try {
       setdescripupdate(true);
+  
+      // Map the frontend status to the backend enum values
+      const statusMapping = {
+        'waiting': 'DEFAULT',
+        'Delivery on the way': 'SUCCESS',
+        'Problem': 'ERROR',
+      };
+  
+      // Get the user-selected status and map it to the backend value
+      const userStatus = orderStatuses[O_id] || 'waiting'; // Default to 'waiting'
+      const statusToUpdate = statusMapping[userStatus]; // Convert to backend status
+  
       await axios.put(`http://localhost:3000/orderlist/descrip`, {
         O_id,
         O_Description: orderDescriptions[O_id] || null, // Send the specific description for the order
-        O_status: orderStatuses[O_id] || false // Send the specific status for the order
+        O_status: statusToUpdate, // Send the mapped status
       });
+  
       alert('Description updated successfully');
       setdescripupdate(false);
     } catch (err) {
       alert('Error updating description');
     }
   };
+  
+  
+
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>, orderId: number) => {
     const value = event.target.value;
-    setSelectedStatus(value);
-
-    // Set the status for the specific order
-    const newStatus = value === 'Delivery on the way';
+  
+    // Set the status for the specific order directly as a string (waiting, Delivery on the way, Problem)
     setOrderStatuses(prevState => ({
       ...prevState,
-      [orderId]: newStatus
+      [orderId]: value as 'waiting' | 'Delivery on the way' | 'Problem'
     }));
   };
 
   const handleCustomerChange = (event: SelectChangeEvent) => {
     setSelectedCustomer(event.target.value as string);
+    setCurrentPage(1); // Reset to first page when changing customers
   };
+  
 
-  const handleShowMore = () => {
-    setVisibleOrders((prev) => prev + 5); // Show 5 more orders when "Show More" is clicked
-  };
+ 
 
   const groupOrdersByCustomer = (orders: any[]) => {
     return orders.reduce((acc, order) => {
@@ -133,28 +168,34 @@ const OrderList: React.FC = () => {
   
   const groupedOrders = groupOrdersByCustomer(orders);
 
-  // Filter orders by selected customer
-  const filteredOrders = selectedCustomer
-    ? orders.filter(order => order.Customer?.C_name === selectedCustomer)
-    : orders;
 
-  const displayedOrders = filteredOrders.slice(0, visibleOrders); // Show limited orders based on visibleOrders
+  const getOrderStatusColor = (status: string) => {
+    switch (status) {
+      case 'Problem':
+        return 'error'; // Red color for Problem
+      case 'Delivery on the way':
+        return 'success'; // Green color for delivery
+      case 'waiting':
+      default:
+        return 'info'; // Grey color for waiting (default)
+    }
+  };
+  
 
   return (
     <Grid container spacing={3}>
       {/* Customer Selection Dropdown */}
       {customers.length > 0 && admin &&(
-        <Grid size={{ xs: 12 }} >
-            <Typography variant="h6" sx={{ fontFamily: 'Montserrat',mb:1 }}>
-                    Select Customers
-                  </Typography>
+        <>
+        <Grid size={{ xs: 8 ,sm:6,md:6}} >
+            <Typography variant="body1" sx={{ fontFamily: 'Montserrat',mb:1 }}>
+                Select Customers
+            </Typography>
             <MuiFormControl fullWidth >
-            {/* <InputLabel id="customer-select-label" shrink={!!selectedCustomer} >Select Customer</InputLabel> */}
             <Select
-              labelId="customer-select-label"
               value={selectedCustomer}
               onChange={handleCustomerChange}
-              sx={{ width: { lg: "80%", sm: "80%" } }}
+              sx={{ width: '100%' }}
               displayEmpty
               onFocus={() => setSelectedCustomer(selectedCustomer || '')} // To handle focus
             >
@@ -169,11 +210,60 @@ const OrderList: React.FC = () => {
             </Select>
           </MuiFormControl>
         </Grid>
+        <Grid   size={{ xs: 4 ,sm:3.7,md:3.7}}>
+        <Typography variant="body1" sx={{ fontFamily: 'Montserrat',mb:1 }}>
+          Order_Status
+        </Typography>
+        <MuiFormControl fullWidth>
+        <FormControl fullWidth>
+          <Select
+            value={selectedStatus}
+            onChange={(event) => setSelectedStatus(event.target.value)}
+            displayEmpty
+            sx={{ width: '100%' }}
+            onFocus={() => setSelectedStatus(selectedStatus || '')} 
+          >
+            <MenuItem value="">
+              <em>All Statuses</em>
+            </MenuItem>
+            <MenuItem value="waiting">Waiting</MenuItem>
+            <MenuItem value="Delivery on the way">Delivery on the way</MenuItem>
+            <MenuItem value="Problem">Problem</MenuItem>
+          </Select>
+        </FormControl>
+        </MuiFormControl>
+      </Grid>
+      </>
       )}
 
+      {customers.length > 0 && !admin &&(
+        <Grid   size={9.8}>
+        <Typography variant="body1" sx={{ fontFamily: 'Montserrat',mb:1 }}>
+          Order_Status
+        </Typography>
+        <MuiFormControl fullWidth>
+        <FormControl fullWidth>
+          <Select
+            value={selectedStatus}
+            onChange={(event) => setSelectedStatus(event.target.value)}
+            displayEmpty
+            sx={{ width: '100%' }}
+            onFocus={() => setSelectedStatus(selectedStatus || '')} 
+          >
+            <MenuItem value="">
+              <em>All Statuses</em>
+            </MenuItem>
+            <MenuItem value="waiting">Waiting</MenuItem>
+            <MenuItem value="Delivery on the way">Delivery on the way</MenuItem>
+            <MenuItem value="Problem">Problem</MenuItem>
+          </Select>
+        </FormControl>
+        </MuiFormControl>
+      </Grid>
+      )}
       {displayedOrders.length === 0 ? (
-        <Grid>
-          <Typography variant="h6">No orders found.</Typography>
+        <Grid size={12}>
+          <Typography variant="h5" sx={{display:'flex',textAlign:'center',justifyContent:'center',width:'80%',mt:8,color:'GrayText',fontFamily: 'Montserrat'}}>No orders found.</Typography>
         </Grid>
       ) : (
         displayedOrders.map((order, index)=> (
@@ -216,13 +306,36 @@ const OrderList: React.FC = () => {
                   
                 </Grid>
                 <Grid size={6}>
-                  <Box sx={{ display: "flex", justifyContent: 'flex-end' }}>
-                    <Chip
-                      label={order.O_status ? 'Delivery on the way' : 'WAITING'}
-                      color={order.O_status ? 'success' : 'error'}
-                      sx={{ fontFamily: 'Montserrat' }}
-                    />
-                  </Box>
+                <Box sx={{ display: "flex", justifyContent: 'flex-end' }}>
+  <Chip
+    label={
+      orderStatuses[order.O_id] // Use updated status if available
+        ? orderStatuses[order.O_id] === 'Delivery on the way'
+          ? 'Delivery on the way'
+          : orderStatuses[order.O_id] === 'Problem'
+          ? 'Problem'
+          : 'Waiting'
+        : order.O_status === 'SUCCESS'
+        ? 'Delivery on the way'
+        : order.O_status === 'ERROR'
+        ? 'Problem'
+        : 'Waiting'
+    }
+    color={
+      orderStatuses[order.O_id] // Use updated status color if available
+        ? getOrderStatusColor(orderStatuses[order.O_id])
+        : getOrderStatusColor(
+            order.O_status === 'SUCCESS'
+              ? 'Delivery on the way'
+              : order.O_status === 'ERROR'
+              ? 'Problem'
+              : 'waiting'
+          )
+    }
+    sx={{ fontFamily: 'Montserrat' }}
+  />
+</Box>
+
                 </Grid>
 
                 {/* Additional Order Details */}
@@ -230,12 +343,12 @@ const OrderList: React.FC = () => {
                   <Box sx={{ display: "flex", flexDirection: "column" }}>
                   <Typography variant="body2" sx={{ fontFamily: 'Montserrat' }}>Date: {new Date(order.O_Date_time).toLocaleString()}</Typography>
                     <Typography variant="body2" sx={{ fontFamily: 'Montserrat' }}>
-                      Address: {order.Address.A_name} {order.Address.A_street}, {order.Address.A_city}, {order.Address.A_state} {order.Address.A_postalCode}, {order.Address.A_country} {order.Address.A_phone
+                    Address: {order.Address.A_name} {order.Address.A_street}, {order.Address.A_city}, {order.Address.A_state} {order.Address.A_postalCode}, {order.Address.A_country} {order.Address.A_phone
                       }
                     </Typography>
                   </Box>
                   {order.Payment.PM_path && (
-                      <Typography
+                      <Typography  
                         variant="body2"
                         component="a"
                         href={order.Payment.PM_path}
@@ -310,15 +423,26 @@ const OrderList: React.FC = () => {
 
                       {/* Order Status */}
                       <FormControl component="fieldset">
-                        <FormLabel component="legend" >Order Status</FormLabel>
-                        <RadioGroup
-                          value={orderStatuses[order.O_id] ? 'Delivery on the way' : 'waiting'}
-                          onChange={(e) => handleStatusChange(e, order.O_id)}
-                        >
-                          <FormControlLabel value="waiting" control={<Radio />} label="Waiting" />
-                          <FormControlLabel value="Delivery on the way" control={<Radio />} label="Delivery on the way" />
-                        </RadioGroup>
-                      </FormControl>
+        <FormLabel component="legend">Order Status</FormLabel>
+        <RadioGroup
+          value={
+            orderStatuses[order.O_id] // Use updated status if available
+              ? orderStatuses[order.O_id]
+              : order.O_status === 'SUCCESS'
+              ? 'Delivery on the way'
+              : order.O_status === 'ERROR'
+              ? 'Problem'
+              : 'waiting'
+          } // Default to 'waiting' if backend status is not provided
+          onChange={(e) => handleStatusChange(e, order.O_id)}
+        >
+          <FormControlLabel value="waiting" control={<Radio />} label="Waiting" />
+          <FormControlLabel value="Delivery on the way" control={<Radio />} label="Delivery on the way" />
+          <FormControlLabel value="Problem" control={<Radio />} label="Problem" />
+        </RadioGroup>
+      </FormControl>
+
+
 
                       {/* Submit Button */}
                       <Button
@@ -352,7 +476,8 @@ const OrderList: React.FC = () => {
                         <Box display="flex" alignItems="center" width="100%" sx={{ padding: "10px" }}>
                           <Grid size={4}>
                             <img
-                              src={detail.Product.P_img || "/placeholder.png"}
+                              src={`http://localhost:3000/uploads/${detail.Product.P_img}`|| "/placeholder.png"}
+                        
                               alt={`${detail.Product.P_name} image`}
                               style={{
                                 width: "80px",
@@ -363,13 +488,13 @@ const OrderList: React.FC = () => {
                             />
                           </Grid>
                           <Grid size={6}>
-                            <Typography variant="h6" fontWeight="500">
+                            <Typography variant="h6" fontWeight="500" sx={{fontFamily: 'Montserrat'}}>
                               {detail.Product.P_name}
                             </Typography>
-                            <Typography variant="body2" color="textSecondary">
+                            <Typography variant="body2" color="textSecondary" sx={{fontFamily: 'Montserrat'}}>
                               {detail.Product.P_description}
                             </Typography>
-                            <Typography className="price" fontWeight="500">
+                            <Typography className="price" fontWeight="500" sx={{fontFamily: 'Montserrat'}}>
                               ${detail.Product.P_price} x {detail.OD_quantity}
                             </Typography>
                           </Grid>
@@ -377,7 +502,7 @@ const OrderList: React.FC = () => {
                             <Typography
                               variant="h6"
                               fontWeight="500"
-                              sx={{ display: "flex", justifyContent: "flex-end" }}
+                              sx={{ display: "flex", justifyContent: "flex-end" ,fontFamily: 'Montserrat'}}
                             >
                               ฿ {parseFloat(detail.OD_price).toFixed(2)}
                             </Typography>
@@ -386,7 +511,8 @@ const OrderList: React.FC = () => {
                       </Box>
                     ))
                   ) : (
-                    <Typography variant="body2">No products found for this order.</Typography>
+                    <Typography variant="h5" sx={{display:'flex',textAlign:'center',justifyContent:'center',width:'80%',mt:8,color:'GrayText',fontFamily: 'Montserrat'}}>No products found for this order.</Typography>
+          
                   )}
                 </CardContent>
               </Collapse>
@@ -396,14 +522,24 @@ const OrderList: React.FC = () => {
         ))
       )}
 
-      {/* Show More Button */}
-      {filteredOrders.length > visibleOrders && (
-        <Grid size={{ xs: 12 }}>
-          <Button variant="outlined" onClick={handleShowMore}>
-            Show More
-          </Button>
+     
+
+      {/* Show More Button  */}
+     {/* Show More Button with Pagination */}
+      {filteredOrders.length > ordersPerPage && (
+        <Grid size={12}>
+          <Pagination
+            count={Math.ceil(filteredOrders.length / ordersPerPage)} // Calculate the total number of pages
+            page={currentPage}
+            onChange={(event, value) => {
+              setCurrentPage(value); // Update current page on change
+              setVisibleOrders(ordersPerPage); // Reset visible orders for each new page
+            }}
+            color="primary"
+          />
         </Grid>
       )}
+
     </Grid>
   );
 };
