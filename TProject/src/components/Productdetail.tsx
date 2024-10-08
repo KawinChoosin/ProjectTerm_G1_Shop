@@ -5,7 +5,7 @@ import {
   Snackbar,
   Typography,
   createSvgIcon,
-  Alert,
+  Alert, // Import alert
 } from "@mui/material";
 import axios from "axios";
 import Navbar from "./Navbar";
@@ -163,7 +163,7 @@ const ProductDetail: React.FC = () => {
       //   triggerAlert("Unable to check stock", "error");
       //   return;
       // }
-  
+
       // if (quantity > stock) {
       //   triggerAlert(`Cannot add more than ${stock} items to cart`, "error");
       //   return;

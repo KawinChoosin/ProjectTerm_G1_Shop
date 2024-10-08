@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Box,
   Button,
@@ -13,7 +13,7 @@ import {
   Typography,
   Card,
   Grid,
-} from '@mui/material';
+} from "@mui/material";
 
 interface Category {
   CG_id: number;
@@ -21,13 +21,13 @@ interface Category {
 }
 
 const AddProductPage: React.FC = () => {
-  const [productName, setProductName] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [category, setCategory] = useState('');
+  const [productName, setProductName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [category, setCategory] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
-  const [newCategory, setNewCategory] = useState('');
+  const [newCategory, setNewCategory] = useState("");
   const [successMessage, setSuccessMessage] = useState(false);
   const [fileImg, setFileImg] = useState<File | null>(null);
   const [imgPreview, setImgPreview] = useState<string | null>(null); // State to hold image preview URL
@@ -35,10 +35,10 @@ const AddProductPage: React.FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/categories');
+        const response = await axios.get("http://localhost:3000/categories");
         setCategories(response.data);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error("Error fetching categories:", error);
       }
     };
 
@@ -50,7 +50,7 @@ const AddProductPage: React.FC = () => {
     if (fileImg) {
       const objectUrl = URL.createObjectURL(fileImg);
       setImgPreview(objectUrl);
-      
+
       // Cleanup function to revoke the object URL when the component unmounts or the file changes
       return () => URL.revokeObjectURL(objectUrl);
     } else {
@@ -62,53 +62,60 @@ const AddProductPage: React.FC = () => {
     event.preventDefault();
 
     const formData = new FormData();
-    formData.append('P_name', productName);
-    formData.append('P_description', description);
-    formData.append('P_price', price);
-    formData.append('P_quantity', quantity);
+    formData.append("P_name", productName);
+    formData.append("P_description", description);
+    formData.append("P_price", price);
+    formData.append("P_quantity", quantity);
 
     if (fileImg) {
-      formData.append('P_img', fileImg);
+      formData.append("P_img", fileImg);
     }
 
     // If a new category is being added, send it to the server.
     if (newCategory) {
       try {
-        const categoryResponse = await axios.post('http://localhost:3000/categories', {
-          CG_name: newCategory,
-        });
-        formData.append('CG_id', categoryResponse.data.CG_id); // assuming the server returns the new category ID
+        const categoryResponse = await axios.post(
+          "http://localhost:3000/categories",
+          {
+            CG_name: newCategory,
+          }
+        );
+        formData.append("CG_id", categoryResponse.data.CG_id); // assuming the server returns the new category ID
       } catch (error) {
-        console.error('Error adding new category:', error);
+        console.error("Error adding new category:", error);
         return; // Prevent product submission if category creation fails
       }
     } else {
-      formData.append('CG_id', category);
+      formData.append("CG_id", category);
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/products', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:3000/products",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.status === 200) {
-        console.log('Product added successfully');
-        setProductName('');
-        setDescription('');
-        setPrice('');
-        setQuantity('');
-        setCategory('');
+        console.log("Product added successfully");
+        setProductName("");
+        setDescription("");
+        setPrice("");
+        setQuantity("");
+        setCategory("");
         setFileImg(null);
-        setNewCategory('');
+        setNewCategory("");
         setImgPreview(null); // Reset the image preview
         setSuccessMessage(true);
       } else {
-        console.error('Failed to add product');
+        console.error("Failed to add product");
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
@@ -124,11 +131,14 @@ const AddProductPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ padding: 2, minHeight: '100vh' }}>
+    <Box sx={{ padding: 2, minHeight: "100vh" }}>
       <Typography variant="h4" gutterBottom color="black">
         Add Product
       </Typography>
-      <Card elevation={3} sx={{ padding: 3, borderRadius: 2, margin: '0 auto' }}>
+      <Card
+        elevation={3}
+        sx={{ padding: 3, borderRadius: 2, margin: "0 auto" }}
+      >
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -177,8 +187,8 @@ const AddProductPage: React.FC = () => {
                   value={category}
                   onChange={(e) => {
                     setCategory(e.target.value);
-                    if (e.target.value === 'new') {
-                      setNewCategory('');
+                    if (e.target.value === "new") {
+                      setNewCategory("");
                     }
                   }}
                   required
@@ -197,7 +207,7 @@ const AddProductPage: React.FC = () => {
             </Grid>
 
             {/* Conditionally render input for new category if "Add New Category" is selected */}
-            {category === 'new' && (
+            {category === "new" && (
               <Grid item xs={12}>
                 <FormControl fullWidth margin="normal">
                   <TextField
@@ -228,18 +238,20 @@ const AddProductPage: React.FC = () => {
             {/* Framed area for file upload */}
             <Grid item xs={12}>
               <FormControl fullWidth margin="normal">
-                <label htmlFor="imageUpload" style={{ cursor: 'pointer' }}>
+                <label htmlFor="imageUpload" style={{ cursor: "pointer" }}>
                   <Box
                     sx={{
-                      border: '2px dashed #3f51b5',
-                      borderRadius: '4px',
+                      border: "2px dashed #3f51b5",
+                      borderRadius: "4px",
                       padding: 2,
-                      textAlign: 'center',
-                      backgroundColor: '#f5f5f5',
+                      textAlign: "center",
+                      backgroundColor: "#f5f5f5",
                     }}
                   >
                     <Typography variant="body1" color="#3f51b5">
-                      {fileImg ? fileImg.name : 'Drag and drop your image here or click to upload'}
+                      {fileImg
+                        ? fileImg.name
+                        : "Drag and drop your image here or click to upload"}
                     </Typography>
                     <input
                       type="file"
@@ -247,7 +259,7 @@ const AddProductPage: React.FC = () => {
                       accept="image/*"
                       onChange={handleImageUpload}
                       required
-                      style={{ display: 'none' }}
+                      style={{ display: "none" }}
                     />
                   </Box>
                 </label>
@@ -259,21 +271,21 @@ const AddProductPage: React.FC = () => {
               <Grid item xs={12}>
                 <Box
                   sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginTop: '16px',
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: "16px",
                   }}
                 >
                   <img
                     src={imgPreview}
                     alt="Product Preview"
                     style={{
-                      maxWidth: '100%',
-                      maxHeight: '200px',
-                      objectFit: 'contain',
-                      border: '1px solid #ccc',
-                      borderRadius: '4px',
+                      maxWidth: "100%",
+                      maxHeight: "200px",
+                      objectFit: "contain",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
                     }}
                   />
                 </Box>
@@ -281,7 +293,12 @@ const AddProductPage: React.FC = () => {
             )}
 
             <Grid item xs={12}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+              >
                 Add Product
               </Button>
             </Grid>
@@ -289,7 +306,12 @@ const AddProductPage: React.FC = () => {
         </form>
       </Card>
 
-      <Snackbar open={successMessage} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar
+        open={successMessage}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }} // Set anchor position to top center
+      >
         <Alert onClose={handleClose} severity="success">
           Product added successfully!
         </Alert>

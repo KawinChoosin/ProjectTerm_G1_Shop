@@ -74,7 +74,7 @@ router.get("/:O_id", async (req, res) => {
     res.json(order);
   } catch (error) {
     console.error("Error fetching order by ID:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error!!!!!!!!!" });
   }
 });
 
@@ -99,7 +99,7 @@ router.get("/orderdetails/:O_id", async (req, res) => {
     res.json(orderDetails);
   } catch (error) {
     console.error("Error fetching order details:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error!" });
   }
 });
 
@@ -377,7 +377,7 @@ router.post("/generateQR", (req, res) => {
 //   }
 // });
 
-router.get("/weekly-summary", async (req, res) => {
+router.get("/sum/weekly-summary", async (req, res) => {
   try {
     // Get the start and end of the current week (assuming week starts on Monday)
     const today = new Date();

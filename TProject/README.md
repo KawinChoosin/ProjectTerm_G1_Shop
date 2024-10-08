@@ -14,5 +14,8 @@ like this:
         const { C_id } = useContext(UserContext);
 ```
 
-```npm install -D sass-embedded
+````npm install -D sass-embedded
 
+```npm i chartjs-adapter-date-fns
+
+````

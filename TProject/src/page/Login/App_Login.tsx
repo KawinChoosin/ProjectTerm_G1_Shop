@@ -130,17 +130,6 @@ const LoginForm: React.FC = () => {
             </Alert>
           )}
 
-          <div
-            className="remember-forgot"
-            style={{ marginTop: "-15px", marginBottom: "15px" }}
-          >
-            <label>
-              <input type="checkbox" style={{ marginRight: "5px" }} />
-              Remember me
-            </label>
-            <a href="#">Forgot password?</a>
-          </div>
-
           <button
             type="submit"
             className="btn_login"

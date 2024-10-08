@@ -28,9 +28,9 @@ async function P_test() {
     // Insert categories if they don't exist
     await prisma.category.createMany({
       data: [
-        { CG_name: "Sport" },
-        { CG_name: "Cloth" },
-        { CG_name: "Electronic" },
+        { CG_name: "Sports" },
+        { CG_name: "Clothes" },
+        { CG_name: "Electronics" },
       ],
     });
   }
@@ -45,7 +45,7 @@ async function P_test() {
 
     if (existingProducts.length === 0) {
       // Insert products based on category
-      if (category.CG_name === "Sport") {
+      if (category.CG_name === "Sports") {
         await prisma.product.createMany({
           data: [
             {
@@ -74,7 +74,7 @@ async function P_test() {
             },
           ],
         });
-      } else if (category.CG_name === "Cloth") {
+      } else if (category.CG_name === "Clothes") {
         await prisma.product.createMany({
           data: [
             {
@@ -103,7 +103,7 @@ async function P_test() {
             },
           ],
         });
-      } else if (category.CG_name === "Electronic") {
+      } else if (category.CG_name === "Electronics") {
         await prisma.product.createMany({
           data: [
             {
