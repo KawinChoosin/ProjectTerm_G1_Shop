@@ -32,10 +32,15 @@ interface CheckoutDialogProps {
 }
 
 interface CartItem {
+  Product: any;
   P_id: number;
   CA_quantity: number;
-  CA_price: number;
+  CA_price: number;  // This should be the price from the cart
+  P_name: string;    // Add this for product name
+  P_price: number;   // Add this for product price
 }
+
+
 
 interface Address {
   A_id: number;
@@ -246,6 +251,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   
 
   const handleCheckoutSubmit = async () => {
+    
     // Validate address selection or addition
     if (!address && !newAddress.street) {
       triggerAlert("Please select or add an address!", "error");
@@ -265,15 +271,19 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       const orderDetails = cartItems.map((item: CartItem) => ({
         P_id: item.P_id,
         OD_quantity: item.CA_quantity,
-        OD_price: item.CA_price,
+        OD_price: total,
+        OD_product_name: item.Product.P_name,
+        OD_product_price: item.Product.P_price,
       }));
+      // console.log("test",cartItems)
+      // console.log("test1",orderDetails)
 
       // Calculate total amount
-      const total = cartItems.reduce(
-        (sum: number, item: CartItem) => sum + item.CA_price * item.CA_quantity,
-        0
-      );
-
+      // const total = cartItems.reduce(
+      //   (sum: number, item: CartItem) => sum + item.CA_price * item.CA_quantity,
+      //   0
+      // );
+      console.log("tota",total)
       // Handle address submission (new or existing)
       const addressId: number = await handleAddressSubmission();
 
@@ -320,23 +330,37 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   const submitOrder = async (
     customerId: number,
     addressId: number,
-    orderDetails: any,
+    orderDetails: CartItem[],  // Define orderDetails as an array of CartItem
     total: number, // Ensure total is passed correctly
     payslipPath: string // New parameter for the payslip path
   ) => {
+  
     const orderData = {
       C_id: customerId,
       Date_time: new Date().toISOString(),
       Total: total,
+      
       PM_amount: total,
       A_id: addressId,
       PM_path: payslipPath,
       O_Description: null,
-      orderDetails,
+      orderDetails: orderDetails.map((item) => ({
+        
+        P_id: item.P_id,
+        OD_quantity: item.CA_quantity,
+        OD_price: item.OD_price,        // Price in cart or discounted price
+        OD_product_name: item.OD_product_name,   // Product name at the time of order
+        OD_product_price: item.OD_product_price, // Product price at the time of order
+      })),
+      
+      
     };
-
+  
+  
+    console.log("odt",orderDetails)
     await axios.post("http://localhost:3000/order", orderData);
   };
+  
 
   const uploadPayslip = async (file: File) => {
     const formData = new FormData();

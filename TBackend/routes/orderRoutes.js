@@ -172,8 +172,8 @@ router.post("/", upload.single("slip"), async (req, res) => {
       const paymentMethod = await prisma.payment.create({
         data: {
           PM_amount: parseFloat(PM_amount),
-          Date_time: new Date(Date_time), // Ensure the date format is correct
-          PM_path, // Store the uploaded file path
+          Date_time: new Date(Date_time),
+          PM_path,
         },
       });
 
@@ -183,25 +183,50 @@ router.post("/", upload.single("slip"), async (req, res) => {
           C_id: parseInt(C_id, 10),
           O_Date_time: new Date(Date_time),
           O_Total: parseFloat(Total),
-          PM_id: paymentMethod.PM_id, // Link to payment
-          A_id: parseInt(A_id, 10), // Address ID
+          PM_id: paymentMethod.PM_id,
+          A_id: parseInt(A_id, 10),
           O_Description: O_Description || null,
           OrderDetail: {
-            create: orderDetails.map((detail) => ({
-              P_id: parseInt(detail.P_id, 10),
-              OD_quantity: parseInt(detail.OD_quantity, 10),
-              OD_price: parseFloat(detail.OD_price),
-            })),
+            create: orderDetails.map((detail, index) => {
+              // Validate and ensure valid quantity
+              const quantity = parseInt(detail.OD_quantity, 10);
+              if (isNaN(quantity) || quantity <= 0) {
+                throw new Error(`Invalid quantity for order detail at index ${index}`);
+              }
+      
+              // Ensure product price is a number
+              const productPrice = parseFloat(detail.OD_product_price);
+              if (isNaN(productPrice)) {
+                throw new Error(`Invalid product price for order detail at index ${index}`);
+              }
+      
+              return {
+                P_id: parseInt(detail.P_id, 10),
+                OD_quantity: quantity,
+                OD_price: parseFloat(detail.OD_price),
+                OD_product_name: detail.OD_product_name,
+                OD_product_price: productPrice,
+              };
+            }),
+          },
+        },
+        include: {
+          OrderDetail: {
+            include: {
+              Product: true,
+            },
           },
         },
       });
+      
+
+      const createdOrderDetails = newOrder.OrderDetail;
 
       // Update product quantities
-      for (const detail of orderDetails) {
-        const productId = parseInt(detail.P_id, 10);
-        const orderedQuantity = parseInt(detail.OD_quantity, 10);
+      for (const detail of createdOrderDetails) {
+        const productId = detail.P_id;
+        const orderedQuantity = detail.OD_quantity;
 
-        // Decrease the product quantity
         await prisma.product.update({
           where: { P_id: productId },
           data: {
@@ -212,19 +237,23 @@ router.post("/", upload.single("slip"), async (req, res) => {
         });
       }
 
-      return newOrder; // Return the new order as the result of the transaction
+      return newOrder;
     });
 
-    res.status(201).json(transaction); // Respond with the created order
+    res.status(201).json(transaction);
   } catch (error) {
-    console.error("Error creating order and payment:", error);
-    res.status(500).json({ error: "Error creating order and payment" });
+    console.error("Error creating order and payment:", error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 
+
+
+
+
 // Add a new order detail
 router.post("/orderdetails", async (req, res) => {
-  const { O_id, P_id, OD_quantity, OD_price } = req.body;
+  const { O_id, P_id, OD_quantity, OD_price, OD_product_name, OD_product_price } = req.body;
 
   try {
     const newOrderDetail = await prisma.orderDetail.create({
@@ -233,6 +262,8 @@ router.post("/orderdetails", async (req, res) => {
         P_id: parseInt(P_id, 10),
         OD_quantity: parseInt(OD_quantity, 10),
         OD_price: parseFloat(OD_price),
+        OD_product_name,  // Store product name at the time of order
+        OD_product_price: parseFloat(OD_product_price), // Store product price at the time of order
       },
     });
 
@@ -242,6 +273,7 @@ router.post("/orderdetails", async (req, res) => {
     res.status(500).json({ error: "Error creating order detail" });
   }
 });
+
 
 // Update an existing order
 router.patch("/:O_id", async (req, res) => {

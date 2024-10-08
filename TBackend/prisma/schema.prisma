@@ -67,14 +67,18 @@ model Order {
 }
 
 model OrderDetail {
-  OD_id     Int      @id @default(autoincrement())
-  O_id      Int
-  P_id      Int
-  OD_quantity Int
-  OD_price  Decimal     // Changed to integer
-  Order     Order   @relation(fields: [O_id], references: [O_id])
-  Product   Product @relation(fields: [P_id], references: [P_id])
+  OD_id        Int      @id @default(autoincrement())
+  O_id         Int
+  P_id         Int      // Reference to Product ID for historical reference
+  OD_quantity  Int
+  OD_price     Decimal   // Price at the time of order
+  OD_product_name String  // Store the product name at the time of order
+  OD_product_price Decimal // Store the product price at the time of order
+  
+  Order        Order   @relation(fields: [O_id], references: [O_id])
+  Product      Product @relation(fields: [P_id], references: [P_id])
 }
+
 
 model Payment {
   PM_id     Int      @id @default(autoincrement())
