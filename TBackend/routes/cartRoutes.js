@@ -67,14 +67,28 @@ router.get("/:C_id", async (req, res) => {
       where: { C_id: parseInt(C_id, 10) },
       include: { Product: true },
     });
-    // if (cartItems.length === 0) {
-    //   return res.status(404).json({ message: "No items found in cart" });
-    // }
-    res.json(cartItems);
+
+    // Map cartItems to a more readable format if needed
+    const formattedCartItems = cartItems.map(item => ({
+      CD_id: item.CD_id,
+      C_id: item.C_id,
+      P_id: item.P_id,
+      CA_quantity: item.CA_quantity,
+      Product: {
+        P_name: item.Product.P_name,
+        P_description: item.Product.P_description,
+        P_price: item.Product.P_price,
+        P_img: item.Product.P_img,
+      },
+    }));
+
+    res.json(formattedCartItems);
   } catch (error) {
+    console.error("Error fetching cart items:", error);
     res.status(500).json({ error: "Error fetching cart items" });
   }
 });
+
 
 // Update product quantity in cart
 router.patch("/update", async (req, res) => {
