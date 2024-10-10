@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import UserContext from "../../context/UserContext";
-import { Card, CardContent, Typography, CardActions, Box, Collapse, TextField, Button, MenuItem, InputLabel,  FormControl as MuiFormControl, colors } from '@mui/material';
+import { Card, CardContent, Typography, Box, Collapse, TextField, Button, MenuItem,  FormControl as MuiFormControl } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Grid from '@mui/material/Grid2'; // Importing Grid2
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -25,15 +25,13 @@ const OrderList: React.FC = () => {
   const [orderDescriptions, setOrderDescriptions] = useState<{ [key: number]: string | null  }>({});
   const [descripupdate, setdescripupdate] = useState<boolean>(false);
   const [admin, setAdmin] = useState<boolean>(false);
-  const [status, setStatus] = useState<boolean>(false);
   const [orderStatuses, setOrderStatuses] = useState<{ [key: number]: 'waiting' | 'Delivery on the way' | 'Problem' }>({});
   const [customers, setCustomers] = useState<string[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<string>('');
-  const [visibleOrders, setVisibleOrders] = useState<number>(5); // Track how many orders are visible
   const [currentPage, setCurrentPage] = useState<number>(1); // Current page number
   // Define the number of orders to display per page
   const ordersPerPage = 5;
-
+  const [nowlogin,setNowlogin] = useState<string>('C_id');
   // Get the current index range for the displayed orders
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
@@ -56,6 +54,7 @@ const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selec
     const fetchOrders = async () => {
       if (C_id) {
         try {
+          setNowlogin(C_id);
           const role = await axios.get(`http://localhost:3000/profile?C_id=${C_id}`);
           if (role.data[0].C_Role) {
             setAdmin(true);
@@ -75,8 +74,10 @@ const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selec
         setError('No customer ID found.');
       }
     };
-
-    fetchOrders();
+    if(nowlogin !== C_id){
+       fetchOrders();
+    }
+   
   }, [C_id, descripupdate, orders]);
 
   // Extract unique customer names from orders
@@ -152,23 +153,6 @@ const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selec
     setCurrentPage(1); // Reset to first page when changing customers
   };
   
-
- 
-
-  const groupOrdersByCustomer = (orders: any[]) => {
-    return orders.reduce((acc, order) => {
-      const customerName = order.Customer?.C_name || "Unknown Customer";
-      if (!acc[customerName]) {
-        acc[customerName] = [];
-      }
-      acc[customerName].push(order);
-      return acc;
-    }, {} as { [key: string]: any[] });
-  };
-  
-  const groupedOrders = groupOrdersByCustomer(orders);
-
-
   const getOrderStatusColor = (status: string) => {
     switch (status) {
       case 'Problem':
@@ -489,13 +473,13 @@ const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selec
                           </Grid>
                           <Grid size={6}>
                             <Typography variant="h6" fontWeight="500" sx={{fontFamily: 'Montserrat'}}>
-                              {detail.Product.P_name}
+                              {detail.OD_product_name}
                             </Typography>
                             <Typography variant="body2" color="textSecondary" sx={{fontFamily: 'Montserrat'}}>
                               {detail.Product.P_description}
                             </Typography>
                             <Typography className="price" fontWeight="500" sx={{fontFamily: 'Montserrat'}}>
-                              ${detail.Product.P_price} x {detail.OD_quantity}
+                              ${detail.OD_product_price} x {detail.OD_quantity}
                             </Typography>
                           </Grid>
                           <Grid size={3}>
@@ -531,9 +515,9 @@ const [selectedStatus, setSelectedStatus] = useState<string>(''); // Track selec
           <Pagination
             count={Math.ceil(filteredOrders.length / ordersPerPage)} // Calculate the total number of pages
             page={currentPage}
-            onChange={(event, value) => {
+            onChange={(_event, value) => {
               setCurrentPage(value); // Update current page on change
-              setVisibleOrders(ordersPerPage); // Reset visible orders for each new page
+          
             }}
             color="primary"
           />

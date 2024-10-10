@@ -6,7 +6,7 @@ import { Container, Typography, Button, Fab } from "@mui/material";
 import Footer from "./components/Footer";
 import axios from "axios";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import LoadingCompo from "./components/loading";
 
 const App: React.FC = () => {
@@ -17,8 +17,8 @@ const App: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | string>(
     "all"
   ); // Change to store category ID
-  const location = useLocation();
-  const { C_id } = location.state || {};
+  // const location = useLocation();
+  // const { C_id } = location.state || {};
 
   // Fetch products from the backend API
   useEffect(() => {

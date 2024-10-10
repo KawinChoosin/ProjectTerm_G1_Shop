@@ -6,7 +6,7 @@ import clothpic from "./banner/cloth.jpg";
 import elecpic from "./banner/elec.jpg";
 
 interface MainBannerProps {
-  keyType: string; // Use 'keyType' instead of 'key' because 'key' is a reserved prop in React.
+  keyType: any; // Use 'keyType' instead of 'key' because 'key' is a reserved prop in React.
 }
 
 const MainBanner: React.FC<MainBannerProps> = ({ keyType }) => {

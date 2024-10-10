@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
+// @ts-ignore
+import React from 'react'; 
 import {
   Box,
   Typography,
@@ -43,7 +45,7 @@ function User() {
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [changePass, setChangePass] = useState<boolean>(false);
-  const [password, setPassword] = useState({
+  const [password] = useState({
     O_pass: "",
     N_pass: "",
     RN_pass: "",
