@@ -43,7 +43,7 @@ const OrdersByCustomer: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
-  const [customerId, setCustomerId] = useState<number>(1); // Default customer ID
+  const [customerId] = useState<number>(1); // Default customer ID
   const [expandedOrders, setExpandedOrders] = useState<Set<number>>(new Set());
 
   useEffect(() => {

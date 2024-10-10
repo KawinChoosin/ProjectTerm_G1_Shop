@@ -1,3 +1,4 @@
+// @ts-ignore
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -11,14 +12,14 @@ import App_Register from "./page/Register/App_Register.tsx";
 import FavPage from "./components/favourite/FavPage.tsx";
 import { UserProvider } from "./context/UserContext.tsx"; // Import UserProvider
 import Tapmenu from "./page/User/TabsMenu.tsx";
-import { ThemeContextProvider } from "./ThemeContext.tsx";
+
 import GoogleCallback from "./page/Login/GoogleCallback.tsx";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
   <UserProvider>
-    {/* <ThemeContextProvider> */}
+
     <Router>
       <Routes>
         <Route path="/" element={<App />} />
@@ -34,6 +35,6 @@ root.render(
         {/* </Route> */}
       </Routes>
     </Router>
-    {/* </ThemeContextProvider> */}
+
   </UserProvider>
 );

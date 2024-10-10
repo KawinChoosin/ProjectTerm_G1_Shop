@@ -1,15 +1,12 @@
-import React, { useContext, useState } from "react";
+import React, {  useState } from "react";
 import { Button, IconButton , Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import useScreenSize from "./useScreenSize";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { ColorModeContext } from '../ThemeContext';
-
 
 const Navbar: React.FC = () => {
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
   const navigate = useNavigate();
-  const colorMode = useContext(ColorModeContext);
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
 
 

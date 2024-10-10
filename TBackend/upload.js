@@ -4,7 +4,7 @@ const path = require('path');
 
 // Set up storage engine
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: function (req, file, cb) { 
     cb(null, './slip'); // Save files in the './slip' directory
   },
   filename: function (req, file, cb) {

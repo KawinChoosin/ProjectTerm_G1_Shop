@@ -9,7 +9,7 @@ interface CartTotalsProps {
   onCheckout: () => void; 
 }
 
-const CartTotals: React.FC<CartTotalsProps> = ({ subtotal, shipping, discount, total, onCheckout }) => {
+const CartTotals: React.FC<CartTotalsProps> = ({ total, onCheckout }) => {
   return (
     <Box p={5} sx={{ backgroundColor: '#f9f9f9' }}>
       <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Montserrat' }}>

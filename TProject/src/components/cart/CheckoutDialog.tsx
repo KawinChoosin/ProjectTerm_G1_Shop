@@ -23,6 +23,7 @@ import QR from "./Qr";
 import PaymentForm from "./uploadfile"; // Ensure this is the correct import for your upload component
 import { useForm, Controller } from 'react-hook-form';
 
+
 interface CheckoutDialogProps {
   open: boolean;
   onClose: () => void;
@@ -287,7 +288,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         return;
       }
 
-      console.log("pay:", payslipPath);
+      // console.log("pay:", payslipPath);
 
       // Check if payslipPath is null
       if (payslipPath === null) {
@@ -304,7 +305,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         payslipPath
       ); // Pass the payslip path
 
-      console.log("Order Details:", orderDetails);
+      // console.log("Order Details:", orderDetails);
 
       // Clear the cart after a successful order
       await clearCart(cartItems);
@@ -317,6 +318,18 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     }
   };
 
+  const dateInUTC7 = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Bangkok', // UTC+07:00
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).format(new Date());
+
+ 
+
   const submitOrder = async (
     customerId: number,
     addressId: number,
@@ -326,7 +339,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   ) => {
     const orderData = {
       C_id: customerId,
-      Date_time: new Date().toISOString(),
+      Date_time: dateInUTC7,
       Total: total,
       PM_amount: total,
       A_id: addressId,
@@ -334,6 +347,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       O_Description: null,
       orderDetails,
     };
+    // console.log(orderData)
 
     await axios.post("http://localhost:3000/order", orderData);
   };

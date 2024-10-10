@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
+import {  Card, CardContent, CardMedia, Typography } from "@mui/material";
 import { Link } from "react-router-dom"; // Import Link from React Router
 import Grid from "@mui/material/Grid2"; // Use Grid from @mui/material
 
@@ -31,11 +31,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
         .filter((product) => product.P_quantity > 0) // Only include products with quantity > 0
         .map((product) => (
           <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
-            lg={3}
+        
+            size={{xs:12,sm:6,md:4,lg:3}}
             key={product.P_id}
             sx={{ display: "flex", justifyContent: "center" }} // Center products within their grid item
           >
@@ -106,11 +103,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
         .filter((product) => product.P_quantity <= 0) // Only include products with quantity <= 0
         .map((product) => (
           <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
-            lg={3}
+            size={{xs:12,sm:6,md:4,lg:3}}
             key={product.P_id}
             sx={{ display: "flex", justifyContent: "center" }} // Center products within their grid item
           >

@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
+// @ts-ignore
+import React from 'react'; 
 import {
   Box,
   Typography,
@@ -14,8 +16,6 @@ import {
   Select,
   MenuItem,
   FormHelperText,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import axios from "axios";
 import Grid from "@mui/material/Grid2";
@@ -45,7 +45,7 @@ function User() {
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [changePass, setChangePass] = useState<boolean>(false);
-  const [password, setPassword] = useState({
+  const [password] = useState({
     O_pass: "",
     N_pass: "",
     RN_pass: "",
@@ -56,11 +56,6 @@ function User() {
   const navigate = useNavigate();
   const { C_id, setC_id } = useContext<any>(UserContext);
   const [passnull, setPassnull] = useState<boolean>(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertSeverity, setAlertSeverity] = useState<
-    "success" | "error" | "warning" | "info"
-  >("success");
-  const [showAlert, setShowAlert] = useState(false); //set time to show alert
 
   // Initialize React Hook Form
   const {
@@ -91,7 +86,7 @@ function User() {
             `http://localhost:3000/profile?C_id=${C_id}`
           );
           setUser([response.data[0]]);
-          if (response.data[0].C_password.length == 0) {
+          if (response.data[0].C_password == null) {
             setPassnull(true);
           } else {
             setPassnull(false);
@@ -144,27 +139,13 @@ function User() {
     setEditMode(true);
   };
 
-  const triggerAlert = (
-    message: string,
-    severity: "success" | "error" | "warning" | "info"
-  ) => {
-    setAlertMessage(message);
-    setAlertSeverity(severity);
-    setShowAlert(true);
-
-    // set time out = 3 sec for alert
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
-  };
-
   const onSubmit = async (data: any) => {
     try {
       await axios.put(`http://localhost:3000/profile?C_id=${C_id}`, data);
       setEditMode(false);
-      triggerAlert("User updated successfully.", "success");
+      alert("User updated successfully");
     } catch (err) {
-      triggerAlert("Error updating user.", "error");
+      alert("Error updating user");
     }
   };
 
@@ -177,18 +158,15 @@ function User() {
             { C_password: password.N_pass }
           );
           setChangePass(false);
-          triggerAlert("Password updated successfully.", "success");
+          alert("Password updated successfully");
         } else {
-          triggerAlert(
-            "Retyped password does not match the new password.",
-            "error"
-          );
+          alert("Retyped password does not match the new password.");
         }
       } else {
-        triggerAlert("Incorrect old password.", "error");
+        alert("Incorrect old password.");
       }
     } catch (err) {
-      triggerAlert("Error updating password", "error");
+      alert("Error updating password");
     }
   };
 
@@ -509,6 +487,7 @@ function User() {
         </Dialog>
 
         {/* Change Password Dialog */}
+        {/* Change Password Dialog */}
         <Dialog open={changePass} onClose={() => setChangePass(false)}>
           <DialogTitle>Change Password</DialogTitle>
           <DialogContent>
@@ -632,14 +611,6 @@ function User() {
           </DialogActions>
         </Dialog>
       </Box>
-      <Snackbar
-        open={showAlert}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
-          {alertMessage}
-        </Alert>
-      </Snackbar>
     </Grid>
   );
 }

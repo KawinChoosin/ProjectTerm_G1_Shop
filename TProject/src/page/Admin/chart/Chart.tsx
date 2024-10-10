@@ -31,7 +31,7 @@ ChartJS.register(
 // Interfaces for sales data
 interface DailySales {
   date: string;
-  totalSales: number;
+  totalSum: number;
 }
 
 interface DailyOrders {
@@ -39,132 +39,135 @@ interface DailyOrders {
   totalOrders: number;
 }
 
-interface MonthlySales {
-  month: string;
-  totalSales: number;
-}
 
 const Chart: React.FC = () => {
-  const [totalSales, setTotalSales] = useState<number>(0);
+  const [totalSum, setTotalSales] = useState<number>(0);
   const [totalOrders, setTotalOrders] = useState<number>(0);
   const [dailySales, setDailySales] = useState<DailySales[]>([]);
   const [dailyOrders, setDailyOrders] = useState<DailyOrders[]>([]);
-  const [monthlySales, setMonthlySales] = useState<MonthlySales[]>([]);
   const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   // Fetch total sales, orders, and monthly data from the backend
   useEffect(() => {
     const fetchWeeklyData = async () => {
-      setLoading(true); // Start loading
+      setLoading(true);
       try {
         const now = new Date();
-        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1)); // Monday of the current week
-        const endOfWeek = new Date(now.setDate(startOfWeek.getDate() + 6)); // Sunday of the current week
-
-        // Format dates for API calls
+        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
+        const endOfWeek = new Date(now.setDate(startOfWeek.getDate() + 6));
+  
         const startOfWeekStr = startOfWeek.toISOString();
         const endOfWeekStr = endOfWeek.toISOString();
-
+  
         // Fetch total sales for the current week
-        const salesResponse = await fetch(`http://localhost:3000/sales/total-sales-week?start=${startOfWeekStr}&end=${endOfWeekStr}`);
-        if (!salesResponse.ok) throw new Error(`Failed to fetch weekly sales: ${salesResponse.statusText}`);
-
-        const salesData: DailySales[] = await salesResponse.json();
-        setDailySales(salesData);
-        const totalSalesAmount = salesData.reduce((sum, day) => sum + day.totalSales, 0);
+        const salesResponse = await fetch(`http://localhost:3000/order/chart/total-sales-week?start=${startOfWeekStr}&end=${endOfWeekStr}`);
+        const salesData = await salesResponse.json();
+  
+        // Assume salesData is in the format you provided in your example
+        const totalSalesAmount = salesData.orders.reduce((acc:any, order:any) => acc + parseFloat(order.O_Total), 0);
+        const totalOrdersCount = salesData.orders.length;
+  
+        // Create an array to store daily sales and orders
+        const dailySalesMap: { [key: string]: number } = {};
+        const dailyOrdersMap: { [key: string]: number } = {};
+  
+        salesData.orders.forEach((order: { O_Date_time: string | number | Date; O_Total: string; }) => {
+          const orderDate = new Date(order.O_Date_time).toISOString().split('T')[0]; // Get only the date part
+  
+          // Accumulate sales
+          if (!dailySalesMap[orderDate]) {
+            dailySalesMap[orderDate] = 0;
+          }
+          dailySalesMap[orderDate] += parseFloat(order.O_Total);
+  
+          // Accumulate order count
+          if (!dailyOrdersMap[orderDate]) {
+            dailyOrdersMap[orderDate] = 0;
+          }
+          dailyOrdersMap[orderDate] += 1;
+        });
+  
+        // Convert daily sales and orders maps to arrays
+        const dailySales = Object.keys(dailySalesMap).map(date => ({
+          date,
+          totalSum: dailySalesMap[date],
+        }));
+        const dailyOrders = Object.keys(dailyOrdersMap).map(date => ({
+          date,
+          totalOrders: dailyOrdersMap[date],
+        }));
+  
+        // Set state
+        setDailySales(dailySales);
+        setDailyOrders(dailyOrders);
         setTotalSales(totalSalesAmount);
-
-        // Fetch total orders for the current week
-        const ordersResponse = await fetch(`http://localhost:3000/sales/total-orders-week?start=${startOfWeekStr}&end=${endOfWeekStr}`);
-        if (!ordersResponse.ok) throw new Error(`Failed to fetch weekly orders: ${ordersResponse.statusText}`);
-
-        const ordersData: DailyOrders[] = await ordersResponse.json();
-        setDailyOrders(ordersData);
-        const totalOrdersCount = ordersData.reduce((sum, day) => sum + day.totalOrders, 0);
         setTotalOrders(totalOrdersCount);
-
-        // Fetch monthly sales data
-        const monthlySalesResponse = await fetch('http://localhost:3000/sales/total-sales-month');
-        if (!monthlySalesResponse.ok) throw new Error(`Failed to fetch monthly sales: ${monthlySalesResponse.statusText}`);
-
-        const monthlySalesData: MonthlySales[] = await monthlySalesResponse.json();
-        setMonthlySales(monthlySalesData);
-
+  
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     };
-
+  
     fetchWeeklyData();
   }, []);
+  
 
-  // const fetchMonthlySalesData = async () => {
-  //   try {
-  //     const monthlySalesResponse = await fetch('http://localhost:3000/sales/total-sales-month');
-  //     if (!monthlySalesResponse.ok) throw new Error(`Failed to fetch monthly sales: ${monthlySalesResponse.statusText}`);
-
-  //     const monthlySalesData = await monthlySalesResponse.json();
-  //     setMonthlySales(monthlySalesData);
-
-  //     // Check the data format
-  //     console.log(monthlySalesData); // Log the data for debugging
-  //   } catch (error) {
-  //     console.error('Error fetching monthly sales data:', error);
-  //   }
-  // };
-
-  // fetchMonthlySalesData();
 
   // Prepare data for the bar chart with Mon to Sun labels
-  const weeklyChartData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [
-      {
-        label: 'Weekly Sales ($)',
-        data: dailySales.map(sales => sales.totalSales),
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
+const weeklyChartData = {
+  labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  datasets: [
+    {
+      label: 'Weekly Sales ($)',
+      data: [
+        dailySales.find(sale => new Date(sale.date).getDay() === 1)?.totalSum || 0, // Monday
+        dailySales.find(sale => new Date(sale.date).getDay() === 2)?.totalSum || 0, // Tuesday
+        dailySales.find(sale => new Date(sale.date).getDay() === 3)?.totalSum || 0, // Wednesday
+        dailySales.find(sale => new Date(sale.date).getDay() === 4)?.totalSum || 0, // Thursday
+        dailySales.find(sale => new Date(sale.date).getDay() === 5)?.totalSum || 0, // Friday
+        dailySales.find(sale => new Date(sale.date).getDay() === 6)?.totalSum || 0, // Saturday
+        dailySales.find(sale => new Date(sale.date).getDay() === 0)?.totalSum || 0  // Sunday
+      ],
+      backgroundColor: 'rgba(75, 192, 192, 0.6)',
+      borderColor: 'rgba(75, 192, 192, 1)',
+      borderWidth: 1,
+    },
+  ],
+};
 
-  // Prepare data for the line chart (12PM to 12AM)
-  const dailyChartData = {
-    labels: [
-      '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM', '7PM', '8PM', '9PM', '10PM', '11PM', '12AM'
-    ],
-    datasets: [
-      {
-        label: 'Daily Sales ($)',
-        data: dailySales.map((sales) => sales.totalSales),
-        fill: false,
-        borderColor: 'rgba(255, 99, 132, 1)',
-        tension: 0.1,
-      },
-    ],
-  };
+// Prepare data for the line chart (12PM to 12AM)
+// Assuming you have a way to determine sales by hour, you might need to structure your daily sales data accordingly
+const hourlySalesData = Array(24).fill(0); // Initialize an array for 24 hours
 
-  // // Prepare data for the monthly sales chart
-  // const monthlyChartData = {
-  //   labels: [
-  //     'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
-  //   ],
-  //   datasets: [
-  //     {
-  //       label: 'Monthly Sales ($)',
-  //       data: monthlySales.map(sale => sale.totalSales), // Array of total sales amounts
-  //       backgroundColor: 'rgba(153, 102, 255, 0.6)',
-  //       borderColor: 'rgba(153, 102, 255, 1)',
-  //       borderWidth: 1,
-  //     },
-  //   ],
-  // };
+dailyOrders.forEach(order => {
+  const orderHour = new Date(order.date).getHours(); // Get the hour of the order
+  const totalOrderAmount = order.totalOrders; // Adjust according to your data structure
+
+  hourlySalesData[orderHour] += totalOrderAmount; // Accumulate sales for each hour
+});
+
+// Prepare the data for the line chart
+const dailyChartData = {
+  labels: [
+    '12AM', '1AM', '2AM', '3AM', '4AM', '5AM', '6AM', '7AM', '8AM', '9AM', '10AM', '11AM',
+    '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM', '7PM', '8PM', '9PM', '10PM', '11PM'
+  ],
+  datasets: [
+    {
+      label: 'Daily Sales ($)',
+      data: hourlySalesData, // Use the accumulated hourly sales data
+      fill: false,
+      borderColor: 'rgba(255, 99, 132, 1)',
+      tension: 0.1,
+    },
+  ],
+};
+
 
   return (
-    <Box sx={{ padding: 2,minHeight: '100vh' }}>
+    <Box sx={{ padding: 2, minHeight: '100vh' }}>
       <Typography variant="h4" gutterBottom>
         Sales Analytics
       </Typography>
@@ -180,7 +183,9 @@ const Chart: React.FC = () => {
                   Weekly Total Sales
                 </Typography>
                 <Typography variant="h4" color="primary">
-                  ${totalSales.toFixed(2)}
+                  ${(totalSum)}
+                  
+                
                 </Typography>
               </CardContent>
             </Card>
@@ -202,30 +207,24 @@ const Chart: React.FC = () => {
       )}
 
       <Box sx={{ mt: 4 }}>
-
-        <Box sx={{ mt: 4 }}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h5" gutterBottom>
-                Daily Sales Overview
-              </Typography>
-              <Line data={dailyChartData} options={{ responsive: true }} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h5" gutterBottom>
-                Weekly Sales Overview
-              </Typography>
-              <Bar data={weeklyChartData} options={{ responsive: true }} />
-              {/* <Typography variant="h6" gutterBottom>
-                Monthly Sales Overview
-              </Typography>
-              <Line data={monthlyChartData} options={{ responsive: true }} /> */}
-            </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Typography variant="h5" gutterBottom>
+              Daily Sales Overview
+            </Typography>
+            <Line data={dailyChartData} options={{ responsive: true }} />
           </Grid>
-        </Box>
+          <Grid item xs={12} md={6}>
+            <Typography variant="h5" gutterBottom>
+              Weekly Sales Overview
+            </Typography>
+            <Bar data={weeklyChartData} options={{ responsive: true }} />
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   );
 };
 
 export default Chart;
+
