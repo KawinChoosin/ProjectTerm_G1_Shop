@@ -16,7 +16,7 @@ There are .env.example in
 - **TBackend** repository
 - **TProject** repository
 
-***Don't forget to change all .env.example into .env***
+*** ***Don't forget to change all .env.example into .env*** ***
 <br/>
 <br/>
 
@@ -51,8 +51,7 @@ docker exec -it g1-db bash
 ```bash
 psql -U usertest -d g1db
 ```
-
-- Don't forget to change the password.
+*** ***Don't forget to change the password*** ***
 
 ```bash
 REVOKE CONNECT ON DATABASE g1db FROM public;
