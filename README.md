@@ -9,7 +9,7 @@
 - ธัญชนก กวีกุล 650615021
 <br/>
 
-## 1. Change all .env.example to .env
+## 1) Change all .env.example to .env
 
 There are .env.example in 
 - **PROJECTTERM_MAINPAGE** repository
@@ -18,22 +18,23 @@ There are .env.example in
 
 ***Don't forget to change all .env.example into .env***
 <br/>
+<br/>
 
-## 2. Config .env in TBackend repository
+## 2) Config .env in TBackend repository
 
 There are **GOOGLE_CID** and **GOOGLE_CS** you need to config.
 - **GOOGLE_CID** is for Google OAuth 2.0 **Client ID**
 - **GOOGLE_CS** is for Google OAuth 2.0 **Client Secret**
 <br/>
 
-## 3. Spinning up database instance using [docker](https://hub.docker.com/).
+## 3) Spinning up database instance using [docker](https://hub.docker.com/).
 
 ```bash
 docker compose up -d --build
 ```
 <br/>
 
-## 4. Go to TBackend repository
+## 4) Go to TBackend repository
 
 **Install Packages**
 
@@ -76,7 +77,7 @@ npx prisma generate
 ```
 <br/>
 
-## 5. Go to TProject repository
+## 5) Go to TProject repository
 
 **Install Packages**
 
