@@ -28,9 +28,13 @@ const AddProductPage: React.FC = () => {
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategory, setNewCategory] = useState("");
-  const [successMessage, setSuccessMessage] = useState(false);
   const [fileImg, setFileImg] = useState<File | null>(null);
   const [imgPreview, setImgPreview] = useState<string | null>(null); // State to hold image preview URL
+  const [alertMessage] = useState("");
+  const [alertSeverity] = useState<"success" | "error" | "warning" | "info">(
+    "success"
+  );
+  const [showAlert, setShowAlert] = useState(false); //set time to show alert
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -57,6 +61,20 @@ const AddProductPage: React.FC = () => {
       setImgPreview(null); // Reset preview if no image is selected
     }
   }, [fileImg]);
+
+  // const triggerAlert = (
+  //   message: string,
+  //   severity: "success" | "error" | "warning" | "info"
+  // ) => {
+  //   setAlertMessage(message);
+  //   setAlertSeverity(severity);
+  //   setShowAlert(true);
+
+  //   // set time out = 5 sec for alert
+  //   setTimeout(() => {
+  //     setShowAlert(false);
+  //   }, 5000);
+  // };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -110,7 +128,7 @@ const AddProductPage: React.FC = () => {
         setFileImg(null);
         setNewCategory("");
         setImgPreview(null); // Reset the image preview
-        setSuccessMessage(true);
+        // setSuccessMessage(true);
       } else {
         console.error("Failed to add product");
       }
@@ -126,9 +144,9 @@ const AddProductPage: React.FC = () => {
     }
   };
 
-  const handleClose = () => {
-    setSuccessMessage(false);
-  };
+  // const handleClose = () => {
+  //   setSuccessMessage(false);
+  // };
 
   return (
     <Box sx={{ padding: 2, minHeight: "100vh" }}>
@@ -307,13 +325,11 @@ const AddProductPage: React.FC = () => {
       </Card>
 
       <Snackbar
-        open={successMessage}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} // Set anchor position to top center
+        open={showAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert onClose={handleClose} severity="success">
-          Product added successfully!
+        <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
+          {alertMessage}
         </Alert>
       </Snackbar>
     </Box>

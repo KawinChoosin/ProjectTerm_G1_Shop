@@ -130,21 +130,11 @@ const ProductDetail: React.FC = () => {
     setAlertSeverity(severity);
     setShowAlert(true);
 
-    // set time out = 3 sec for alert
+    // set time out = 5 sec for alert
     setTimeout(() => {
       setShowAlert(false);
-    }, 3000);
+    }, 5000);
   };
-
-  // const checkStock = async () => {
-  //   try {
-  //     const response = await axios.get(`http://localhost:3000/check-stock/${product.P_id}`);
-  //     return response.data.P_quantity;
-  //   } catch (error) {
-  //     console.error("Error checking stock:", error);
-  //     return null;
-  //   }
-  // };
 
   const handleAddToCart = async () => {
     if (!C_id) {
@@ -157,24 +147,14 @@ const ProductDetail: React.FC = () => {
     }
 
     try {
-      // const stock = await checkStock();
-
-      // if (stock === null) {
-      //   triggerAlert("Unable to check stock", "error");
-      //   return;
-      // }
-
-      // if (quantity > stock) {
-      //   triggerAlert(`Cannot add more than ${stock} items to cart`, "error");
-      //   return;
-      // }
-
       const response = await axios.post("http://localhost:3000/cart/add", {
         C_id: C_id,
         P_id: product.P_id,
         CA_quantity: quantity,
         CA_price: product.P_price,
       });
+
+      console.log(response.data.CA_price);
 
       if (response.status === 200) {
         triggerAlert(

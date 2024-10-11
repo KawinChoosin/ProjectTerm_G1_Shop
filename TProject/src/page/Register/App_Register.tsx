@@ -27,7 +27,7 @@ const RegisterForm: React.FC = () => {
   const [repassword, setRepassword] = useState({ re_password: "" });
   const [error, setError] = useState("");
   const [phoneError, setPhoneError] = useState(""); // State for phone number validation
-  const [passwordMatchError, setPasswordMatchError] = useState("");
+  const [passwordMatchError] = useState("");
 
   // Calculate age based on birthday
   const calculateAge = (birthdate: string) => {

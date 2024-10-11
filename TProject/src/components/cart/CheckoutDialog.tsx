@@ -17,12 +17,11 @@ import {
   Snackbar,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import  Grid  from "@mui/material/Grid2"; // Importing Grid
+import Grid from "@mui/material/Grid2"; // Importing Grid
 import axios from "axios";
 import QR from "./Qr";
 import PaymentForm from "./uploadfile"; // Ensure this is the correct import for your upload component
-import { useForm, Controller } from 'react-hook-form';
-
+import { useForm, Controller } from "react-hook-form";
 
 interface CheckoutDialogProps {
   open: boolean;
@@ -103,16 +102,21 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     "success" | "error" | "warning" | "info"
   >("success");
   const [showAlert, setShowAlert] = useState(false);
-  const { control, handleSubmit, formState: { errors }, trigger } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+  } = useForm({
     mode: "onBlur", // Trigger validation onBlur
     defaultValues: {
-      name: '',
-      phoneNumber: '',
-      street: '',
-      city: '',
-      state: '',
-      postalCode: '',
-      country: ''
+      name: "",
+      phoneNumber: "",
+      street: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
     },
   });
 
@@ -181,14 +185,13 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   };
 
   const handleSaveNewAddress = async () => {
-    
     // Check for form validation here
     const isValid = await trigger(); // Trigger validation for all fields
     if (!isValid) {
       triggerAlert("Please fill all fields to save the new address.", "error");
       return;
     }
-  
+
     try {
       const response = await axios.post("http://localhost:3000/address", {
         A_street: newAddress.street,
@@ -200,15 +203,15 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         A_name: newAddress.name,
         A_phone: newAddress.phoneNumber,
       });
-  
+
       const savedAddress = response.data; // Ensure this matches your API's response
-  
+
       // Update checkout addresses to include the newly added address
       setCheckoutAddresses((prevAddresses) => [...prevAddresses, savedAddress]);
-  
+
       // Automatically select the newly added address
       setAddress(savedAddress);
-  
+
       // Clear the newAddress state if you want to reset the form
       setNewAddress({
         name: "",
@@ -219,7 +222,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         postalCode: "",
         country: "",
       });
-  
+
       // Hide the new address form and go back to the address selection view
       setShowNewAddressForm(false);
     } catch (error) {
@@ -227,11 +230,9 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       triggerAlert("Failed to save the new address.", "error");
     }
   };
-  
-  
+
   // Add this in the component to set newAddress when toggling form
   const handleShowNewAddressForm = () => {
- 
     // Optionally, reset newAddress if you want a fresh form
     setNewAddress({
       name: "",
@@ -244,7 +245,6 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     });
     setShowNewAddressForm(true);
   };
-  
 
   const handleCheckoutSubmit = async () => {
     // Validate address selection or addition
@@ -271,7 +271,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
 
       // Calculate total amount
       const total = cartItems.reduce(
-        (sum: number, item: CartItem) => sum + item.CA_price * item.CA_quantity,
+        (sum: number, item: CartItem) => sum + item.CA_price,
         0
       );
 
@@ -318,17 +318,15 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     }
   };
 
-  const dateInUTC7 = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Bangkok', // UTC+07:00
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
+  const dateInUTC7 = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Bangkok", // UTC+07:00
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
   }).format(new Date());
-
- 
 
   const submitOrder = async (
     customerId: number,
@@ -487,199 +485,229 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                 </div>
               </FormControl>
             ) : (
-              <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth TransitionComponent={Transition}>
-              <DialogTitle>CHECKOUT</DialogTitle>
-              <DialogContent>
-                <form onSubmit={handleSubmit(handleCheckoutSubmit)}>
-                  <Grid container spacing={2}>
-                    <Grid size={12}>
-                      <Controller
-                        name="name"
-                        
-                        control={control}
-                        rules={{ required: 'Name is required' }}
-                        render={({ field }) => (
-                          <TextField
-                            label="Name"
-                            fullWidth
-                            variant="outlined"
-                            
-                            // {...field}
-                            error={!!errors.name}
-                            helperText={errors.name?.message}
-                            onBlur={() => trigger('name')}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              setNewAddress((prev) => ({ ...prev, name: e.target.value })); // Update newAddress state
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
-      
-                    <Grid size={12}>
-                      <Controller
-                        name="phoneNumber"
-                        control={control}
-                        rules={{
-                          required: 'Phone number is required',
-                          pattern: {
-                            value: /^0[0-9]{9}$/, // Example: phone must start with 0 and have 10 digits
-                            message: 'Phone number must start with 0 and be 10 digits long',
-                          },
-                        }}
-                        render={({ field }) => (
-                          <TextField
-                            label="Phone"
-                            fullWidth
-                            variant="outlined"
-                            // {...field}
-                            error={!!errors.phoneNumber}
-                            helperText={errors.phoneNumber?.message}
-                            onBlur={() => trigger('phoneNumber')}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              setNewAddress((prev) => ({ ...prev, phoneNumber: e.target.value })); // Update newAddress state
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
-      
-                    <Grid size={12}>
-                      <Controller
-                        name="street"
-                        control={control}
-                        rules={{ required: 'Street is required' }}
-                        render={({ field }) => (
-                          <TextField
-                            label="Street"
-                            fullWidth
-                            variant="outlined"
-                            // {...field}
-                            error={!!errors.street}
-                            helperText={errors.street?.message}
-                            onBlur={() => trigger('street')}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              setNewAddress((prev) => ({ ...prev, street: e.target.value })); // Update newAddress state
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
-      
-                    <Grid size={12}>
-                      <Controller
-                        name="city"
-                        control={control}
-                        rules={{ required: 'City is required' }}
-                        render={({ field }) => (
-                          <TextField
-                            label="City"
-                            fullWidth
-                            variant="outlined"
-                            // {...field}
-                            error={!!errors.city}
-                            helperText={errors.city?.message}
-                            onBlur={() => trigger('city')}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              setNewAddress((prev) => ({ ...prev, city: e.target.value })); // Update newAddress state
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
-      
-                    <Grid size={12}>
-                      <Controller
-                        name="state"
-                        control={control}
-                        rules={{ required: 'State is required' }}
-                        render={({ field }) => (
-                          <TextField
-                            label="State"
-                            fullWidth
-                            variant="outlined"
-                            // {...field}
-                            error={!!errors.state}
-                            helperText={errors.state?.message}
-                            onBlur={() => trigger('state')}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              setNewAddress((prev) => ({ ...prev, state: e.target.value })); // Update newAddress state
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
-      
-                    <Grid size={12}>
-                      <Controller
-                        name="postalCode"
-                        control={control}
-                        rules={{ required: 'Postal code is required' }}
-                        render={({ field }) => (
-                          <TextField
-                            label="Postal Code"
-                            fullWidth
-                            variant="outlined"
-                            // {...field}
-                            error={!!errors.postalCode}
-                            helperText={errors.postalCode?.message}
-                            onBlur={() => trigger('postalCode')}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              setNewAddress((prev) => ({ ...prev, postalCode: e.target.value })); // Update newAddress state
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
-      
-                    <Grid size={12}>
-                      <Controller
-                        name="country"
-                        control={control}
-                        rules={{ required: 'Country is required' }}
-                        render={({ field }) => (
-                          <TextField
-                            label="Country"
-                            fullWidth
-                            variant="outlined"
-                            // {...field}
-                            error={!!errors.country}
-                            helperText={errors.country?.message}
-                            onBlur={() => trigger('country')}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              setNewAddress((prev) => ({ ...prev, country: e.target.value })); // Update newAddress state
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  </Grid>
-      
-                  <DialogActions>
-                  <Button
-                  onClick={() => setShowNewAddressForm(false)}
-                  sx={{ mt: 2, color: "#db4237" }}
-                >
-                  BACK
-                </Button>
-                <Button
-                  onClick={handleSaveNewAddress}
-                  sx={{ mt: 2, ml: 13, color: "#596fb7", alignSelf: "center" }}
-                >
-                  Save New Address
-                </Button>
+              <Dialog
+                open={open}
+                onClose={onClose}
+                maxWidth="sm"
+                fullWidth
+                TransitionComponent={Transition}
+              >
+                <DialogTitle>CHECKOUT</DialogTitle>
+                <DialogContent>
+                  <form onSubmit={handleSubmit(handleCheckoutSubmit)}>
+                    <Grid container spacing={2}>
+                      <Grid size={12}>
+                        <Controller
+                          name="name"
+                          control={control}
+                          rules={{ required: "Name is required" }}
+                          render={({ field }) => (
+                            <TextField
+                              label="Name"
+                              fullWidth
+                              variant="outlined"
+                              // {...field}
+                              error={!!errors.name}
+                              helperText={errors.name?.message}
+                              onBlur={() => trigger("name")}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setNewAddress((prev) => ({
+                                  ...prev,
+                                  name: e.target.value,
+                                })); // Update newAddress state
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
 
-                  </DialogActions>
-                </form>
-              </DialogContent>
-            </Dialog>
+                      <Grid size={12}>
+                        <Controller
+                          name="phoneNumber"
+                          control={control}
+                          rules={{
+                            required: "Phone number is required",
+                            pattern: {
+                              value: /^0[0-9]{9}$/, // Example: phone must start with 0 and have 10 digits
+                              message:
+                                "Phone number must start with 0 and be 10 digits long",
+                            },
+                          }}
+                          render={({ field }) => (
+                            <TextField
+                              label="Phone"
+                              fullWidth
+                              variant="outlined"
+                              // {...field}
+                              error={!!errors.phoneNumber}
+                              helperText={errors.phoneNumber?.message}
+                              onBlur={() => trigger("phoneNumber")}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setNewAddress((prev) => ({
+                                  ...prev,
+                                  phoneNumber: e.target.value,
+                                })); // Update newAddress state
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
+
+                      <Grid size={12}>
+                        <Controller
+                          name="street"
+                          control={control}
+                          rules={{ required: "Street is required" }}
+                          render={({ field }) => (
+                            <TextField
+                              label="Street"
+                              fullWidth
+                              variant="outlined"
+                              // {...field}
+                              error={!!errors.street}
+                              helperText={errors.street?.message}
+                              onBlur={() => trigger("street")}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setNewAddress((prev) => ({
+                                  ...prev,
+                                  street: e.target.value,
+                                })); // Update newAddress state
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
+
+                      <Grid size={12}>
+                        <Controller
+                          name="city"
+                          control={control}
+                          rules={{ required: "City is required" }}
+                          render={({ field }) => (
+                            <TextField
+                              label="City"
+                              fullWidth
+                              variant="outlined"
+                              // {...field}
+                              error={!!errors.city}
+                              helperText={errors.city?.message}
+                              onBlur={() => trigger("city")}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setNewAddress((prev) => ({
+                                  ...prev,
+                                  city: e.target.value,
+                                })); // Update newAddress state
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
+
+                      <Grid size={12}>
+                        <Controller
+                          name="state"
+                          control={control}
+                          rules={{ required: "State is required" }}
+                          render={({ field }) => (
+                            <TextField
+                              label="State"
+                              fullWidth
+                              variant="outlined"
+                              // {...field}
+                              error={!!errors.state}
+                              helperText={errors.state?.message}
+                              onBlur={() => trigger("state")}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setNewAddress((prev) => ({
+                                  ...prev,
+                                  state: e.target.value,
+                                })); // Update newAddress state
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
+
+                      <Grid size={12}>
+                        <Controller
+                          name="postalCode"
+                          control={control}
+                          rules={{ required: "Postal code is required" }}
+                          render={({ field }) => (
+                            <TextField
+                              label="Postal Code"
+                              fullWidth
+                              variant="outlined"
+                              // {...field}
+                              error={!!errors.postalCode}
+                              helperText={errors.postalCode?.message}
+                              onBlur={() => trigger("postalCode")}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setNewAddress((prev) => ({
+                                  ...prev,
+                                  postalCode: e.target.value,
+                                })); // Update newAddress state
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
+
+                      <Grid size={12}>
+                        <Controller
+                          name="country"
+                          control={control}
+                          rules={{ required: "Country is required" }}
+                          render={({ field }) => (
+                            <TextField
+                              label="Country"
+                              fullWidth
+                              variant="outlined"
+                              // {...field}
+                              error={!!errors.country}
+                              helperText={errors.country?.message}
+                              onBlur={() => trigger("country")}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setNewAddress((prev) => ({
+                                  ...prev,
+                                  country: e.target.value,
+                                })); // Update newAddress state
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
+                    </Grid>
+
+                    <DialogActions>
+                      <Button
+                        onClick={() => setShowNewAddressForm(false)}
+                        sx={{ mt: 2, color: "#db4237" }}
+                      >
+                        BACK
+                      </Button>
+                      <Button
+                        onClick={handleSaveNewAddress}
+                        sx={{
+                          mt: 2,
+                          ml: 13,
+                          color: "#596fb7",
+                          alignSelf: "center",
+                        }}
+                      >
+                        Save New Address
+                      </Button>
+                    </DialogActions>
+                  </form>
+                </DialogContent>
+              </Dialog>
             )}
             <Snackbar
               open={showAlert}
@@ -692,7 +720,6 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                 {alertMessage}
               </Alert>
             </Snackbar>
-          
           </div>
         </DialogContent>
         <DialogActions>

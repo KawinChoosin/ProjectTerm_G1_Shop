@@ -89,26 +89,28 @@ const CartPage: React.FC = () => {
       const fetchCartDetails = async () => {
         try {
           // Fetch cart details
-          const response = await axios.get(`http://localhost:3000/cart/${customerId}`);
+          const response = await axios.get(
+            `http://localhost:3000/cart/${customerId}`
+          );
           const fetchedCartItems = response.data;
           const updatedCartItems = [...fetchedCartItems]; // Copy fetched cart items
-  
+
           // Loop through each cart item and check stock
           for (let i = 0; i < fetchedCartItems.length; i++) {
             const item = fetchedCartItems[i];
             const availableStock = await checkStockAvailability(item.P_id);
-  
+
             // If quantity exceeds stock, update the cart
             if (item.CA_quantity > availableStock.P_quantity) {
               updatedCartItems[i].CA_quantity = availableStock.P_quantity;
-  
+
               await axios.patch(`http://localhost:3000/cart/update`, {
                 C_id: item.C_id,
                 P_id: item.P_id,
                 CA_quantity: availableStock.P_quantity, // Set quantity to available stock
                 CA_price: parseFloat(item.Product.P_price) || 0, // Use product price from the cart item
               });
-  
+
               // If stock is zero, delete the item from the cart
               if (availableStock.P_quantity === 0) {
                 await axios.delete(`http://localhost:3000/cart/delete`, {
@@ -117,17 +119,13 @@ const CartPage: React.FC = () => {
                     P_id: item.P_id,
                   },
                 });
-  
+
                 // Remove the deleted item from updatedCartItems array
                 updatedCartItems.splice(i, 1);
                 i--; // Adjust index since we are modifying the array
 
-                triggerAlert(
-                  `${item.Product.P_name} out of stock.`,
-                  "warning"
-                );
-
-              }else{
+                triggerAlert(`${item.Product.P_name} out of stock.`, "warning");
+              } else {
                 // Notify user about the change
                 triggerAlert(
                   `${item.Product.P_name} quantity updated to ${availableStock.P_quantity} due to stock limits.`,
@@ -136,7 +134,7 @@ const CartPage: React.FC = () => {
               }
             }
           }
-  
+
           // Set updated cart items to the state
           setCartItems(updatedCartItems);
           setLoading(false);
@@ -146,12 +144,11 @@ const CartPage: React.FC = () => {
           setLoading(false);
         }
       };
-  
+
       fetchCartDetails();
     }
   }, [customerId, openCheckoutDialog, dataRef]);
-  
-  
+
   const triggerAlert = (
     message: string,
     severity: "success" | "error" | "warning" | "info"
@@ -169,7 +166,9 @@ const CartPage: React.FC = () => {
   const checkStockAvailability = async (itemId: number) => {
     try {
       // Fetch stock data for the specific product
-      const response = await axios.get(`http://localhost:3000/products/check-stock/${itemId}`);
+      const response = await axios.get(
+        `http://localhost:3000/products/check-stock/${itemId}`
+      );
       const stockItem = response.data;
       return stockItem;
     } catch (error) {
@@ -177,22 +176,22 @@ const CartPage: React.FC = () => {
       return false; // Assume item is out of stock on error
     }
   };
-  
+
   const handleQuantityChange = async (id: number, newQuantity: number) => {
     // const availableStock = await checkStockAvailability(id);
-    
+
     // if (newQuantity > availableStock) {
     //   triggerAlert("Product is out of stock", "error");
     //   return;
     // }
-  
+
     // Proceed to update the cart
     setCartItems((prevItems) =>
       prevItems.map((item) =>
         item.P_id === id ? { ...item, CA_quantity: newQuantity } : item
       )
     );
-  
+
     const updatedItem = cartItems.find((item) => item.P_id === id);
     if (updatedItem) {
       try {
@@ -226,41 +225,45 @@ const CartPage: React.FC = () => {
   const handleOpenCheckout = async () => {
     let validCart = true;
     const updatedCartItems = [...cartItems]; // Copy the current cart items
-  
+
     for (let i = 0; i < cartItems.length; i++) {
       const item = cartItems[i];
       const availableStock = await checkStockAvailability(item.P_id);
-  
+
       if (availableStock < item.CA_quantity) {
         validCart = false;
-  
+
         // Set the cart item's quantity to 0 if it exceeds available stock
         if (availableStock === 0) {
-          triggerAlert(`${item.Product.P_name} is out of stock and removed from cart`, "error");
+          triggerAlert(
+            `${item.Product.P_name} is out of stock and removed from cart`,
+            "error"
+          );
           updatedCartItems[i].CA_quantity = 0; // Set quantity to 0 if out of stock
         } else {
-          triggerAlert(`${item.Product.P_name} quantity exceeds stock. Adjusting to 0`, "warning");
+          triggerAlert(
+            `${item.Product.P_name} quantity exceeds stock. Adjusting to 0`,
+            "warning"
+          );
           updatedCartItems[i].CA_quantity = 0; // Adjust quantity to 0 as per requirement
         }
       }
     }
-  
+
     // Update cart with the adjusted items (including any with a quantity of 0)
     setCartItems(updatedCartItems);
-  
+
     // Open checkout dialog if all items are valid
     if (validCart) {
       setOpenCheckoutDialog(true);
     }
   };
-  
-  
 
   const handleCloseCheckout = () => {
     setOpenCheckoutDialog(false);
   };
 
-  const handleCheckoutSubmit = async (addressId: number) => {
+  const handleCheckoutSubmit = async () => {
     // console.log("Address ID:", addressId);
     handleCloseCheckout();
     triggerAlert("Order successfully placed and cart cleared!", "success");
@@ -275,7 +278,7 @@ const CartPage: React.FC = () => {
 
   const subtotal = calculateSubtotal();
   const shipping = 0;
-  let discount = 0;
+  // let discount = 0;
   let total = subtotal + shipping;
 
   // if (total >= 1000) {
@@ -356,14 +359,13 @@ const CartPage: React.FC = () => {
             <Grid size={{ xs: 12, md: 4 }}>
               <Box onClick={() => setDataref(true)}>
                 <CartTotals
-                subtotal={subtotal}
-                shipping={shipping}
-                discount={discount}
-                total={total}
-                onCheckout={handleOpenCheckout}
-              />
+                  // subtotal={subtotal}
+                  // shipping={shipping}
+                  // discount={discount}
+                  total={total}
+                  onCheckout={handleOpenCheckout}
+                />
               </Box>
-              
             </Grid>
           </Grid>
         </ThemeProvider>
@@ -384,7 +386,6 @@ const CartPage: React.FC = () => {
           open={openCheckoutDialog}
           onClose={handleCloseCheckout}
           onSubmit={handleCheckoutSubmit}
-
           total={total}
         />
       )}

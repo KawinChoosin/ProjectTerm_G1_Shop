@@ -20,8 +20,8 @@ COPY prisma ./prisma
 COPY . .
 
 
-RUN npx prisma generate
 # RUN npx prisma migrate dev --name init
+RUN npx prisma generate
 # # Generate Prisma client
 
 CMD ["node", "index.js"]

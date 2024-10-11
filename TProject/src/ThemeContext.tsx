@@ -1,25 +1,26 @@
-import { createContext, useMemo, useState, ReactNode } from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
-import React from 'react';
+import { createContext, useMemo, useState, ReactNode } from "react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
+// @ts-ignore
+import React from "react";
 
 type ThemeContextType = {
   toggleTheme: () => void;
-  mode: 'light' | 'dark'; // Add this line
+  mode: "light" | "dark"; // Add this line
 };
 
 export const ColorModeContext = createContext<ThemeContextType>({
   toggleTheme: () => {},
-  mode: 'light', // Default value
+  mode: "light", // Default value
 });
 
 export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [mode, setMode] = useState<"light" | "dark">("light");
 
   const colorMode = useMemo(
     () => ({
       toggleTheme: () => {
-        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
       },
       mode,
     }),

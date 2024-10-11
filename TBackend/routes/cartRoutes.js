@@ -24,7 +24,7 @@ router.post("/add", async (req, res) => {
         },
         data: {
           CA_quantity: existingCartDetail.CA_quantity + CA_quantity,
-          CA_price: existingCartPrice + (newPrice * quantity),
+          CA_price: existingCartPrice + newPrice * quantity,
         },
       });
       res.json(updatedCartDetail);

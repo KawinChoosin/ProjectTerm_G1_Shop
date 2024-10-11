@@ -6,7 +6,7 @@ const _ = require("lodash");
 const QRCode = require("qrcode");
 const generatePayload = require("promptpay-qr");
 const upload = require("../upload");
-const { startOfWeek, endOfWeek, format } = require('date-fns');
+const { startOfWeek, endOfWeek, format } = require("date-fns");
 
 // Get all orders for a customer
 router.get("/customer/:C_id", async (req, res) => {
@@ -32,11 +32,11 @@ router.get("/customer/:C_id", async (req, res) => {
         order.Payment.PM_path = `http://localhost:3000/${order.Payment.PM_path}`;
       }
     });
-    if (orders.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No orders found for this customer" });
-    }
+    // if (orders.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .json({ message: "No orders found for this customer" });
+    // }
 
     res.json(orders);
   } catch (error) {
@@ -123,7 +123,7 @@ router.post("/", upload.single("slip"), async (req, res) => {
 
     // Convert Date_time to UTC from UTC+07:00
     const localDate = new Date(Date_time); // Local date from user input (assumed UTC+07:00)
-    const utc7Date = new Date(localDate.getTime() + (7 * 60 * 60 * 1000)); // Adjust by 7 hours to convert to UTC
+    const utc7Date = new Date(localDate.getTime() + 7 * 60 * 60 * 1000); // Adjust by 7 hours to convert to UTC
 
     // Start a transaction
     const transaction = await prisma.$transaction(async (prisma) => {
@@ -336,8 +336,6 @@ router.post("/generateQR", (req, res) => {
 //   }
 // });
 
-
-
 router.get("/chart/total-sales-week", async (req, res) => {
   try {
     // Get the start and end of the current week (assuming the week starts on Monday)
@@ -354,15 +352,15 @@ router.get("/chart/total-sales-week", async (req, res) => {
         },
       },
       orderBy: {
-        O_Date_time: 'asc', // Sort orders by date (ascending)
+        O_Date_time: "asc", // Sort orders by date (ascending)
       },
     });
 
     // Return the full list of orders within the week
     res.json({
-      weekStart: format(weekStart, 'yyyy-MM-dd'),
-      weekEnd: format(weekEnd, 'yyyy-MM-dd'),
-      orders,  // Send all orders directly without grouping
+      weekStart: format(weekStart, "yyyy-MM-dd"),
+      weekEnd: format(weekEnd, "yyyy-MM-dd"),
+      orders, // Send all orders directly without grouping
     });
   } catch (error) {
     console.error("Error fetching weekly orders:", error);

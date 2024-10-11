@@ -1,6 +1,6 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 // @ts-ignore
-import React from 'react'; 
+import React from "react";
 import {
   Box,
   Typography,
@@ -86,7 +86,8 @@ function User() {
             `http://localhost:3000/profile?C_id=${C_id}`
           );
           setUser([response.data[0]]);
-          if (response.data[0].C_password == null) {
+          console.log("hearrasdsao", response.data[0].C_password);
+          if (response.data[0].C_password.length == 0) {
             setPassnull(true);
           } else {
             setPassnull(false);
