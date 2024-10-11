@@ -14,15 +14,17 @@ EXPOSE 3000
 # Run the app
 
 # Copy Prisma schema
-COPY prisma ./prisma
+
 
 # Copy app source code
 COPY . .
 
 
+COPY prisma ./prisma
+
 # RUN npx prisma migrate dev --name init
 RUN npx prisma generate
 # # Generate Prisma client
 
-CMD ["node", "index.js"]
+CMD ["npm", "run", "backend"]
 

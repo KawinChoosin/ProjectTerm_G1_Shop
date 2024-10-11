@@ -87,16 +87,17 @@ const CartItem: React.FC<CartItemProps> = ({ item, onQuantityChange, onDelete })
         >
           <Add />
         </IconButton>
+            <Typography
+            variant="h6"
+            align="right"
+            fontWeight="500"
+            sx={{ width: "100px", textAlign: "left" }}
+          >
+            ฿ {(parseFloat(item.P_price) *  realQuantity).toFixed(2)}
+          </Typography>
       </Box>
 
-      <Typography
-        variant="h6"
-        align="right"
-        fontWeight="500"
-        sx={{ width: "100px", textAlign: "left" }}
-      >
-        ฿ {(parseFloat(item.P_price) *  realQuantity).toFixed(2)}
-      </Typography>
+      
 
       <IconButton
         onClick={handleDelete}

@@ -66,6 +66,9 @@ ALTER USER tuser CREATEDB;
 ```
 
 **Database Prisma Setup**
+```bash
+docker exec -it g1-backend bash
+```
 
 ```bash
 npx prisma migrate dev --name init

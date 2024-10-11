@@ -10,13 +10,15 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+
+
 # Copy local code to the container image
 COPY . .
 
 # Expose port 5173 for Vite
 EXPOSE 5173
 
-RUN npm run build
+
 
 # Run the web service on container startup
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "dev"]
