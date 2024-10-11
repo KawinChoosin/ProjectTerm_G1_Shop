@@ -69,7 +69,9 @@ const ProductList: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/products");
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/products`
+        );
         const sortedProducts = response.data.sort(
           (a: Product, b: Product) => b.P_id - a.P_id
         );
@@ -84,7 +86,9 @@ const ProductList: React.FC = () => {
 
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/categories");
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/categories`
+        );
         setCategories(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -130,7 +134,9 @@ const ProductList: React.FC = () => {
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     setFormData(product);
-    setImagePreview(`http://localhost:3000/uploads/${product.P_img}`); // Set image preview to existing image
+    setImagePreview(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${product.P_img}`
+    ); // Set image preview to existing image
     setImageFile(null); // Reset the uploaded file
   };
 
@@ -182,7 +188,9 @@ const ProductList: React.FC = () => {
     try {
       // Send a PUT request to update the product
       const response = await axios.put(
-        `http://localhost:3000/products/${editingProduct.P_id}`,
+        `${import.meta.env.VITE_APP_API_BASE_URL}/products/${
+          editingProduct.P_id
+        }`,
         formDataToSend,
         {
           headers: {
@@ -223,7 +231,9 @@ const ProductList: React.FC = () => {
     if (productIdToDelete !== null) {
       try {
         await axios.delete(
-          `http://localhost:3000/products/${productIdToDelete}`
+          `${
+            import.meta.env.VITE_APP_API_BASE_URL
+          }/products/${productIdToDelete}`
         );
         setFilteredProducts((prev) =>
           prev.filter((product) => product.P_id !== productIdToDelete)
@@ -289,7 +299,9 @@ const ProductList: React.FC = () => {
               {filteredProducts.map((product) => (
                 <ListItem key={product.P_id} divider>
                   <Avatar
-                    src={`http://localhost:3000/uploads/${product.P_img}`}
+                    src={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+                      product.P_img
+                    }`}
                     alt={product.P_name}
                     sx={{ marginRight: 2 }}
                   />

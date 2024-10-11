@@ -39,7 +39,9 @@ const AddProductPage: React.FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/categories");
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/categories`
+        );
         setCategories(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -93,7 +95,7 @@ const AddProductPage: React.FC = () => {
     if (newCategory) {
       try {
         const categoryResponse = await axios.post(
-          "http://localhost:3000/categories",
+          `${import.meta.env.VITE_APP_API_BASE_URL}/categories`,
           {
             CG_name: newCategory,
           }
@@ -109,7 +111,7 @@ const AddProductPage: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/products",
+        `${import.meta.env.VITE_APP_API_BASE_URL}/products`,
         formData,
         {
           headers: {

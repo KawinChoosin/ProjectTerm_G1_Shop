@@ -18,13 +18,13 @@ const App: React.FC = () => {
     "all"
   ); // Change to store category ID
 
-
-
   // Fetch products from the backend API
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/products");
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/products`
+        );
         setProducts(response.data);
         setLoading(false);
       } catch (err) {
@@ -41,7 +41,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/categories");
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/categories`
+        );
         setCategories([{ CG_id: "all", CG_name: "ALL" }, ...response.data]); // Include "ALL" category
       } catch (err) {
         console.error("Error fetching categories:", err);

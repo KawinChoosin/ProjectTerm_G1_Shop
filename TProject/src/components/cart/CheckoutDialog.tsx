@@ -146,7 +146,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   const fetchAddresses = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/address/${customerId}`
+        `${import.meta.env.VITE_APP_API_BASE_URL}/address/${customerId}`
       );
       const addresses = response.data.map((addr: any) => ({
         A_id: addr.A_id,
@@ -193,16 +193,19 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/address", {
-        A_street: newAddress.street,
-        A_city: newAddress.city,
-        A_state: newAddress.state,
-        A_postalCode: newAddress.postalCode,
-        A_country: newAddress.country,
-        C_id: customerId,
-        A_name: newAddress.name,
-        A_phone: newAddress.phoneNumber,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/address`,
+        {
+          A_street: newAddress.street,
+          A_city: newAddress.city,
+          A_state: newAddress.state,
+          A_postalCode: newAddress.postalCode,
+          A_country: newAddress.country,
+          C_id: customerId,
+          A_name: newAddress.name,
+          A_phone: newAddress.phoneNumber,
+        }
+      );
 
       const savedAddress = response.data; // Ensure this matches your API's response
 
@@ -269,20 +272,27 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         OD_price: item.CA_price,
       }));
 
+      // console.log("orderDetails: ", orderDetails);
+
       // Calculate total amount
       const total = cartItems.reduce(
         (sum: number, item: CartItem) => sum + item.CA_price,
         0
       );
 
+      // console.log("total: ", total);
+
       // Handle address submission (new or existing)
       const addressId: number = await handleAddressSubmission();
+
+      // console.log("addressId: ", addressId);
 
       // Handle file upload before submitting the order
       let payslipPath: string | null = null; // Initialize payslipPath
 
       if (selectedFile) {
         payslipPath = await uploadPayslip(selectedFile); // Get the file path
+        // console.log(payslipPath);
       } else {
         triggerAlert("Please upload a payslip.", "error");
         return;
@@ -305,11 +315,11 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         payslipPath
       ); // Pass the payslip path
 
-      // console.log("Order Details:", orderDetails);
+      // console.log("1 Order Details:", orderDetails);
 
       // Clear the cart after a successful order
       await clearCart(cartItems);
-
+      // console.log("Clear cart successfully");
       // alert("Order successfully placed and cart cleared!");
       onSubmit(addressId); // Pass selected address and payment method
     } catch (error) {
@@ -345,20 +355,22 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       O_Description: null,
       orderDetails,
     };
-    // console.log(orderData)
+    console.log(orderData);
 
-    await axios.post("http://localhost:3000/order", orderData);
+    await axios.post(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/order`,
+      orderData
+    );
   };
 
   const uploadPayslip = async (file: File) => {
     const formData = new FormData();
     formData.append("slip", file);
-
     // If you're appending numbers, convert them to strings first
     formData.append("total", total.toString());
 
     const fileUploadResponse = await axios.post(
-      "http://localhost:3000/upload/slip",
+      `${import.meta.env.VITE_APP_API_BASE_URL}/upload/slip`,
       formData,
       {
         headers: {
@@ -366,13 +378,14 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         },
       }
     );
+    console.log(fileUploadResponse.data.payslipPath);
     setUploadSuccess(true); // Set upload success
     return fileUploadResponse.data.payslipPath;
   };
 
   const fetchCartItems = async (customerId: number) => {
     const cartResponse = await axios.get(
-      `http://localhost:3000/cart/${customerId}`
+      `${import.meta.env.VITE_APP_API_BASE_URL}/cart/${customerId}`
     );
     return cartResponse.data;
   };
@@ -381,7 +394,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     let addressId: number;
     if (showNewAddressForm) {
       const addressResponse = await axios.post(
-        "http://localhost:3000/address",
+        `${import.meta.env.VITE_APP_API_BASE_URL}/address`,
         {
           A_street: newAddress.street,
           A_city: newAddress.city,
@@ -418,9 +431,12 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
 
   const clearCart = async (cartItems: CartItem[]) => {
     for (const item of cartItems) {
-      await axios.delete("http://localhost:3000/cart/delete", {
-        data: { C_id: customerId, P_id: item.P_id },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/cart/delete`,
+        {
+          data: { C_id: customerId, P_id: item.P_id },
+        }
+      );
     }
   };
 

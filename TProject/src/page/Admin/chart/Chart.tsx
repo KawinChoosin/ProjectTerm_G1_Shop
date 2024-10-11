@@ -69,7 +69,9 @@ const Chart: React.FC = () => {
 
         // Fetch total sales for the current week
         const salesResponse = await fetch(
-          `http://localhost:3000/order/chart/total-sales-week?start=${startOfWeekStr}&end=${endOfWeekStr}`
+          `${
+            import.meta.env.VITE_APP_API_BASE_URL
+          }/order/chart/total-sales-week?start=${startOfWeekStr}&end=${endOfWeekStr}`
         );
         const salesData = await salesResponse.json();
 

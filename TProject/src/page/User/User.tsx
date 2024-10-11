@@ -83,10 +83,9 @@ function User() {
       const fetchUser = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:3000/profile?C_id=${C_id}`
+            `${import.meta.env.VITE_APP_API_BASE_URL}/profile?C_id=${C_id}`
           );
           setUser([response.data[0]]);
-          console.log("hearrasdsao", response.data[0].C_password);
           if (response.data[0].C_password.length == 0) {
             setPassnull(true);
           } else {
@@ -142,7 +141,10 @@ function User() {
 
   const onSubmit = async (data: any) => {
     try {
-      await axios.put(`http://localhost:3000/profile?C_id=${C_id}`, data);
+      await axios.put(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/profile?C_id=${C_id}`,
+        data
+      );
       setEditMode(false);
       alert("User updated successfully");
     } catch (err) {
@@ -155,7 +157,9 @@ function User() {
       if (password.O_pass === user[0]?.C_password) {
         if (password.N_pass === password.RN_pass) {
           await axios.put(
-            `http://localhost:3000/profile/pass/${user[0].C_id}`,
+            `${import.meta.env.VITE_APP_API_BASE_URL}/profile/pass/${
+              user[0].C_id
+            }`,
             { C_password: password.N_pass }
           );
           setChangePass(false);

@@ -85,17 +85,17 @@ const OrderList: React.FC = () => {
         try {
           setNowlogin(C_id);
           const role = await axios.get(
-            `http://localhost:3000/profile?C_id=${C_id}`
+            `${import.meta.env.VITE_APP_API_BASE_URL}/profile?C_id=${C_id}`
           );
           if (role.data[0].C_Role) {
             setAdmin(true);
             const response = await axios.get(
-              `http://localhost:3000/orderlist/customer`
+              `${import.meta.env.VITE_APP_API_BASE_URL}/orderlist/customer`
             );
             setOrders(response.data);
           } else {
             const response = await axios.get(
-              `http://localhost:3000/order/customer/${C_id}`
+              `${import.meta.env.VITE_APP_API_BASE_URL}/order/customer/${C_id}`
             );
             setOrders(response.data);
           }
@@ -175,11 +175,14 @@ const OrderList: React.FC = () => {
       const userStatus = orderStatuses[O_id] || "waiting"; // Default to 'waiting'
       const statusToUpdate = statusMapping[userStatus]; // Convert to backend status
 
-      await axios.put(`http://localhost:3000/orderlist/descrip`, {
-        O_id,
-        O_Description: orderDescriptions[O_id] || null, // Send the specific description for the order
-        O_status: statusToUpdate, // Send the mapped status
-      });
+      await axios.put(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/orderlist/descrip`,
+        {
+          O_id,
+          O_Description: orderDescriptions[O_id] || null, // Send the specific description for the order
+          O_status: statusToUpdate, // Send the mapped status
+        }
+      );
 
       triggerAlert("Description updated successfully", "success");
       setdescripupdate(false);
@@ -604,7 +607,9 @@ const OrderList: React.FC = () => {
                           <Grid size={4}>
                             <img
                               src={
-                                `http://localhost:3000/uploads/${detail.Product.P_img}` ||
+                                `${
+                                  import.meta.env.VITE_APP_API_BASE_URL
+                                }/uploads/${detail.Product.P_img}` ||
                                 "/placeholder.png"
                               }
                               alt={`${detail.Product.P_name} image`}

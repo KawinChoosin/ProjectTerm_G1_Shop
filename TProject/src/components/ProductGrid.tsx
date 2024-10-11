@@ -1,5 +1,5 @@
 import React from "react";
-import {  Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 import { Link } from "react-router-dom"; // Import Link from React Router
 import Grid from "@mui/material/Grid2"; // Use Grid from @mui/material
 
@@ -31,8 +31,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
         .filter((product) => product.P_quantity > 0) // Only include products with quantity > 0
         .map((product) => (
           <Grid
-        
-            size={{xs:12,sm:6,md:4,lg:3}}
+            size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
             key={product.P_id}
             sx={{ display: "flex", justifyContent: "center" }} // Center products within their grid item
           >
@@ -60,7 +59,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
               >
                 <CardMedia
                   component="img"
-                  image={`http://localhost:3000/uploads/${product.P_img}`}
+                  image={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+                    product.P_img
+                  }`}
                   alt={product.P_name}
                   sx={{
                     height: "220px", // Image takes up 70% of card height
@@ -103,7 +104,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
         .filter((product) => product.P_quantity <= 0) // Only include products with quantity <= 0
         .map((product) => (
           <Grid
-            size={{xs:12,sm:6,md:4,lg:3}}
+            size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
             key={product.P_id}
             sx={{ display: "flex", justifyContent: "center" }} // Center products within their grid item
           >
@@ -129,7 +130,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
               >
                 <CardMedia
                   component="img"
-                  image={`http://localhost:3000/uploads/${product.P_img}`}
+                  image={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+                    product.P_img
+                  }`}
                   alt={product.P_name}
                   sx={{
                     height: "220px", // Image takes up 70% of card height

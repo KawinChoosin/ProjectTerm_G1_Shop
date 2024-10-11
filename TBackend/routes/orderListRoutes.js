@@ -77,7 +77,7 @@ router.get("/customer", async (req, res) => {
 
     orders.forEach((order) => {
       if (order.Payment && order.Payment.PM_path) {
-        order.Payment.PM_path = `http://localhost:3000/${order.Payment.PM_path}`;
+        order.Payment.PM_path = `${process.env.API_BASE_URL}/${order.Payment.PM_path}`;
       }
     });
     // if (orders.length === 0) {

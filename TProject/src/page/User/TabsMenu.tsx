@@ -65,7 +65,7 @@ function TabsMenu() {
       const fetchUser = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:3000/profile?C_id=${C_id}`
+            `${import.meta.env.VITE_APP_API_BASE_URL}/profile?C_id=${C_id}`
           );
           setAdmin(response.data[0].C_Role);
         } catch (err) {

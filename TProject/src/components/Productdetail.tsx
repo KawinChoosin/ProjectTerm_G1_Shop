@@ -42,7 +42,7 @@ const ProductDetail: React.FC = () => {
     const fetchProductDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/products/${id}`
+          `${import.meta.env.VITE_APP_API_BASE_URL}/products/${id}`
         );
         const product = response.data;
 
@@ -52,7 +52,9 @@ const ProductDetail: React.FC = () => {
 
         if (C_id) {
           const favoriteResponse = await axios.get(
-            `http://localhost:3000/favourite/check/${product.P_id}`,
+            `${import.meta.env.VITE_APP_API_BASE_URL}/favourite/check/${
+              product.P_id
+            }`,
             {
               params: {
                 C_id: C_id,
@@ -147,12 +149,15 @@ const ProductDetail: React.FC = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/cart/add", {
-        C_id: C_id,
-        P_id: product.P_id,
-        CA_quantity: quantity,
-        CA_price: product.P_price,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/cart/add`,
+        {
+          C_id: C_id,
+          P_id: product.P_id,
+          CA_quantity: quantity,
+          CA_price: product.P_price,
+        }
+      );
 
       console.log(response.data.CA_price);
 
@@ -181,7 +186,7 @@ const ProductDetail: React.FC = () => {
     try {
       if (newIsLiked) {
         const response = await axios.post(
-          "http://localhost:3000/favourite/add",
+          `${import.meta.env.VITE_APP_API_BASE_URL}/favourite/add`,
           {
             C_id: C_id,
             P_id: product.P_id,
@@ -195,7 +200,7 @@ const ProductDetail: React.FC = () => {
         }
       } else {
         const response = await axios.delete(
-          "http://localhost:3000/favourite/remove",
+          `${import.meta.env.VITE_APP_API_BASE_URL}/favourite/remove`,
           {
             data: {
               C_id: C_id,
@@ -273,7 +278,9 @@ const ProductDetail: React.FC = () => {
         >
           <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
             <img
-              src={`http://localhost:3000/uploads/${product.P_img}`}
+              src={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+                product.P_img
+              }`}
               alt={product?.P_name}
               style={{
                 width: "100%",
@@ -450,7 +457,9 @@ const ProductDetail: React.FC = () => {
           }}
         >
           <img
-            src={`http://localhost:3000/uploads/${product.P_img}`}
+            src={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+              product.P_img
+            }`}
             alt={product?.P_name}
             style={{
               width: "70%",

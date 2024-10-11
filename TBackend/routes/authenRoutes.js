@@ -2,11 +2,10 @@ const { OAuth2Client } = require("google-auth-library");
 const express = require("express");
 const prisma = require("../prisma/client");
 const router = express.Router();
-
 const client = new OAuth2Client(
   process.env.GOOGLE_CID,
   process.env.GOOGLE_CS,
-  "http://localhost:5173/auth/google/callback"
+  `${process.env.FE_BASE_URL}/auth/google/callback`
 );
 
 router.get("/callback", async (req, res) => {

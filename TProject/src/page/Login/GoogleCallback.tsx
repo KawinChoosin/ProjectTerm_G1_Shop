@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import UserContext from "../../context/UserContext";
+import Loading from "../../components/loading";
 
 const GoogleCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ const GoogleCallback: React.FC = () => {
     fetchGoogleUser();
   }, [navigate, setC_id, location.state]);
 
-  return <h1>Loading...</h1>; // Add loading spinner or placeholder
+  return <Loading />; // Add loading spinner or placeholder
 };
 
 export default GoogleCallback;

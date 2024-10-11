@@ -50,7 +50,9 @@ const OrdersByCustomer: React.FC = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/order/customer/${customerId}`
+          `${
+            import.meta.env.VITE_APP_API_BASE_URL
+          }/order/customer/${customerId}`
         );
         setOrders(response.data);
       } catch (err) {
@@ -135,7 +137,7 @@ const OrdersByCustomer: React.FC = () => {
                     Date: {new Date(order.Date_time).toLocaleDateString()}
                   </Typography>
                   <Typography variant="body1" sx={{ mt: 1 }}>
-                    Total: ${(order.Total).toFixed(2)}{" "}
+                    Total: ${order.Total.toFixed(2)}{" "}
                     {/* Assuming Total is in cents */}
                   </Typography>
                   <Collapse in={expandedOrders.has(order.O_id)}>
@@ -161,8 +163,7 @@ const OrdersByCustomer: React.FC = () => {
                             {detail.Product.P_name}
                           </Typography>
                           <Typography variant="body2">
-                            {detail.OD_quantity} x $
-                            {(detail.OD_price).toFixed(2)}{" "}
+                            {detail.OD_quantity} x ${detail.OD_price.toFixed(2)}{" "}
                             {/* Assuming price is in cents */}
                           </Typography>
                         </Grid>

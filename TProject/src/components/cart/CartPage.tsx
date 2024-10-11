@@ -90,7 +90,7 @@ const CartPage: React.FC = () => {
         try {
           // Fetch cart details
           const response = await axios.get(
-            `http://localhost:3000/cart/${customerId}`
+            `${import.meta.env.VITE_APP_API_BASE_URL}/cart/${customerId}`
           );
           const fetchedCartItems = response.data;
           const updatedCartItems = [...fetchedCartItems]; // Copy fetched cart items
@@ -104,21 +104,27 @@ const CartPage: React.FC = () => {
             if (item.CA_quantity > availableStock.P_quantity) {
               updatedCartItems[i].CA_quantity = availableStock.P_quantity;
 
-              await axios.patch(`http://localhost:3000/cart/update`, {
-                C_id: item.C_id,
-                P_id: item.P_id,
-                CA_quantity: availableStock.P_quantity, // Set quantity to available stock
-                CA_price: parseFloat(item.Product.P_price) || 0, // Use product price from the cart item
-              });
+              await axios.patch(
+                `${import.meta.env.VITE_APP_API_BASE_URL}/cart/update`,
+                {
+                  C_id: item.C_id,
+                  P_id: item.P_id,
+                  CA_quantity: availableStock.P_quantity, // Set quantity to available stock
+                  CA_price: parseFloat(item.Product.P_price) || 0, // Use product price from the cart item
+                }
+              );
 
               // If stock is zero, delete the item from the cart
               if (availableStock.P_quantity === 0) {
-                await axios.delete(`http://localhost:3000/cart/delete`, {
-                  data: {
-                    C_id: item.C_id,
-                    P_id: item.P_id,
-                  },
-                });
+                await axios.delete(
+                  `${import.meta.env.VITE_APP_API_BASE_URL}/cart/delete`,
+                  {
+                    data: {
+                      C_id: item.C_id,
+                      P_id: item.P_id,
+                    },
+                  }
+                );
 
                 // Remove the deleted item from updatedCartItems array
                 updatedCartItems.splice(i, 1);
@@ -167,7 +173,9 @@ const CartPage: React.FC = () => {
     try {
       // Fetch stock data for the specific product
       const response = await axios.get(
-        `http://localhost:3000/products/check-stock/${itemId}`
+        `${
+          import.meta.env.VITE_APP_API_BASE_URL
+        }/products/check-stock/${itemId}`
       );
       const stockItem = response.data;
       return stockItem;
@@ -195,12 +203,15 @@ const CartPage: React.FC = () => {
     const updatedItem = cartItems.find((item) => item.P_id === id);
     if (updatedItem) {
       try {
-        await axios.patch(`http://localhost:3000/cart/update`, {
-          C_id: updatedItem.C_id,
-          P_id: updatedItem.P_id,
-          CA_quantity: newQuantity,
-          CA_price: parseFloat(updatedItem.Product.P_price) || 0,
-        });
+        await axios.patch(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/cart/update`,
+          {
+            C_id: updatedItem.C_id,
+            P_id: updatedItem.P_id,
+            CA_quantity: newQuantity,
+            CA_price: parseFloat(updatedItem.Product.P_price) || 0,
+          }
+        );
       } catch (error) {
         console.error("Error updating cart quantity:", error);
       }
@@ -209,12 +220,15 @@ const CartPage: React.FC = () => {
 
   const handleDelete = async (P_id: number, C_id: number) => {
     try {
-      await axios.delete(`http://localhost:3000/cart/delete`, {
-        data: {
-          C_id,
-          P_id,
-        },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/cart/delete`,
+        {
+          data: {
+            C_id,
+            P_id,
+          },
+        }
+      );
 
       setCartItems(cartItems.filter((item) => item.P_id !== P_id));
     } catch (error) {
