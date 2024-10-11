@@ -15,13 +15,16 @@ router.post("/add", async (req, res) => {
     });
 
     if (existingCartDetail) {
+      let existingCartPrice = parseFloat(existingCartDetail.CA_price);
+      let newPrice = parseFloat(CA_price);
+      let quantity = parseInt(CA_quantity, 10);
       const updatedCartDetail = await prisma.cartDetail.update({
         where: {
           C_id_P_id: { C_id, P_id },
         },
         data: {
           CA_quantity: existingCartDetail.CA_quantity + CA_quantity,
-          CA_price: existingCartDetail.CA_price + CA_price * CA_quantity,
+          CA_price: existingCartPrice + (newPrice * quantity),
         },
       });
       res.json(updatedCartDetail);

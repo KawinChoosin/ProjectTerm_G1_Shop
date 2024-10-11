@@ -260,7 +260,7 @@ const CartPage: React.FC = () => {
     setOpenCheckoutDialog(false);
   };
 
-  const handleCheckoutSubmit = async () => {
+  const handleCheckoutSubmit = async (addressId: number) => {
     // console.log("Address ID:", addressId);
     handleCloseCheckout();
     triggerAlert("Order successfully placed and cart cleared!", "success");
@@ -278,11 +278,11 @@ const CartPage: React.FC = () => {
   let discount = 0;
   let total = subtotal + shipping;
 
-  if (total >= 1000) {
-    discount = total * 0.1;
-  }
+  // if (total >= 1000) {
+  //   discount = total * 0.1;
+  // }
 
-  total = total - discount;
+  // total = total - discount;
 
   // console.log(cartItems)
   return (
