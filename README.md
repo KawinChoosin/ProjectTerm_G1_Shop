@@ -12,7 +12,7 @@
 ## 1) Change all .env.example to .env
 
 There are .env.example in 
-- **PROJECTTERM_MAINPAGE** repository
+- **ProjectTerm_G1_Shop** repository
 - **TBackend** repository
 - **TProject** repository
 
@@ -66,14 +66,13 @@ ALTER USER tuser CREATEDB;
 ```
 
 **Database Prisma Setup**
+
 ```bash
 docker exec -it g1-backend bash
 ```
-
 ```bash
 npx prisma migrate dev --name init
 ```
-
 ```bash
 npx prisma generate
 ```
