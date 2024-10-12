@@ -9,6 +9,8 @@
 - ธัญชนก กวีกุล 650615021
 <br/>
 
+# SETUP
+
 ## 1) Change all .env.example to .env
 
 There are .env.example in 
@@ -36,12 +38,6 @@ docker compose up -d --build
 
 ## 4) Go to TBackend repository
 
-**Install Packages**
-
-```bash
-npm i
-```
-
 **User Management**
 
 ```bash
@@ -64,29 +60,28 @@ GRANT ALL ON DATABASE g1db TO tuser;
 GRANT ALL ON SCHEMA public TO tuser;
 ALTER USER tuser CREATEDB;
 ```
+<br/>
 
-**Database Prisma Setup**
+## 5) Open TBackend in intergrated terminal
+
+**If you are deploying, the next code is required**
 
 ```bash
 docker exec -it g1-backend bash
 ```
+
+**then (require for both deployment and development)**
+
 ```bash
 npx prisma migrate dev --name init
 ```
+
 ```bash
 npx prisma generate
 ```
 <br/>
 
-## 5) Go to TProject repository
-
-**Install Packages**
-
-```bash
-npm i
-```
-
-**Start Dev**
+**Start Dev (for development section)**
 
 ```bash
 npm run dev
