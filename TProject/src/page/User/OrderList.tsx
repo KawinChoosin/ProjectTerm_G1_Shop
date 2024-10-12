@@ -13,6 +13,11 @@ import {
   Snackbar,
   Alert,
   FormControl as MuiFormControl,
+  Dialog,
+  DialogContentText,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Grid from "@mui/material/Grid2"; // Importing Grid2
@@ -38,6 +43,7 @@ const OrderList: React.FC = () => {
     [key: number]: string | null;
   }>({});
   const [descripupdate, setdescripupdate] = useState<boolean>(false);
+  const [orderdelete, setOrderDeleting] = useState<boolean>(false);
   const [admin, setAdmin] = useState<boolean>(false);
   const [orderStatuses, setOrderStatuses] = useState<{
     [key: number]: "waiting" | "Delivery on the way" | "Problem";
@@ -57,6 +63,25 @@ const OrderList: React.FC = () => {
     "success" | "error" | "warning" | "info"
   >("success");
   const [showAlert, setShowAlert] = useState(false); //set time to show alert
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [orderIdToDelete, setOrderIdToDelete] = useState<number | null>(null); // Track the order to delete
+  
+  const handleOpenDialog = (O_id: number) => {
+    setOrderIdToDelete(O_id); // Store the order ID for deletion
+    setOpenConfirmDialog(true); // Open the dialog
+  };
+
+  const handleCloseDialog = () => {
+    setOpenConfirmDialog(false); // Close the dialog
+    setOrderIdToDelete(null); // Reset the selected order ID
+  };
+
+  const handleConfirmDelete = async () => {
+    if (orderIdToDelete !== null) {
+      await handleOrderDelete(orderIdToDelete); // Call the delete function with the correct order ID
+    }
+    handleCloseDialog(); // Close the dialog after deleting
+  };
 
   // Filter and slice orders based on pagination
   const filteredOrders = orders
@@ -113,7 +138,7 @@ const OrderList: React.FC = () => {
     if (nowlogin !== C_id) {
       fetchOrders();
     }
-  }, [C_id, descripupdate, orders]);
+  }, [C_id, descripupdate, orders,orderdelete]);
 
   // Extract unique customer names from orders
   useEffect(() => {
@@ -190,6 +215,32 @@ const OrderList: React.FC = () => {
       triggerAlert("Error updating description", "error");
     }
   };
+
+  const handleOrderDelete = async (O_id: number) => {
+    try {
+      // Show loading or set a state that indicates the deletion process
+      setOrderDeleting(true);
+  
+      // Make a DELETE request to the backend to delete the order
+      await axios.delete(`${import.meta.env.VITE_APP_API_BASE_URL}/order/${O_id}`);
+  
+      // Trigger success message
+      triggerAlert("Order deleted successfully. Product quantities have been updated.", "success");
+  
+      // Update any necessary frontend state (e.g., remove the deleted order from the UI)
+      setOrders((prevOrders) => prevOrders.filter((order) => order.O_id !== O_id));
+  
+      // Optionally, reset any states related to the deletion
+      setOrderDeleting(false);
+    } catch (err) {
+      // Trigger error message
+      triggerAlert("Error deleting order", "error");
+  
+      // Optionally, handle any error states (e.g., stop loading spinner)
+      setOrderDeleting(false);
+    }
+  };
+  
 
   const handleStatusChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -575,7 +626,36 @@ const OrderList: React.FC = () => {
                       >
                         Update
                       </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleOpenDialog(order.O_id)} 
+                        fullWidth
+                        sx={{ mt: 1 }}
+                      >
+                        Delete this order 
+                      </Button>
+                      <Dialog
+      open={openConfirmDialog}
+      onClose={handleCloseDialog}
+    >
+      <DialogTitle>{"Confirm Deletion"}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are you sure you want to delete this order? This action cannot be undone, and the product quantities will be updated.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseDialog} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={handleConfirmDelete} color="error" autoFocus>
+          Confirm Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
                     </Grid>
+                    
                   )}
                 </CardContent>
               </Collapse>
@@ -697,6 +777,7 @@ const OrderList: React.FC = () => {
           />
         </Grid>
       )}
+      
     </Grid>
   );
 };

@@ -15,6 +15,7 @@ import {
   FormControl,
   Alert,
   Snackbar,
+  Typography,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import Grid from "@mui/material/Grid2"; // Importing Grid
@@ -491,7 +492,8 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                   }}
                 >
                   <QR amount={total} />
-                  <h3>TOTAL: {total}</h3>
+                  <Typography variant="inherit">นายกวิน ชูสิน</Typography>
+                  <Typography variant="inherit">TOTAL: {total}</Typography>
                   <PaymentForm total={total} onFileUpload={handleFileUpload} />
                   {uploadSuccess && (
                     <span style={{ color: "green" }}>

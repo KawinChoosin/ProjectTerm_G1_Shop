@@ -52,29 +52,30 @@ enum OrderStatus {
 }
 
 model Order {
-  O_id      Int      @id @default(autoincrement())
-  C_id      Int
-  O_Date_time DateTime
-  O_Total     Decimal     // Changed to integer
-  PM_id     Int
-  A_id      Int
-  O_Description  String?  @db.Text
-  O_status       OrderStatus    @default(DEFAULT)
-  Customer  Customer @relation(fields: [C_id], references: [C_id])
-  Payment   Payment  @relation(fields: [PM_id], references: [PM_id])
-  Address     Address @relation(fields: [A_id], references: [A_id])
-  OrderDetail OrderDetail[]
+  O_id          Int           @id @default(autoincrement())
+  C_id          Int
+  O_Date_time   DateTime
+  O_Total       Decimal        // Changed to integer
+  PM_id         Int
+  A_id          Int
+  O_Description String?        @db.Text
+  O_status      OrderStatus    @default(DEFAULT)
+  Customer      Customer       @relation(fields: [C_id], references: [C_id])
+  Payment       Payment        @relation(fields: [PM_id], references: [PM_id])
+  Address       Address        @relation(fields: [A_id], references: [A_id])
+  OrderDetail   OrderDetail[]  // No need for `onDelete` here, defined in OrderDetail
 }
 
 model OrderDetail {
-  OD_id     Int      @id @default(autoincrement())
-  O_id      Int
-  P_id      Int
+  OD_id      Int      @id @default(autoincrement())
+  O_id       Int
+  P_id       Int
   OD_quantity Int
-  OD_price  Decimal     // Changed to integer
-  Order     Order   @relation(fields: [O_id], references: [O_id])
-  Product   Product @relation(fields: [P_id], references: [P_id])
+  OD_price   Decimal      // Changed to integer
+  Order      Order        @relation(fields: [O_id], references: [O_id], onDelete: Cascade)  // Cascading delete applied here
+  Product    Product      @relation(fields: [P_id], references: [P_id])
 }
+
 
 model Payment {
   PM_id     Int      @id @default(autoincrement())

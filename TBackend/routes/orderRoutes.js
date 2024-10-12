@@ -233,19 +233,47 @@ router.patch("/:O_id", async (req, res) => {
 // Delete an order
 router.delete("/:O_id", async (req, res) => {
   const orderId = parseInt(req.params.O_id, 10);
+
   try {
+    // Step 1: Fetch the order details associated with the order
+    const orderDetails = await prisma.orderDetail.findMany({
+      where: {
+        O_id: orderId,
+      },
+    });
+
+    // Step 2: Update the product quantities
+    for (const detail of orderDetails) {
+      await prisma.product.update({
+        where: {
+          P_id: detail.P_id,
+        },
+        data: {
+          P_quantity: {
+            increment: detail.OD_quantity, // Add the quantity back to the product
+          },
+        },
+      });
+    }
+
+    // Step 3: Delete the order and associated order details (cascade delete)
     const deletedOrder = await prisma.order.delete({
       where: {
         O_id: orderId,
       },
     });
 
-    res.json({ message: "Order successfully deleted", deletedOrder });
+    // Respond with success message
+    res.json({
+      message: "Order and associated OrderDetails successfully deleted, and product quantities restored.",
+      deletedOrder,
+    });
   } catch (error) {
     console.error("Error deleting order:", error);
     res.status(500).json({ error: "Error deleting order" });
   }
 });
+
 
 // Generate QR code
 router.post("/generateQR", (req, res) => {

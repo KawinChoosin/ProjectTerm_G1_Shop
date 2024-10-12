@@ -2,24 +2,25 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function P_test() {
-  // Check if customer already exists
-  // const existingCustomer = await prisma.customer.findUnique({
-  //   where: { C_email: "testuser@example.com" },
-  // });
+  const existingCustomer = await prisma.customer.findUnique({
+    where: { C_email: "testuser@example.com" },
+  });
+  
+  if (!existingCustomer) {
+    // Insert the customer if it doesn't exist
+    await prisma.customer.create({
+      data: {
+        C_name: "admin",
+        C_password: "admin", // Consider hashing the password before storing
+        C_email: "admin@admin.com",
+        C_gender: "other",
+        C_age: 99,
+        T_pnum: "0999999999",
+        C_Role: true,  // Role is defaulted to false but explicitly included here
 
-  // if (!existingCustomer) {
-  //   // Insert the customer if it doesn't exist
-  //   await prisma.customer.create({
-  //     data: {
-  //       C_name: "test",
-  //       C_password: "1234",
-  //       C_email: "testuser@example.com",
-  //       C_gender: "Male",
-  //       C_age: 25,
-  //       T_pnum: "0976543210"
-  //     },
-  //   });
-  // }
+      },
+    });
+  }
 
   // Check if categories already exist
   const existingCategories = await prisma.category.findMany();
