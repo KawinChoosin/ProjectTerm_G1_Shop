@@ -52,11 +52,11 @@ const RegisterForm: React.FC = () => {
       event.preventDefault();
 
       // Debug log to track form submissions
-      console.log("Register form submitted");
+      // console.log("Register form submitted");
 
       // Prevent double submission
       if (isSubmitting) {
-        console.log("Form is already submitting, skipping...");
+        // console.log("Form is already submitting, skipping...");
         return;
       }
 
@@ -82,7 +82,7 @@ const RegisterForm: React.FC = () => {
       }
 
       // Debug log to confirm we're about to send the request
-      console.log("Sending register request...");
+      // console.log("Sending register request...");
 
       try {
         const response = await fetch(
@@ -102,7 +102,7 @@ const RegisterForm: React.FC = () => {
           setC_id(result.C_id); // Set C_id in UserContext
           sessionStorage.setItem("C_id", result.C_id); // Save C_id to sessionStorage
 
-          console.log("Registration successful, redirecting...");
+          // console.log("Registration successful, redirecting...");
           const from = location.state?.from?.pathname || "/";
           navigate(from);
         } else {

@@ -16,7 +16,7 @@ const QRGen: React.FC<QRGenProps> = ({ amount }) => {
           amount: amount, // Use the amount passed as a prop
         }
       );
-      console.log("good", response.data);
+      // console.log("good", response.data);
       setQrImage(response.data.Result);
     } catch (error) {
       console.error("bad", error);

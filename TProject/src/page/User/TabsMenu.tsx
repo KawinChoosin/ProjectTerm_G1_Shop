@@ -59,7 +59,7 @@ function TabsMenu() {
   const screenSize = useScreenSize();
   const isMobile = screenSize.width < 900;
 
-  console.log(C_id);
+  // console.log(C_id);
   useEffect(() => {
     if (C_id !== null) {
       const fetchUser = async () => {

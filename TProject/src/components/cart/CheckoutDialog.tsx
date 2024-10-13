@@ -356,7 +356,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       O_Description: null,
       orderDetails,
     };
-    console.log(orderData);
+    // console.log(orderData);
 
     await axios.post(
       `${import.meta.env.VITE_APP_API_BASE_URL}/order`,
@@ -379,7 +379,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         },
       }
     );
-    console.log(fileUploadResponse.data.payslipPath);
+    // console.log(fileUploadResponse.data.payslipPath);
     setUploadSuccess(true); // Set upload success
     return fileUploadResponse.data.payslipPath;
   };

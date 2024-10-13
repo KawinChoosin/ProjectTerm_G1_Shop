@@ -47,7 +47,7 @@ const FavPage: React.FC = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_APP_API_BASE_URL}/favourite/${C_id}`
         );
-        console.log(C_id);
+        // console.log(C_id);
         setFavItems(response.data);
         setLoading(false);
       } catch (error) {

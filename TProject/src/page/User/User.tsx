@@ -91,7 +91,7 @@ function User() {
           } else {
             setPassnull(false);
           }
-          console.log(response.data[0].C_password);
+          // console.log(response.data[0].C_password);
           reset(response.data[0]); // Set the fetched user data into the form
           setLoading(false);
         } catch (err) {

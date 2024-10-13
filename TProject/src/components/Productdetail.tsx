@@ -48,7 +48,7 @@ const ProductDetail: React.FC = () => {
 
         // Set the fetched product data
         setProduct(product);
-        console.log(C_id);
+        // console.log(C_id);
 
         if (C_id) {
           const favoriteResponse = await axios.get(
@@ -159,7 +159,7 @@ const ProductDetail: React.FC = () => {
         }
       );
 
-      console.log(response.data.CA_price);
+      // console.log(response.data.CA_price);
 
       if (response.status === 200) {
         triggerAlert(

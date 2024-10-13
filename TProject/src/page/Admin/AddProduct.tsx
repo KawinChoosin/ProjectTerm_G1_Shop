@@ -121,7 +121,7 @@ const AddProductPage: React.FC = () => {
       );
 
       if (response.status === 200) {
-        console.log("Product added successfully");
+        // console.log("Product added successfully");
         setProductName("");
         setDescription("");
         setPrice("");

@@ -50,7 +50,7 @@ const GoogleCallback: React.FC = () => {
         }
       } else {
         // If no code is present, likely the user canceled the login
-        console.log("No authorization code found or login canceled.");
+        // console.log("No authorization code found or login canceled.");
         navigate("/login"); // Redirect to login
       }
     };

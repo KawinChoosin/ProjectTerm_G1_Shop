@@ -265,7 +265,8 @@ router.delete("/:O_id", async (req, res) => {
 
     // Respond with success message
     res.json({
-      message: "Order and associated OrderDetails successfully deleted, and product quantities restored.",
+      message:
+        "Order and associated OrderDetails successfully deleted, and product quantities restored.",
       deletedOrder,
     });
   } catch (error) {
@@ -273,7 +274,6 @@ router.delete("/:O_id", async (req, res) => {
     res.status(500).json({ error: "Error deleting order" });
   }
 });
-
 
 // Generate QR code
 router.post("/generateQR", (req, res) => {
