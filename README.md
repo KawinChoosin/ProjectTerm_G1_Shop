@@ -80,7 +80,7 @@ npx prisma migrate dev --name init
 npx prisma generate
 ```
 
-### Development section
+***Development section***
 
 ```bash
 node index.js
