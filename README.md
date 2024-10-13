@@ -79,6 +79,13 @@ npx prisma migrate dev --name init
 ```bash
 npx prisma generate
 ```
+
+**If you are in development section, the code below is required**
+
+```bash
+node index.js
+```
+
 <br/>
 
 **Start Dev (for development section)**
