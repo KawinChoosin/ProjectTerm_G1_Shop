@@ -276,8 +276,8 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       // console.log("orderDetails: ", orderDetails);
 
       // Calculate total amount
-      const total = cartItems.reduce(
-        (sum: number, item: CartItem) => sum + item.CA_price,
+      const total: number = cartItems.reduce(
+        (sum: number, item: CartItem) => sum + Number(item.CA_price),
         0
       );
 
