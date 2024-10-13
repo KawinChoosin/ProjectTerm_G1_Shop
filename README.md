@@ -36,7 +36,7 @@ docker compose up -d --build
 ```
 <br/>
 
-## 4) Go to TBackend repository
+## 4) Open TBackend terminal
 
 **User Management**
 
@@ -80,7 +80,11 @@ npx prisma migrate dev --name init
 npx prisma generate
 ```
 
+<br/>
+
 ## 6) Run backend and dev(only for dev section)
+
+**open TBackend terminal**
 
 ```bash
 node index.js
@@ -88,7 +92,7 @@ node index.js
 
 <br/>
 
-**then go to TProject repository**
+**then open TProject terminal**
 
 ```bash
 npm run dev
