@@ -80,7 +80,7 @@ npx prisma migrate dev --name init
 npx prisma generate
 ```
 
-## 6) Development section
+## 6) Run backend and dev(only for dev section)
 
 ```bash
 node index.js
