@@ -34,7 +34,7 @@ services:
     container_name: g1-frontend
     build: ./TProject
     ports:
-      - 5174:5173
+      - 4444:5173
     networks:
       - g1-net
     depends_on:
