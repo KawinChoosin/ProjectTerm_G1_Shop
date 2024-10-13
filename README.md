@@ -80,7 +80,7 @@ npx prisma migrate dev --name init
 npx prisma generate
 ```
 
-**If you are in development section, the code below is required**
+### Development section
 
 ```bash
 node index.js
@@ -88,7 +88,7 @@ node index.js
 
 <br/>
 
-**Start Dev (for development section)**
+**then go to TProject repository**
 
 ```bash
 npm run dev
