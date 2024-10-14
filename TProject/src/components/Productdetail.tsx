@@ -42,7 +42,7 @@ const ProductDetail: React.FC = () => {
     const fetchProductDetails = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/products/${id}`
+          `api/products/${id}`
         );
         const product = response.data;
 
@@ -52,7 +52,7 @@ const ProductDetail: React.FC = () => {
 
         if (C_id) {
           const favoriteResponse = await axios.get(
-            `${import.meta.env.VITE_APP_API_BASE_URL}/favourite/check/${
+            `api/favourite/check/${
               product.P_id
             }`,
             {
@@ -150,7 +150,7 @@ const ProductDetail: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/cart/add`,
+        `api/cart/add`,
         {
           C_id: C_id,
           P_id: product.P_id,
@@ -186,7 +186,7 @@ const ProductDetail: React.FC = () => {
     try {
       if (newIsLiked) {
         const response = await axios.post(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/favourite/add`,
+          `api/favourite/add`,
           {
             C_id: C_id,
             P_id: product.P_id,
@@ -200,7 +200,7 @@ const ProductDetail: React.FC = () => {
         }
       } else {
         const response = await axios.delete(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/favourite/remove`,
+          `api/favourite/remove`,
           {
             data: {
               C_id: C_id,
@@ -278,7 +278,7 @@ const ProductDetail: React.FC = () => {
         >
           <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
             <img
-              src={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+              src={`api/uploads/${
                 product.P_img
               }`}
               alt={product?.P_name}
@@ -457,7 +457,7 @@ const ProductDetail: React.FC = () => {
           }}
         >
           <img
-            src={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+            src={`api/uploads/${
               product.P_img
             }`}
             alt={product?.P_name}

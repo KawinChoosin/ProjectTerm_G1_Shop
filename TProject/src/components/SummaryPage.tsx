@@ -50,9 +50,7 @@ const OrdersByCustomer: React.FC = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(
-          `${
-            import.meta.env.VITE_APP_API_BASE_URL
-          }/order/customer/${customerId}`
+          `api/order/customer/${customerId}`
         );
         setOrders(response.data);
       } catch (err) {

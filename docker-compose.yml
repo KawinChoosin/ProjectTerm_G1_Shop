@@ -6,7 +6,7 @@ services:
     image: postgres:16-alpine
     container_name: g1-db
     ports:
-      - "5432:${POSTGRES_PORT}"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - g1-data:/var/lib/postgresql/data
     environment:
@@ -20,7 +20,7 @@ services:
     build: ./TBackend
     container_name: g1-backend
     ports:
-      - ${PORT}:${PORT}
+      - ${BackendPORT}:3000
     environment:
       - DATABASE_URL=${DATABASE_URL}
     depends_on:
@@ -34,7 +34,7 @@ services:
     container_name: g1-frontend
     build: ./TProject
     ports:
-      - 4444:5173
+      - ${FrontendPORT}:5173
     networks:
       - g1-net
     depends_on:

@@ -83,7 +83,7 @@ function User() {
       const fetchUser = async () => {
         try {
           const response = await axios.get(
-            `${import.meta.env.VITE_APP_API_BASE_URL}/profile?C_id=${C_id}`
+            `api/profile?C_id=${C_id}`
           );
           setUser([response.data[0]]);
           if (response.data[0].C_password.length == 0) {
@@ -142,7 +142,7 @@ function User() {
   const onSubmit = async (data: any) => {
     try {
       await axios.put(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/profile?C_id=${C_id}`,
+        `api/profile?C_id=${C_id}`,
         data
       );
       setEditMode(false);
@@ -157,7 +157,7 @@ function User() {
       if (password.O_pass === user[0]?.C_password) {
         if (password.N_pass === password.RN_pass) {
           await axios.put(
-            `${import.meta.env.VITE_APP_API_BASE_URL}/profile/pass/${
+            `api/profile/pass/${
               user[0].C_id
             }`,
             { C_password: password.N_pass }

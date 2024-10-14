@@ -59,7 +59,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
               >
                 <CardMedia
                   component="img"
-                  image={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+                  image={`api/uploads/${
                     product.P_img
                   }`}
                   alt={product.P_name}
@@ -130,7 +130,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
               >
                 <CardMedia
                   component="img"
-                  image={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+                  image={`api/uploads/${
                     product.P_img
                   }`}
                   alt={product.P_name}

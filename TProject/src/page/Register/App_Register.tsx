@@ -86,7 +86,7 @@ const RegisterForm: React.FC = () => {
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/register`,
+          `api/register`,
           {
             method: "POST",
             headers: {
