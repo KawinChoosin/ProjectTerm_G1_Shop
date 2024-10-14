@@ -8,7 +8,7 @@ export interface Credentials {
 export const onLogin = async (data: Credentials) => {
   const requestConfig: AxiosRequestConfig = {
     method: "post",
-    url: `${import.meta.env.VITE_APP_API_BASE_URL}/login`, // Ensure this points to the correct backend URL
+    url: `api/login`, // Ensure this points to the correct backend URL
     data,
   };
 

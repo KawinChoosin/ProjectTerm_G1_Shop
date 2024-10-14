@@ -16,7 +16,7 @@ const GoogleCallback: React.FC = () => {
       if (code) {
         try {
           const res = await fetch(
-            `${import.meta.env.VITE_APP_API_BASE_URL}/auth/google/callback`,
+            `api/auth/google/callback`,
             {
               method: "POST",
               headers: {

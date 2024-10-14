@@ -23,7 +23,7 @@ const App: React.FC = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/products`
+          `api/products`
         );
         setProducts(response.data);
         setLoading(false);
@@ -42,7 +42,7 @@ const App: React.FC = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/categories`
+          `api/categories`
         );
         setCategories([{ CG_id: "all", CG_name: "ALL" }, ...response.data]); // Include "ALL" category
       } catch (err) {

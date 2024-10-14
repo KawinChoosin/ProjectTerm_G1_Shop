@@ -38,7 +38,7 @@ const FavItem: React.FC<FavItemProps> = ({ item }) => {
       >
         <CardMedia
           component="img"
-          image={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+          image={`api/uploads/${
             item.P_img
           }`}
           alt={item.P_name}

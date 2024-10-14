@@ -90,7 +90,7 @@ const CartPage: React.FC = () => {
         try {
           // Fetch cart details
           const response = await axios.get(
-            `${import.meta.env.VITE_APP_API_BASE_URL}/cart/${customerId}`
+            `api/cart/${customerId}`
           );
           const fetchedCartItems = response.data;
           const updatedCartItems = [...fetchedCartItems]; // Copy fetched cart items
@@ -105,7 +105,7 @@ const CartPage: React.FC = () => {
               updatedCartItems[i].CA_quantity = availableStock.P_quantity;
 
               await axios.patch(
-                `${import.meta.env.VITE_APP_API_BASE_URL}/cart/update`,
+                `api/cart/update`,
                 {
                   C_id: item.C_id,
                   P_id: item.P_id,
@@ -117,7 +117,7 @@ const CartPage: React.FC = () => {
               // If stock is zero, delete the item from the cart
               if (availableStock.P_quantity === 0) {
                 await axios.delete(
-                  `${import.meta.env.VITE_APP_API_BASE_URL}/cart/delete`,
+                  `api/cart/delete`,
                   {
                     data: {
                       C_id: item.C_id,
@@ -173,9 +173,7 @@ const CartPage: React.FC = () => {
     try {
       // Fetch stock data for the specific product
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_APP_API_BASE_URL
-        }/products/check-stock/${itemId}`
+        `api/products/check-stock/${itemId}`
       );
       const stockItem = response.data;
       return stockItem;
@@ -204,7 +202,7 @@ const CartPage: React.FC = () => {
     if (updatedItem) {
       try {
         await axios.patch(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/cart/update`,
+          `api/cart/update`,
           {
             C_id: updatedItem.C_id,
             P_id: updatedItem.P_id,
@@ -221,7 +219,7 @@ const CartPage: React.FC = () => {
   const handleDelete = async (P_id: number, C_id: number) => {
     try {
       await axios.delete(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/cart/delete`,
+        `api/cart/delete`,
         {
           data: {
             C_id,

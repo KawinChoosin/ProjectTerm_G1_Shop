@@ -50,7 +50,7 @@ const CartItem: React.FC<CartItemProps> = ({
       <Box display="flex" alignItems="center" flex={1}>
         <img
           src={
-            `${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${item.P_img}` ||
+            `api/uploads/${item.P_img}` ||
             "/placeholder.png"
           }
           alt={`${item.P_name} image`}

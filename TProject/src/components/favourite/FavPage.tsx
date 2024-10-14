@@ -45,7 +45,7 @@ const FavPage: React.FC = () => {
     const fetchFavDetails = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/favourite/${C_id}`
+          `api/favourite/${C_id}`
         );
         // console.log(C_id);
         setFavItems(response.data);

@@ -33,7 +33,7 @@ const LoginForm: React.FC = () => {
     } else {
       try {
         const serverResponse = await fetch(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/login`,
+          `api/login`,
           {
             method: "POST",
             headers: {

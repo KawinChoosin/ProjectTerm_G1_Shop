@@ -110,17 +110,17 @@ const OrderList: React.FC = () => {
         try {
           setNowlogin(C_id);
           const role = await axios.get(
-            `${import.meta.env.VITE_APP_API_BASE_URL}/profile?C_id=${C_id}`
+            `api/profile?C_id=${C_id}`
           );
           if (role.data[0].C_Role) {
             setAdmin(true);
             const response = await axios.get(
-              `${import.meta.env.VITE_APP_API_BASE_URL}/orderlist/customer`
+              `api/orderlist/customer`
             );
             setOrders(response.data);
           } else {
             const response = await axios.get(
-              `${import.meta.env.VITE_APP_API_BASE_URL}/order/customer/${C_id}`
+              `api/order/customer/${C_id}`
             );
             setOrders(response.data);
           }
@@ -201,7 +201,7 @@ const OrderList: React.FC = () => {
       const statusToUpdate = statusMapping[userStatus]; // Convert to backend status
 
       await axios.put(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/orderlist/descrip`,
+        `api/orderlist/descrip`,
         {
           O_id,
           O_Description: orderDescriptions[O_id] || null, // Send the specific description for the order
@@ -223,7 +223,7 @@ const OrderList: React.FC = () => {
 
       // Make a DELETE request to the backend to delete the order
       await axios.delete(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/order/${O_id}`
+        `api/order/${O_id}`
       );
 
       // Trigger success message
@@ -698,9 +698,7 @@ const OrderList: React.FC = () => {
                           <Grid size={4}>
                             <img
                               src={
-                                `${
-                                  import.meta.env.VITE_APP_API_BASE_URL
-                                }/uploads/${detail.Product.P_img}` ||
+                                `api/uploads/${detail.Product.P_img}` ||
                                 "/placeholder.png"
                               }
                               alt={`${detail.Product.P_name} image`}

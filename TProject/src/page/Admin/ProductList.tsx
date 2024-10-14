@@ -70,7 +70,7 @@ const ProductList: React.FC = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/products`
+          `api/products`
         );
         const sortedProducts = response.data.sort(
           (a: Product, b: Product) => b.P_id - a.P_id
@@ -87,7 +87,7 @@ const ProductList: React.FC = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/categories`
+          `api/categories`
         );
         setCategories(response.data);
       } catch (error) {
@@ -135,7 +135,7 @@ const ProductList: React.FC = () => {
     setEditingProduct(product);
     setFormData(product);
     setImagePreview(
-      `${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${product.P_img}`
+      `api/uploads/${product.P_img}`
     ); // Set image preview to existing image
     setImageFile(null); // Reset the uploaded file
   };
@@ -188,7 +188,7 @@ const ProductList: React.FC = () => {
     try {
       // Send a PUT request to update the product
       const response = await axios.put(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/products/${
+        `api/products/${
           editingProduct.P_id
         }`,
         formDataToSend,
@@ -231,9 +231,7 @@ const ProductList: React.FC = () => {
     if (productIdToDelete !== null) {
       try {
         await axios.delete(
-          `${
-            import.meta.env.VITE_APP_API_BASE_URL
-          }/products/${productIdToDelete}`
+          `api/products/${productIdToDelete}`
         );
         setFilteredProducts((prev) =>
           prev.filter((product) => product.P_id !== productIdToDelete)
@@ -299,7 +297,7 @@ const ProductList: React.FC = () => {
               {filteredProducts.map((product) => (
                 <ListItem key={product.P_id} divider>
                   <Avatar
-                    src={`${import.meta.env.VITE_APP_API_BASE_URL}/uploads/${
+                    src={`api/uploads/${
                       product.P_img
                     }`}
                     alt={product.P_name}
