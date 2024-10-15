@@ -59,9 +59,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
               >
                 <CardMedia
                   component="img"
-                  image={`api/uploads/${
-                    product.P_img
-                  }`}
+                  image={`/api/uploads/${product.P_img}`}
                   alt={product.P_name}
                   sx={{
                     height: "220px", // Image takes up 70% of card height
@@ -85,7 +83,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                   </Typography>
                 </CardContent>
               </Card>
-            </Link>
+              </Link>
           </Grid>
         ))}
 
@@ -130,9 +128,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
               >
                 <CardMedia
                   component="img"
-                  image={`api/uploads/${
-                    product.P_img
-                  }`}
+                  image={`/api/uploads/${product.P_img}`}
                   alt={product.P_name}
                   sx={{
                     height: "220px", // Image takes up 70% of card height

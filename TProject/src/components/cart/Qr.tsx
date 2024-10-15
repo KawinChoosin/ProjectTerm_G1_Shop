@@ -11,7 +11,7 @@ const QRGen: React.FC<QRGenProps> = ({ amount }) => {
   const genQR = async () => {
     try {
       const response = await axios.post(
-        `api/order/generateQR`,
+        `/api/order/generateQR`,
         {
           amount: amount, // Use the amount passed as a prop
         }

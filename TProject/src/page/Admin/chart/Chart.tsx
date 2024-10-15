@@ -69,7 +69,7 @@ const Chart: React.FC = () => {
 
         // Fetch total sales for the current week
         const salesResponse = await fetch(
-          `api/order/chart/total-sales-week?start=${startOfWeekStr}&end=${endOfWeekStr}`
+          `/api/order/chart/total-sales-week?start=${startOfWeekStr}&end=${endOfWeekStr}`
         );
         const salesData = await salesResponse.json();
 

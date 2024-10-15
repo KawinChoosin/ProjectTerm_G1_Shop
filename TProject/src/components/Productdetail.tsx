@@ -18,7 +18,8 @@ import TextField from "@mui/material/TextField";
 import useScreenSize from "./useScreenSize";
 import UserContext from "../context/UserContext";
 
-const ProductDetail: React.FC = () => {
+
+const ProductDetail: React.FC=  () => {
   const { C_id } = useContext(UserContext);
   const { id } = useParams<{ id: string }>(); // Get the product ID from the route
   const [product, setProduct] = useState<any | null>(null); // State to hold product details
@@ -42,17 +43,16 @@ const ProductDetail: React.FC = () => {
     const fetchProductDetails = async () => {
       try {
         const response = await axios.get(
-          `api/products/${id}`
+          `/api/products/${id}`
         );
         const product = response.data;
 
         // Set the fetched product data
         setProduct(product);
-        // console.log(C_id);
-
+        
         if (C_id) {
           const favoriteResponse = await axios.get(
-            `api/favourite/check/${
+            `/api/favourite/check/${
               product.P_id
             }`,
             {
@@ -150,7 +150,7 @@ const ProductDetail: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `api/cart/add`,
+        `/api/cart/add`,
         {
           C_id: C_id,
           P_id: product.P_id,
@@ -186,7 +186,7 @@ const ProductDetail: React.FC = () => {
     try {
       if (newIsLiked) {
         const response = await axios.post(
-          `api/favourite/add`,
+          `/api/favourite/add`,
           {
             C_id: C_id,
             P_id: product.P_id,
@@ -200,7 +200,7 @@ const ProductDetail: React.FC = () => {
         }
       } else {
         const response = await axios.delete(
-          `api/favourite/remove`,
+          `/api/favourite/remove`,
           {
             data: {
               C_id: C_id,
@@ -276,21 +276,22 @@ const ProductDetail: React.FC = () => {
             alignItems: "stretch",
           }}
         >
-          <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+          <div style={{ flex: 2, display: "flex", justifyContent: "center" }}>
             <img
-              src={`api/uploads/${
+              src={`/api/uploads/${
                 product.P_img
               }`}
               alt={product?.P_name}
               style={{
                 width: "100%",
-                height: "auto",
-                objectFit: "contain",
+                height: "500px",
+                objectFit: "scale-down",
                 borderRadius: "0.5rem",
+                // marginLeft: 2,
+                padding: 2,
               }}
             />
           </div>
-          <div style={{ flex: 0.4, height: "auto" }}></div>
           <div
             style={{
               flex: 2,
@@ -457,7 +458,7 @@ const ProductDetail: React.FC = () => {
           }}
         >
           <img
-            src={`api/uploads/${
+            src={`/api/uploads/${
               product.P_img
             }`}
             alt={product?.P_name}

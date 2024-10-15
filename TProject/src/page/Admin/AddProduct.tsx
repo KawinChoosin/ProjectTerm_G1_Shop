@@ -40,7 +40,7 @@ const AddProductPage: React.FC = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          `api/categories`
+          `/api/categories`
         );
         setCategories(response.data);
       } catch (error) {
@@ -95,7 +95,7 @@ const AddProductPage: React.FC = () => {
     if (newCategory) {
       try {
         const categoryResponse = await axios.post(
-          `api/categories`,
+          `/api/categories`,
           {
             CG_name: newCategory,
           }
@@ -111,7 +111,7 @@ const AddProductPage: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `api/products`,
+        `/api/products`,
         formData,
         {
           headers: {

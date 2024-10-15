@@ -50,7 +50,7 @@ const OrdersByCustomer: React.FC = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(
-          `api/order/customer/${customerId}`
+          `/api/order/customer/${customerId}`
         );
         setOrders(response.data);
       } catch (err) {

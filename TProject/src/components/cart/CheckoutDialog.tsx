@@ -147,7 +147,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   const fetchAddresses = async () => {
     try {
       const response = await axios.get(
-        `api/address/${customerId}`
+        `/api/address/${customerId}`
       );
       const addresses = response.data.map((addr: any) => ({
         A_id: addr.A_id,
@@ -195,7 +195,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
 
     try {
       const response = await axios.post(
-        `api/address`,
+        `/api/address`,
         {
           A_street: newAddress.street,
           A_city: newAddress.city,
@@ -359,7 +359,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     // console.log(orderData);
 
     await axios.post(
-      `api/order`,
+      `/api/order`,
       orderData
     );
   };
@@ -371,7 +371,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     formData.append("total", total.toString());
 
     const fileUploadResponse = await axios.post(
-      `api/upload/slip`,
+      `/api/upload/slip`,
       formData,
       {
         headers: {
@@ -386,7 +386,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
 
   const fetchCartItems = async (customerId: number) => {
     const cartResponse = await axios.get(
-      `api/cart/${customerId}`
+      `/api/cart/${customerId}`
     );
     return cartResponse.data;
   };
@@ -395,7 +395,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
     let addressId: number;
     if (showNewAddressForm) {
       const addressResponse = await axios.post(
-        `api/address`,
+        `/api/address`,
         {
           A_street: newAddress.street,
           A_city: newAddress.city,
@@ -433,7 +433,7 @@ const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   const clearCart = async (cartItems: CartItem[]) => {
     for (const item of cartItems) {
       await axios.delete(
-        `api/cart/delete`,
+        `/api/cart/delete`,
         {
           data: { C_id: customerId, P_id: item.P_id },
         }
