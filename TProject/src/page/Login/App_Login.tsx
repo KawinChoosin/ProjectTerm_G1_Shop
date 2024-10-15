@@ -166,7 +166,7 @@ const LoginForm: React.FC = () => {
             <p>
               Don't have an account?{" "}
               <a
-                href={import.meta.env.VITE_APP_FE_BASE_URL + "/register"}
+                href="/register"
                 style={{ color: "black" }}
               >
                 Register
