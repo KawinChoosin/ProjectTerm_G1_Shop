@@ -131,7 +131,7 @@ npm run dev
   - **components**  
     เก็บ component ย่อย ๆ ที่ใช้สร้างหน้าเว็บ เช่น Banner, Cart, และ Favourite
     - **banner**  
-      เก็บรูแภาพสำหรับแทดงในแต่ละ category
+      เก็บรูแภาพสำหรับแสดงในแต่ละ category
     - **cart**  
       เก็บ component ที่ใช้แสดงข้อมูลตะกร้าสินค้าของผู้ใช้
     - **favourite**  
