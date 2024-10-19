@@ -5,7 +5,7 @@
 -- Dumped from database version 16.3
 -- Dumped by pg_dump version 16.4
 
--- Started on 2024-10-18 18:47:22
+-- Started on 2024-10-19 14:02:59
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -18,7 +18,6 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-ALTER TABLE ONLY public."Rate" DROP CONSTRAINT "Rate_P_id_fkey";
 ALTER TABLE ONLY public."Product" DROP CONSTRAINT "Product_CG_id_fkey";
 ALTER TABLE ONLY public."Order" DROP CONSTRAINT "Order_PM_id_fkey";
 ALTER TABLE ONLY public."Order" DROP CONSTRAINT "Order_C_id_fkey";
@@ -27,7 +26,6 @@ ALTER TABLE ONLY public."OrderDetail" DROP CONSTRAINT "OrderDetail_P_id_fkey";
 ALTER TABLE ONLY public."OrderDetail" DROP CONSTRAINT "OrderDetail_O_id_fkey";
 ALTER TABLE ONLY public."Favourite" DROP CONSTRAINT "Favourite_P_id_fkey";
 ALTER TABLE ONLY public."Favourite" DROP CONSTRAINT "Favourite_C_id_fkey";
-ALTER TABLE ONLY public."Comment" DROP CONSTRAINT "Comment_P_id_fkey";
 ALTER TABLE ONLY public."CartDetail" DROP CONSTRAINT "CartDetail_P_id_fkey";
 ALTER TABLE ONLY public."CartDetail" DROP CONSTRAINT "CartDetail_C_id_fkey";
 ALTER TABLE ONLY public."Address" DROP CONSTRAINT "Address_C_id_fkey";
@@ -35,31 +33,25 @@ DROP INDEX public."Favourite_C_id_P_id_key";
 DROP INDEX public."Customer_C_email_key";
 DROP INDEX public."CartDetail_C_id_P_id_key";
 ALTER TABLE ONLY public._prisma_migrations DROP CONSTRAINT _prisma_migrations_pkey;
-ALTER TABLE ONLY public."Rate" DROP CONSTRAINT "Rate_pkey";
 ALTER TABLE ONLY public."Product" DROP CONSTRAINT "Product_pkey";
 ALTER TABLE ONLY public."Payment" DROP CONSTRAINT "Payment_pkey";
 ALTER TABLE ONLY public."Order" DROP CONSTRAINT "Order_pkey";
 ALTER TABLE ONLY public."OrderDetail" DROP CONSTRAINT "OrderDetail_pkey";
 ALTER TABLE ONLY public."Favourite" DROP CONSTRAINT "Favourite_pkey";
 ALTER TABLE ONLY public."Customer" DROP CONSTRAINT "Customer_pkey";
-ALTER TABLE ONLY public."Comment" DROP CONSTRAINT "Comment_pkey";
 ALTER TABLE ONLY public."Category" DROP CONSTRAINT "Category_pkey";
 ALTER TABLE ONLY public."CartDetail" DROP CONSTRAINT "CartDetail_pkey";
 ALTER TABLE ONLY public."Address" DROP CONSTRAINT "Address_pkey";
-ALTER TABLE public."Rate" ALTER COLUMN "R_id" DROP DEFAULT;
 ALTER TABLE public."Product" ALTER COLUMN "P_id" DROP DEFAULT;
 ALTER TABLE public."Payment" ALTER COLUMN "PM_id" DROP DEFAULT;
 ALTER TABLE public."OrderDetail" ALTER COLUMN "OD_id" DROP DEFAULT;
 ALTER TABLE public."Order" ALTER COLUMN "O_id" DROP DEFAULT;
 ALTER TABLE public."Favourite" ALTER COLUMN "Fav_id" DROP DEFAULT;
 ALTER TABLE public."Customer" ALTER COLUMN "C_id" DROP DEFAULT;
-ALTER TABLE public."Comment" ALTER COLUMN "CM_id" DROP DEFAULT;
 ALTER TABLE public."Category" ALTER COLUMN "CG_id" DROP DEFAULT;
 ALTER TABLE public."CartDetail" ALTER COLUMN "CA_id" DROP DEFAULT;
 ALTER TABLE public."Address" ALTER COLUMN "A_id" DROP DEFAULT;
 DROP TABLE public._prisma_migrations;
-DROP SEQUENCE public."Rate_R_id_seq";
-DROP TABLE public."Rate";
 DROP SEQUENCE public."Product_P_id_seq";
 DROP TABLE public."Product";
 DROP SEQUENCE public."Payment_PM_id_seq";
@@ -72,8 +64,6 @@ DROP SEQUENCE public."Favourite_Fav_id_seq";
 DROP TABLE public."Favourite";
 DROP SEQUENCE public."Customer_C_id_seq";
 DROP TABLE public."Customer";
-DROP SEQUENCE public."Comment_CM_id_seq";
-DROP TABLE public."Comment";
 DROP SEQUENCE public."Category_CG_id_seq";
 DROP TABLE public."Category";
 DROP SEQUENCE public."CartDetail_CA_id_seq";
@@ -93,7 +83,7 @@ CREATE SCHEMA public;
 ALTER SCHEMA public OWNER TO pg_database_owner;
 
 --
--- TOC entry 3529 (class 0 OID 0)
+-- TOC entry 3507 (class 0 OID 0)
 -- Dependencies: 5
 -- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
 --
@@ -102,7 +92,7 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
--- TOC entry 865 (class 1247 OID 16939)
+-- TOC entry 861 (class 1247 OID 16939)
 -- Name: OrderStatus; Type: TYPE; Schema: public; Owner: tuser
 --
 
@@ -120,7 +110,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 235 (class 1259 OID 17019)
+-- TOC entry 231 (class 1259 OID 17019)
 -- Name: Address; Type: TABLE; Schema: public; Owner: tuser
 --
 
@@ -140,7 +130,7 @@ CREATE TABLE public."Address" (
 ALTER TABLE public."Address" OWNER TO tuser;
 
 --
--- TOC entry 234 (class 1259 OID 17018)
+-- TOC entry 230 (class 1259 OID 17018)
 -- Name: Address_A_id_seq; Type: SEQUENCE; Schema: public; Owner: tuser
 --
 
@@ -156,8 +146,8 @@ CREATE SEQUENCE public."Address_A_id_seq"
 ALTER SEQUENCE public."Address_A_id_seq" OWNER TO tuser;
 
 --
--- TOC entry 3531 (class 0 OID 0)
--- Dependencies: 234
+-- TOC entry 3509 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: Address_A_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
 --
 
@@ -165,7 +155,7 @@ ALTER SEQUENCE public."Address_A_id_seq" OWNED BY public."Address"."A_id";
 
 
 --
--- TOC entry 233 (class 1259 OID 17012)
+-- TOC entry 229 (class 1259 OID 17012)
 -- Name: CartDetail; Type: TABLE; Schema: public; Owner: tuser
 --
 
@@ -181,7 +171,7 @@ CREATE TABLE public."CartDetail" (
 ALTER TABLE public."CartDetail" OWNER TO tuser;
 
 --
--- TOC entry 232 (class 1259 OID 17011)
+-- TOC entry 228 (class 1259 OID 17011)
 -- Name: CartDetail_CA_id_seq; Type: SEQUENCE; Schema: public; Owner: tuser
 --
 
@@ -197,8 +187,8 @@ CREATE SEQUENCE public."CartDetail_CA_id_seq"
 ALTER SEQUENCE public."CartDetail_CA_id_seq" OWNER TO tuser;
 
 --
--- TOC entry 3532 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 3510 (class 0 OID 0)
+-- Dependencies: 228
 -- Name: CartDetail_CA_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
 --
 
@@ -235,52 +225,12 @@ CREATE SEQUENCE public."Category_CG_id_seq"
 ALTER SEQUENCE public."Category_CG_id_seq" OWNER TO tuser;
 
 --
--- TOC entry 3533 (class 0 OID 0)
+-- TOC entry 3511 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: Category_CG_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
 --
 
 ALTER SEQUENCE public."Category_CG_id_seq" OWNED BY public."Category"."CG_id";
-
-
---
--- TOC entry 231 (class 1259 OID 17003)
--- Name: Comment; Type: TABLE; Schema: public; Owner: tuser
---
-
-CREATE TABLE public."Comment" (
-    "CM_id" integer NOT NULL,
-    "CM_text" text NOT NULL,
-    "CM_createDate" timestamp(3) without time zone NOT NULL,
-    "P_id" integer NOT NULL
-);
-
-
-ALTER TABLE public."Comment" OWNER TO tuser;
-
---
--- TOC entry 230 (class 1259 OID 17002)
--- Name: Comment_CM_id_seq; Type: SEQUENCE; Schema: public; Owner: tuser
---
-
-CREATE SEQUENCE public."Comment_CM_id_seq"
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public."Comment_CM_id_seq" OWNER TO tuser;
-
---
--- TOC entry 3534 (class 0 OID 0)
--- Dependencies: 230
--- Name: Comment_CM_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
---
-
-ALTER SEQUENCE public."Comment_CM_id_seq" OWNED BY public."Comment"."CM_id";
 
 
 --
@@ -319,7 +269,7 @@ CREATE SEQUENCE public."Customer_C_id_seq"
 ALTER SEQUENCE public."Customer_C_id_seq" OWNER TO tuser;
 
 --
--- TOC entry 3535 (class 0 OID 0)
+-- TOC entry 3512 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: Customer_C_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
 --
@@ -328,7 +278,7 @@ ALTER SEQUENCE public."Customer_C_id_seq" OWNED BY public."Customer"."C_id";
 
 
 --
--- TOC entry 237 (class 1259 OID 17028)
+-- TOC entry 233 (class 1259 OID 17028)
 -- Name: Favourite; Type: TABLE; Schema: public; Owner: tuser
 --
 
@@ -342,7 +292,7 @@ CREATE TABLE public."Favourite" (
 ALTER TABLE public."Favourite" OWNER TO tuser;
 
 --
--- TOC entry 236 (class 1259 OID 17027)
+-- TOC entry 232 (class 1259 OID 17027)
 -- Name: Favourite_Fav_id_seq; Type: SEQUENCE; Schema: public; Owner: tuser
 --
 
@@ -358,8 +308,8 @@ CREATE SEQUENCE public."Favourite_Fav_id_seq"
 ALTER SEQUENCE public."Favourite_Fav_id_seq" OWNER TO tuser;
 
 --
--- TOC entry 3536 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 3513 (class 0 OID 0)
+-- Dependencies: 232
 -- Name: Favourite_Fav_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
 --
 
@@ -418,7 +368,7 @@ CREATE SEQUENCE public."OrderDetail_OD_id_seq"
 ALTER SEQUENCE public."OrderDetail_OD_id_seq" OWNER TO tuser;
 
 --
--- TOC entry 3537 (class 0 OID 0)
+-- TOC entry 3514 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: OrderDetail_OD_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
 --
@@ -443,7 +393,7 @@ CREATE SEQUENCE public."Order_O_id_seq"
 ALTER SEQUENCE public."Order_O_id_seq" OWNER TO tuser;
 
 --
--- TOC entry 3538 (class 0 OID 0)
+-- TOC entry 3515 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: Order_O_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
 --
@@ -483,7 +433,7 @@ CREATE SEQUENCE public."Payment_PM_id_seq"
 ALTER SEQUENCE public."Payment_PM_id_seq" OWNER TO tuser;
 
 --
--- TOC entry 3539 (class 0 OID 0)
+-- TOC entry 3516 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: Payment_PM_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
 --
@@ -526,52 +476,12 @@ CREATE SEQUENCE public."Product_P_id_seq"
 ALTER SEQUENCE public."Product_P_id_seq" OWNER TO tuser;
 
 --
--- TOC entry 3540 (class 0 OID 0)
+-- TOC entry 3517 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: Product_P_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
 --
 
 ALTER SEQUENCE public."Product_P_id_seq" OWNED BY public."Product"."P_id";
-
-
---
--- TOC entry 229 (class 1259 OID 16996)
--- Name: Rate; Type: TABLE; Schema: public; Owner: tuser
---
-
-CREATE TABLE public."Rate" (
-    "R_id" integer NOT NULL,
-    "R_total" numeric(65,30) NOT NULL,
-    "R_createDate" timestamp(3) without time zone NOT NULL,
-    "P_id" integer NOT NULL
-);
-
-
-ALTER TABLE public."Rate" OWNER TO tuser;
-
---
--- TOC entry 228 (class 1259 OID 16995)
--- Name: Rate_R_id_seq; Type: SEQUENCE; Schema: public; Owner: tuser
---
-
-CREATE SEQUENCE public."Rate_R_id_seq"
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public."Rate_R_id_seq" OWNER TO tuser;
-
---
--- TOC entry 3541 (class 0 OID 0)
--- Dependencies: 228
--- Name: Rate_R_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tuser
---
-
-ALTER SEQUENCE public."Rate_R_id_seq" OWNED BY public."Rate"."R_id";
 
 
 --
@@ -594,7 +504,7 @@ CREATE TABLE public._prisma_migrations (
 ALTER TABLE public._prisma_migrations OWNER TO tuser;
 
 --
--- TOC entry 3316 (class 2604 OID 25826)
+-- TOC entry 3304 (class 2604 OID 25826)
 -- Name: Address A_id; Type: DEFAULT; Schema: public; Owner: tuser
 --
 
@@ -602,7 +512,7 @@ ALTER TABLE ONLY public."Address" ALTER COLUMN "A_id" SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 3315 (class 2604 OID 25827)
+-- TOC entry 3303 (class 2604 OID 25827)
 -- Name: CartDetail CA_id; Type: DEFAULT; Schema: public; Owner: tuser
 --
 
@@ -610,7 +520,7 @@ ALTER TABLE ONLY public."CartDetail" ALTER COLUMN "CA_id" SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3305 (class 2604 OID 25828)
+-- TOC entry 3295 (class 2604 OID 25828)
 -- Name: Category CG_id; Type: DEFAULT; Schema: public; Owner: tuser
 --
 
@@ -618,15 +528,7 @@ ALTER TABLE ONLY public."Category" ALTER COLUMN "CG_id" SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3314 (class 2604 OID 25829)
--- Name: Comment CM_id; Type: DEFAULT; Schema: public; Owner: tuser
---
-
-ALTER TABLE ONLY public."Comment" ALTER COLUMN "CM_id" SET DEFAULT nextval('public."Comment_CM_id_seq"'::regclass);
-
-
---
--- TOC entry 3307 (class 2604 OID 25830)
+-- TOC entry 3297 (class 2604 OID 25830)
 -- Name: Customer C_id; Type: DEFAULT; Schema: public; Owner: tuser
 --
 
@@ -634,7 +536,7 @@ ALTER TABLE ONLY public."Customer" ALTER COLUMN "C_id" SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 3317 (class 2604 OID 25831)
+-- TOC entry 3305 (class 2604 OID 25831)
 -- Name: Favourite Fav_id; Type: DEFAULT; Schema: public; Owner: tuser
 --
 
@@ -642,7 +544,7 @@ ALTER TABLE ONLY public."Favourite" ALTER COLUMN "Fav_id" SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3309 (class 2604 OID 25832)
+-- TOC entry 3299 (class 2604 OID 25832)
 -- Name: Order O_id; Type: DEFAULT; Schema: public; Owner: tuser
 --
 
@@ -650,7 +552,7 @@ ALTER TABLE ONLY public."Order" ALTER COLUMN "O_id" SET DEFAULT nextval('public.
 
 
 --
--- TOC entry 3311 (class 2604 OID 25833)
+-- TOC entry 3301 (class 2604 OID 25833)
 -- Name: OrderDetail OD_id; Type: DEFAULT; Schema: public; Owner: tuser
 --
 
@@ -658,7 +560,7 @@ ALTER TABLE ONLY public."OrderDetail" ALTER COLUMN "OD_id" SET DEFAULT nextval('
 
 
 --
--- TOC entry 3312 (class 2604 OID 25834)
+-- TOC entry 3302 (class 2604 OID 25834)
 -- Name: Payment PM_id; Type: DEFAULT; Schema: public; Owner: tuser
 --
 
@@ -666,7 +568,7 @@ ALTER TABLE ONLY public."Payment" ALTER COLUMN "PM_id" SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 3306 (class 2604 OID 25835)
+-- TOC entry 3296 (class 2604 OID 25835)
 -- Name: Product P_id; Type: DEFAULT; Schema: public; Owner: tuser
 --
 
@@ -674,16 +576,8 @@ ALTER TABLE ONLY public."Product" ALTER COLUMN "P_id" SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 3313 (class 2604 OID 25836)
--- Name: Rate R_id; Type: DEFAULT; Schema: public; Owner: tuser
---
-
-ALTER TABLE ONLY public."Rate" ALTER COLUMN "R_id" SET DEFAULT nextval('public."Rate_R_id_seq"'::regclass);
-
-
---
--- TOC entry 3521 (class 0 OID 17019)
--- Dependencies: 235
+-- TOC entry 3499 (class 0 OID 17019)
+-- Dependencies: 231
 -- Data for Name: Address; Type: TABLE DATA; Schema: public; Owner: tuser
 --
 
@@ -694,8 +588,8 @@ INSERT INTO public."Address" VALUES (4, 1510456600, 'cat2', '0887699473', 'adfsg
 
 
 --
--- TOC entry 3519 (class 0 OID 17012)
--- Dependencies: 233
+-- TOC entry 3497 (class 0 OID 17012)
+-- Dependencies: 229
 -- Data for Name: CartDetail; Type: TABLE DATA; Schema: public; Owner: tuser
 --
 
@@ -703,7 +597,7 @@ INSERT INTO public."CartDetail" VALUES (26, 1, 2, 2, 50.000000000000000000000000
 
 
 --
--- TOC entry 3503 (class 0 OID 16946)
+-- TOC entry 3485 (class 0 OID 16946)
 -- Dependencies: 217
 -- Data for Name: Category; Type: TABLE DATA; Schema: public; Owner: tuser
 --
@@ -714,15 +608,7 @@ INSERT INTO public."Category" VALUES (3, 'Electronics');
 
 
 --
--- TOC entry 3517 (class 0 OID 17003)
--- Dependencies: 231
--- Data for Name: Comment; Type: TABLE DATA; Schema: public; Owner: tuser
---
-
-
-
---
--- TOC entry 3507 (class 0 OID 16962)
+-- TOC entry 3489 (class 0 OID 16962)
 -- Dependencies: 221
 -- Data for Name: Customer; Type: TABLE DATA; Schema: public; Owner: tuser
 --
@@ -735,8 +621,8 @@ INSERT INTO public."Customer" VALUES (1788793909, 'test1001', '12345678', 'a@b.c
 
 
 --
--- TOC entry 3523 (class 0 OID 17028)
--- Dependencies: 237
+-- TOC entry 3501 (class 0 OID 17028)
+-- Dependencies: 233
 -- Data for Name: Favourite; Type: TABLE DATA; Schema: public; Owner: tuser
 --
 
@@ -745,7 +631,7 @@ INSERT INTO public."Favourite" VALUES (2, 273235621, 7);
 
 
 --
--- TOC entry 3509 (class 0 OID 16972)
+-- TOC entry 3491 (class 0 OID 16972)
 -- Dependencies: 223
 -- Data for Name: Order; Type: TABLE DATA; Schema: public; Owner: tuser
 --
@@ -758,7 +644,7 @@ INSERT INTO public."Order" VALUES (13, 273235621, '2024-10-16 23:11:52', 875.000
 
 
 --
--- TOC entry 3511 (class 0 OID 16982)
+-- TOC entry 3493 (class 0 OID 16982)
 -- Dependencies: 225
 -- Data for Name: OrderDetail; Type: TABLE DATA; Schema: public; Owner: tuser
 --
@@ -774,7 +660,7 @@ INSERT INTO public."OrderDetail" VALUES (25, 13, 1, 5, 500.000000000000000000000
 
 
 --
--- TOC entry 3513 (class 0 OID 16989)
+-- TOC entry 3495 (class 0 OID 16989)
 -- Dependencies: 227
 -- Data for Name: Payment; Type: TABLE DATA; Schema: public; Owner: tuser
 --
@@ -795,7 +681,7 @@ INSERT INTO public."Payment" VALUES (13, 875.000000000000000000000000000000, 'sl
 
 
 --
--- TOC entry 3505 (class 0 OID 16953)
+-- TOC entry 3487 (class 0 OID 16953)
 -- Dependencies: 219
 -- Data for Name: Product; Type: TABLE DATA; Schema: public; Owner: tuser
 --
@@ -812,15 +698,7 @@ INSERT INTO public."Product" VALUES (1, 'Bike', 'Green bike for outdoor sports',
 
 
 --
--- TOC entry 3515 (class 0 OID 16996)
--- Dependencies: 229
--- Data for Name: Rate; Type: TABLE DATA; Schema: public; Owner: tuser
---
-
-
-
---
--- TOC entry 3501 (class 0 OID 16927)
+-- TOC entry 3483 (class 0 OID 16927)
 -- Dependencies: 215
 -- Data for Name: _prisma_migrations; Type: TABLE DATA; Schema: public; Owner: tuser
 --
@@ -829,8 +707,8 @@ INSERT INTO public._prisma_migrations VALUES ('196d5a2a-e751-4bf5-b53f-5bc7885b7
 
 
 --
--- TOC entry 3542 (class 0 OID 0)
--- Dependencies: 234
+-- TOC entry 3518 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: Address_A_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
 --
 
@@ -838,8 +716,8 @@ SELECT pg_catalog.setval('public."Address_A_id_seq"', 4, true);
 
 
 --
--- TOC entry 3543 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 3519 (class 0 OID 0)
+-- Dependencies: 228
 -- Name: CartDetail_CA_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
 --
 
@@ -847,7 +725,7 @@ SELECT pg_catalog.setval('public."CartDetail_CA_id_seq"', 26, true);
 
 
 --
--- TOC entry 3544 (class 0 OID 0)
+-- TOC entry 3520 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: Category_CG_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
 --
@@ -856,16 +734,7 @@ SELECT pg_catalog.setval('public."Category_CG_id_seq"', 3, true);
 
 
 --
--- TOC entry 3545 (class 0 OID 0)
--- Dependencies: 230
--- Name: Comment_CM_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
---
-
-SELECT pg_catalog.setval('public."Comment_CM_id_seq"', 1, false);
-
-
---
--- TOC entry 3546 (class 0 OID 0)
+-- TOC entry 3521 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: Customer_C_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
 --
@@ -874,8 +743,8 @@ SELECT pg_catalog.setval('public."Customer_C_id_seq"', 1, true);
 
 
 --
--- TOC entry 3547 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 3522 (class 0 OID 0)
+-- Dependencies: 232
 -- Name: Favourite_Fav_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
 --
 
@@ -883,7 +752,7 @@ SELECT pg_catalog.setval('public."Favourite_Fav_id_seq"', 5, true);
 
 
 --
--- TOC entry 3548 (class 0 OID 0)
+-- TOC entry 3523 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: OrderDetail_OD_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
 --
@@ -892,7 +761,7 @@ SELECT pg_catalog.setval('public."OrderDetail_OD_id_seq"', 25, true);
 
 
 --
--- TOC entry 3549 (class 0 OID 0)
+-- TOC entry 3524 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: Order_O_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
 --
@@ -901,7 +770,7 @@ SELECT pg_catalog.setval('public."Order_O_id_seq"', 13, true);
 
 
 --
--- TOC entry 3550 (class 0 OID 0)
+-- TOC entry 3525 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: Payment_PM_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
 --
@@ -910,7 +779,7 @@ SELECT pg_catalog.setval('public."Payment_PM_id_seq"', 13, true);
 
 
 --
--- TOC entry 3551 (class 0 OID 0)
+-- TOC entry 3526 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: Product_P_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
 --
@@ -919,16 +788,7 @@ SELECT pg_catalog.setval('public."Product_P_id_seq"', 9, true);
 
 
 --
--- TOC entry 3552 (class 0 OID 0)
--- Dependencies: 228
--- Name: Rate_R_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tuser
---
-
-SELECT pg_catalog.setval('public."Rate_R_id_seq"', 1, false);
-
-
---
--- TOC entry 3341 (class 2606 OID 17026)
+-- TOC entry 3325 (class 2606 OID 17026)
 -- Name: Address Address_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -937,7 +797,7 @@ ALTER TABLE ONLY public."Address"
 
 
 --
--- TOC entry 3339 (class 2606 OID 17017)
+-- TOC entry 3323 (class 2606 OID 17017)
 -- Name: CartDetail CartDetail_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -946,7 +806,7 @@ ALTER TABLE ONLY public."CartDetail"
 
 
 --
--- TOC entry 3321 (class 2606 OID 16951)
+-- TOC entry 3309 (class 2606 OID 16951)
 -- Name: Category Category_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -955,16 +815,7 @@ ALTER TABLE ONLY public."Category"
 
 
 --
--- TOC entry 3336 (class 2606 OID 17010)
--- Name: Comment Comment_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
---
-
-ALTER TABLE ONLY public."Comment"
-    ADD CONSTRAINT "Comment_pkey" PRIMARY KEY ("CM_id");
-
-
---
--- TOC entry 3326 (class 2606 OID 16970)
+-- TOC entry 3314 (class 2606 OID 16970)
 -- Name: Customer Customer_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -973,7 +824,7 @@ ALTER TABLE ONLY public."Customer"
 
 
 --
--- TOC entry 3344 (class 2606 OID 17033)
+-- TOC entry 3328 (class 2606 OID 17033)
 -- Name: Favourite Favourite_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -982,7 +833,7 @@ ALTER TABLE ONLY public."Favourite"
 
 
 --
--- TOC entry 3330 (class 2606 OID 16987)
+-- TOC entry 3318 (class 2606 OID 16987)
 -- Name: OrderDetail OrderDetail_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -991,7 +842,7 @@ ALTER TABLE ONLY public."OrderDetail"
 
 
 --
--- TOC entry 3328 (class 2606 OID 16980)
+-- TOC entry 3316 (class 2606 OID 16980)
 -- Name: Order Order_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1000,7 +851,7 @@ ALTER TABLE ONLY public."Order"
 
 
 --
--- TOC entry 3332 (class 2606 OID 16994)
+-- TOC entry 3320 (class 2606 OID 16994)
 -- Name: Payment Payment_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1009,7 +860,7 @@ ALTER TABLE ONLY public."Payment"
 
 
 --
--- TOC entry 3323 (class 2606 OID 16960)
+-- TOC entry 3311 (class 2606 OID 16960)
 -- Name: Product Product_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1018,16 +869,7 @@ ALTER TABLE ONLY public."Product"
 
 
 --
--- TOC entry 3334 (class 2606 OID 17001)
--- Name: Rate Rate_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
---
-
-ALTER TABLE ONLY public."Rate"
-    ADD CONSTRAINT "Rate_pkey" PRIMARY KEY ("R_id");
-
-
---
--- TOC entry 3319 (class 2606 OID 16935)
+-- TOC entry 3307 (class 2606 OID 16935)
 -- Name: _prisma_migrations _prisma_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1036,7 +878,7 @@ ALTER TABLE ONLY public._prisma_migrations
 
 
 --
--- TOC entry 3337 (class 1259 OID 17035)
+-- TOC entry 3321 (class 1259 OID 17035)
 -- Name: CartDetail_C_id_P_id_key; Type: INDEX; Schema: public; Owner: tuser
 --
 
@@ -1044,7 +886,7 @@ CREATE UNIQUE INDEX "CartDetail_C_id_P_id_key" ON public."CartDetail" USING btre
 
 
 --
--- TOC entry 3324 (class 1259 OID 17034)
+-- TOC entry 3312 (class 1259 OID 17034)
 -- Name: Customer_C_email_key; Type: INDEX; Schema: public; Owner: tuser
 --
 
@@ -1052,7 +894,7 @@ CREATE UNIQUE INDEX "Customer_C_email_key" ON public."Customer" USING btree ("C_
 
 
 --
--- TOC entry 3342 (class 1259 OID 17036)
+-- TOC entry 3326 (class 1259 OID 17036)
 -- Name: Favourite_C_id_P_id_key; Type: INDEX; Schema: public; Owner: tuser
 --
 
@@ -1060,7 +902,7 @@ CREATE UNIQUE INDEX "Favourite_C_id_P_id_key" ON public."Favourite" USING btree 
 
 
 --
--- TOC entry 3355 (class 2606 OID 17087)
+-- TOC entry 3337 (class 2606 OID 17087)
 -- Name: Address Address_C_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1069,7 +911,7 @@ ALTER TABLE ONLY public."Address"
 
 
 --
--- TOC entry 3353 (class 2606 OID 17082)
+-- TOC entry 3335 (class 2606 OID 17082)
 -- Name: CartDetail CartDetail_C_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1078,7 +920,7 @@ ALTER TABLE ONLY public."CartDetail"
 
 
 --
--- TOC entry 3354 (class 2606 OID 17077)
+-- TOC entry 3336 (class 2606 OID 17077)
 -- Name: CartDetail CartDetail_P_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1087,16 +929,7 @@ ALTER TABLE ONLY public."CartDetail"
 
 
 --
--- TOC entry 3352 (class 2606 OID 17072)
--- Name: Comment Comment_P_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
---
-
-ALTER TABLE ONLY public."Comment"
-    ADD CONSTRAINT "Comment_P_id_fkey" FOREIGN KEY ("P_id") REFERENCES public."Product"("P_id") ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
--- TOC entry 3356 (class 2606 OID 17097)
+-- TOC entry 3338 (class 2606 OID 17097)
 -- Name: Favourite Favourite_C_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1105,7 +938,7 @@ ALTER TABLE ONLY public."Favourite"
 
 
 --
--- TOC entry 3357 (class 2606 OID 17092)
+-- TOC entry 3339 (class 2606 OID 17092)
 -- Name: Favourite Favourite_P_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1114,7 +947,7 @@ ALTER TABLE ONLY public."Favourite"
 
 
 --
--- TOC entry 3349 (class 2606 OID 17057)
+-- TOC entry 3333 (class 2606 OID 17057)
 -- Name: OrderDetail OrderDetail_O_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1123,7 +956,7 @@ ALTER TABLE ONLY public."OrderDetail"
 
 
 --
--- TOC entry 3350 (class 2606 OID 17062)
+-- TOC entry 3334 (class 2606 OID 17062)
 -- Name: OrderDetail OrderDetail_P_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1132,7 +965,7 @@ ALTER TABLE ONLY public."OrderDetail"
 
 
 --
--- TOC entry 3346 (class 2606 OID 17052)
+-- TOC entry 3330 (class 2606 OID 17052)
 -- Name: Order Order_A_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1141,7 +974,7 @@ ALTER TABLE ONLY public."Order"
 
 
 --
--- TOC entry 3347 (class 2606 OID 17042)
+-- TOC entry 3331 (class 2606 OID 17042)
 -- Name: Order Order_C_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1150,7 +983,7 @@ ALTER TABLE ONLY public."Order"
 
 
 --
--- TOC entry 3348 (class 2606 OID 17047)
+-- TOC entry 3332 (class 2606 OID 17047)
 -- Name: Order Order_PM_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1159,7 +992,7 @@ ALTER TABLE ONLY public."Order"
 
 
 --
--- TOC entry 3345 (class 2606 OID 17037)
+-- TOC entry 3329 (class 2606 OID 17037)
 -- Name: Product Product_CG_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
 --
 
@@ -1168,16 +1001,7 @@ ALTER TABLE ONLY public."Product"
 
 
 --
--- TOC entry 3351 (class 2606 OID 17067)
--- Name: Rate Rate_P_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tuser
---
-
-ALTER TABLE ONLY public."Rate"
-    ADD CONSTRAINT "Rate_P_id_fkey" FOREIGN KEY ("P_id") REFERENCES public."Product"("P_id") ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
--- TOC entry 3530 (class 0 OID 0)
+-- TOC entry 3508 (class 0 OID 0)
 -- Dependencies: 5
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
 --
@@ -1186,7 +1010,7 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO tuser;
 
 
--- Completed on 2024-10-18 18:47:23
+-- Completed on 2024-10-19 14:03:00
 
 --
 -- PostgreSQL database dump complete
