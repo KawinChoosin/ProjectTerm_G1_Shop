@@ -15,6 +15,7 @@ import Addproduct from "../Admin/AddProduct";
 import axios from "axios";
 import SalesChart from "../Admin/chart/Chart";
 import ProductList from "../Admin/ProductList";
+import Footer from "../../components/Footer";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -153,6 +154,7 @@ function TabsMenu() {
           </Box>
         </Box>
       </Container>
+      <Footer />
     </Box>
   );
 }
