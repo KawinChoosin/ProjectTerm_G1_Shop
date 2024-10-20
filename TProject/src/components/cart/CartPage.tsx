@@ -308,10 +308,11 @@ const CartPage: React.FC = () => {
         maxWidth: "100%",
         padding: "0",
         margin: "0",
+         minHeight: "100vh",
       }}
     >
       <Navbar />
-      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8 }}>
+      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8, flexGrow: 1 }}>
         <ThemeProvider theme={responsiveTheme}>
           <Typography
             variant="h3"
