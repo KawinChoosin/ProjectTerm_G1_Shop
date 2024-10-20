@@ -107,7 +107,7 @@ const FavPage: React.FC = () => {
       style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
     >
       <Navbar />
-      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8 }}>
+      <Container maxWidth="xl" sx={{ mt: isMobile ? 0 : 20, mb: 8, flexGrow: 1 }}>
         <Typography
           variant="h3"
           align="left"
