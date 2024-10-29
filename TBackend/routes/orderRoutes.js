@@ -1,3 +1,297 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Customer:
+ *       type: object
+ *       required:
+ *         - C_id
+ *         - C_email
+ *       properties:
+ *         C_id:
+ *           type: integer
+ *         C_email:
+ *           type: string
+ *         C_name:
+ *           type: string
+ *         isOauth:
+ *           type: boolean
+ *     Order:
+ *       type: object
+ *       required:
+ *         - O_id
+ *         - C_id
+ *         - O_Date_time
+ *         - O_Total
+ *       properties:
+ *         O_id:
+ *           type: integer
+ *         C_id:
+ *           type: integer
+ *         O_Date_time:
+ *           type: string
+ *           format: date-time
+ *         O_Total:
+ *           type: number
+ *         PM_id:
+ *           type: integer
+ *         A_id:
+ *           type: integer
+ *         O_Description:
+ *           type: string
+ *           nullable: true
+ *     OrderDetail:
+ *       type: object
+ *       required:
+ *         - O_id
+ *         - P_id
+ *         - OD_quantity
+ *         - OD_price
+ *       properties:
+ *         O_id:
+ *           type: integer
+ *         P_id:
+ *           type: integer
+ *         OD_quantity:
+ *           type: integer
+ *         OD_price:
+ *           type: number
+ *     Payment:
+ *       type: object
+ *       required:
+ *         - PM_id
+ *         - PM_amount
+ *         - Date_time
+ *         - PM_path
+ *       properties:
+ *         PM_id:
+ *           type: integer
+ *         PM_amount:
+ *           type: number
+ *         Date_time:
+ *           type: string
+ *           format: date-time
+ *         PM_path:
+ *           type: string
+ * tags:
+ *   - name: Orders
+ *     description: Order management operations
+ * 
+ * /orders/customer/{C_id}:
+ *   get:
+ *     summary: Get all orders for a specific customer
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: C_id
+ *         required: true
+ *         description: Customer ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of orders
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ *       404:
+ *         description: No orders found for this customer
+ *       500:
+ *         description: Error fetching orders
+ * 
+ * /orders/{O_id}:
+ *   get:
+ *     summary: Get a specific order by ID
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: O_id
+ *         required: true
+ *         description: Order ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Order details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
+ *       404:
+ *         description: Order not found
+ *       500:
+ *         description: Server error
+ * 
+ * /orders/orderdetails/{O_id}:
+ *   get:
+ *     summary: Get order details by order ID
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: O_id
+ *         required: true
+ *         description: Order ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of order details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/OrderDetail'
+ *       404:
+ *         description: No order details found
+ *       500:
+ *         description: Server error
+ * 
+ * /orders:
+ *   post:
+ *     summary: Create a new order
+ *     tags: [Orders]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - C_id
+ *               - Date_time
+ *               - Total
+ *               - PM_amount
+ *               - A_id
+ *               - PM_path
+ *               - orderDetails
+ *             properties:
+ *               C_id:
+ *                 type: integer
+ *               Date_time:
+ *                 type: string
+ *                 format: date-time
+ *               Total:
+ *                 type: number
+ *               PM_amount:
+ *                 type: number
+ *               A_id:
+ *                 type: integer
+ *               PM_path:
+ *                 type: string
+ *               O_Description:
+ *                 type: string
+ *                 nullable: true
+ *               orderDetails:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/OrderDetail'
+ *     responses:
+ *       201:
+ *         description: Order created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
+ *       400:
+ *         description: Invalid request
+ *       500:
+ *         description: Error creating order
+ * 
+ * /orders/orderdetails:
+ *   post:
+ *     summary: Add a new order detail
+ *     tags: [Orders]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - O_id
+ *               - P_id
+ *               - OD_quantity
+ *               - OD_price
+ *             properties:
+ *               O_id:
+ *                 type: integer
+ *               P_id:
+ *                 type: integer
+ *               OD_quantity:
+ *                 type: integer
+ *               OD_price:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Order detail created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OrderDetail'
+ *       500:
+ *         description: Error creating order detail
+ * 
+ * /orders/generateqr:
+ *   post:
+ *     summary: Generate a QR code for payment
+ *     tags: [Orders]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - C_id
+ *               - amount
+ *             properties:
+ *               C_id:
+ *                 type: integer
+ *               amount:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: QR code generated successfully
+ *       500:
+ *         description: Error generating QR code
+ * 
+ * /orders/report:
+ *   get:
+ *     summary: Get sales report for the current week
+ *     tags: [Orders]
+ *     responses:
+ *       200:
+ *         description: Sales report data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   orderId:
+ *                     type: integer
+ *                   total:
+ *                     type: number
+ *                   items:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         productId:
+ *                           type: integer
+ *                         quantity:
+ *                           type: integer
+ *                         price:
+ *                           type: number
+ *       500:
+ *         description: Server error
+ */
+
 const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");

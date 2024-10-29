@@ -1,3 +1,85 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Order:
+ *       type: object
+ *       properties:
+ *         O_id:
+ *           type: integer
+ *         O_Description:
+ *           type: string
+ *         O_status:
+ *           type: string
+ *         Customer:
+ *           type: object
+ *           properties:
+ *             C_name:
+ *               type: string
+ *         Payment:
+ *           type: object
+ *           properties:
+ *             PM_path:
+ *               type: string
+ *         Address:
+ *           type: object
+ *         OrderDetail:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               Product:
+ *                 type: object
+ * 
+ * tags:
+ *   - name: Orders
+ *     description: Order management API
+ * 
+ * /orders/descrip:
+ *   put:
+ *     summary: Update order description and status
+ *     tags: [Orders]
+ *     requestBody:
+ *       required: true
+ *     responses:
+ *       '200':
+ *         description: Order updated successfully
+ *       '400':
+ *         description: Bad request for missing fields or invalid status
+ *       '500':
+ *         description: Error updating order
+ * 
+ * /orders/status:
+ *   put:
+ *     summary: Update order status
+ *     tags: [Orders]
+ *     requestBody:
+ *       required: true
+ *     responses:
+ *       '200':
+ *         description: Order status updated successfully
+ *       '400':
+ *         description: Bad request for missing fields
+ *       '500':
+ *         description: Error updating order
+ * 
+ * /orders/customer:
+ *   get:
+ *     summary: Get all orders for a specific customer
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: query
+ *         name: C_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: List of orders for the customer
+ *       '500':
+ *         description: Error fetching orders
+ */
+
 const express = require("express");
 const router = express.Router();
 const prisma = require("../prisma/client");

@@ -1,3 +1,154 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     CartDetail:
+ *       type: object
+ *       required:
+ *         - C_id
+ *         - P_id
+ *         - CA_quantity
+ *         - CA_price
+ *       properties:
+ *         C_id:
+ *           type: integer
+ *         P_id:
+ *           type: integer
+ *         CA_quantity:
+ *           type: integer
+ *         CA_price:
+ *           type: number
+ *           format: float
+ * tags:
+ *   - name: Cart
+ *     description: Cart management API
+ * 
+ * /cart/add:
+ *   post:
+ *     summary: Add product to cart
+ *     tags: [Cart]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - C_id
+ *               - P_id
+ *               - CA_quantity
+ *               - CA_price
+ *             properties:
+ *               C_id:
+ *                 type: integer
+ *               P_id:
+ *                 type: integer
+ *               CA_quantity:
+ *                 type: integer
+ *               CA_price:
+ *                 type: number
+ *     responses:
+ *       '200':
+ *         description: Product added to cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CartDetail'
+ *       '500':
+ *         description: Error adding product to cart
+ * 
+ * /cart/delete:
+ *   delete:
+ *     summary: Delete product from cart
+ *     tags: [Cart]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - C_id
+ *               - P_id
+ *             properties:
+ *               C_id:
+ *                 type: integer
+ *               P_id:
+ *                 type: integer
+ *     responses:
+ *       '200':
+ *         description: Item successfully deleted from cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Item successfully deleted from cart
+ *                 deletedCartDetail:
+ *                   $ref: '#/components/schemas/CartDetail'
+ *       '500':
+ *         description: Error deleting product from cart
+ * 
+ * /cart/{C_id}:
+ *   get:
+ *     summary: Get all cart items for a specific customer
+ *     tags: [Cart]
+ *     parameters:
+ *       - in: path
+ *         name: C_id
+ *         required: true
+ *         description: Customer ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: A list of cart items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/CartDetail'
+ *       '500':
+ *         description: Error fetching cart items
+ * 
+ * /cart/update:
+ *   patch:
+ *     summary: Update product quantity in cart
+ *     tags: [Cart]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - C_id
+ *               - P_id
+ *               - CA_quantity
+ *               - CA_price
+ *             properties:
+ *               C_id:
+ *                 type: integer
+ *               P_id:
+ *                 type: integer
+ *               CA_quantity:
+ *                 type: integer
+ *               CA_price:
+ *                 type: number
+ *     responses:
+ *       '200':
+ *         description: Cart quantity updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CartDetail'
+ *       '500':
+ *         description: Error updating cart quantity
+ */
+
 // routes/cartRoutes.js
 const express = require("express");
 const prisma = require("../prisma/client");

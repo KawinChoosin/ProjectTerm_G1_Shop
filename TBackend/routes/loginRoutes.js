@@ -1,3 +1,25 @@
+/**
+ * @swagger
+ * 
+ * tags:
+ *   - name: Authentication
+ *     description: User authentication API
+ * 
+ * /login:
+ *   post:
+ *     summary: User login
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *     responses:
+ *       '200':
+ *         description: Login successful
+ *       '401':
+ *         description: Invalid username or password
+ *       '500':
+ *         description: An unexpected error occurred
+ */
+
 const express = require("express");
 const prisma = require("../prisma/client");
 

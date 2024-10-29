@@ -1,3 +1,135 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Customer:
+ *       type: object
+ *       required:
+ *         - C_id
+ *         - C_name
+ *         - C_email
+ *         - T_pnum
+ *         - C_gender
+ *         - C_age
+ *         - C_password
+ *       properties:
+ *         C_id:
+ *           type: integer
+ *         C_name:
+ *           type: string
+ *         C_email:
+ *           type: string
+ *           format: email
+ *         T_pnum:
+ *           type: string
+ *         C_gender:
+ *           type: string
+ *         C_age:
+ *           type: integer
+ *         C_password:
+ *           type: string
+ * tags:
+ *   - name: Customers
+ *     description: Customer management API
+ * 
+ * /customers:
+ *   get:
+ *     summary: Get all customers
+ *     tags: [Customers]
+ *     responses:
+ *       '200':
+ *         description: A list of customers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Customer'
+ *       '500':
+ *         description: Database connection error
+ * 
+ *   post:
+ *     summary: Add a new customer
+ *     tags: [Customers]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - C_name
+ *               - C_password
+ *               - C_email
+ *               - C_gender
+ *               - C_age
+ *               - T_pnum
+ *             properties:
+ *               C_name:
+ *                 type: string
+ *               C_password:
+ *                 type: string
+ *               C_email:
+ *                 type: string
+ *                 format: email
+ *               C_gender:
+ *                 type: string
+ *               C_age:
+ *                 type: integer
+ *               T_pnum:
+ *                 type: string
+ *     responses:
+ *       '201':
+ *         description: Customer created successfully
+ *       '409':
+ *         description: Customer with this name or email already exists
+ *       '500':
+ *         description: Error creating customer
+ * 
+ * /customers/{C_id}:
+ *   delete:
+ *     summary: Delete a customer
+ *     tags: [Customers]
+ *     parameters:
+ *       - in: path
+ *         name: C_id
+ *         required: true
+ *         description: Customer ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Customer deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Customer deleted successfully"
+ *       '400':
+ *         description: Cannot delete customer due to foreign key constraints
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Cannot delete customer due to foreign key constraints."
+ *       '500':
+ *         description: Error deleting customer
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error deleting customer"
+ */
+
 const express = require("express");
 const prisma = require("../prisma/client");
 const { v4: uuidv4 } = require("uuid");
