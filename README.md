@@ -99,6 +99,9 @@ npm run dev
 ```
 <br/>
 
+# Project Swagger
+[API Documentation](http://10.10.182.248:1313/api-docs)
+
 
 # Project Structure
 
