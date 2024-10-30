@@ -9,7 +9,7 @@
 - ธัญชนก กวีกุล 650615021
 <br/>
 
-# SETUP
+# SETUP (Use main branch) 
 
 ## 1) Change all .env.example to .env
 
