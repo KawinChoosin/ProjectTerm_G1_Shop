@@ -1,3 +1,127 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Favourite:
+ *       type: object
+ *       required:
+ *         - C_id
+ *         - P_id
+ *       properties:
+ *         C_id:
+ *           type: integer
+ *         P_id:
+ *           type: integer
+ * 
+ * tags:
+ *   - name: Favourite
+ *     description: Favourite management API
+ * 
+ * /favourites/{C_id}:
+ *   get:
+ *     summary: Get all favourite items for a specific customer
+ *     tags: [Favourite]
+ *     parameters:
+ *       - in: path
+ *         name: C_id
+ *         required: true
+ *         description: Customer ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: A list of favorite items
+ *       '500':
+ *         description: Error fetching favorite items
+ * 
+ * /favourites/add:
+ *   post:
+ *     summary: Add product to favourites
+ *     tags: [Favourite]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - C_id
+ *               - P_id
+ *             properties:
+ *               C_id:
+ *                 type: integer
+ *               P_id:
+ *                 type: integer
+ *     responses:
+ *       '200':
+ *         description: Product added to favourites
+ *       '400':
+ *         description: Item already in favourites
+ *       '500':
+ *         description: Error adding product to favourites
+ * 
+ * /favourites/check/{P_id}:
+ *   get:
+ *     summary: Check if a product is in favourites for a specific customer
+ *     tags: [Favourite]
+ *     parameters:
+ *       - in: path
+ *         name: P_id
+ *         required: true
+ *         description: Product ID
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: C_id
+ *         required: true
+ *         description: Customer ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Check if product is liked
+ *       '400':
+ *         description: C_id is required
+ *       '500':
+ *         description: Error checking favorite status
+ * 
+ * /favourites/remove:
+ *   delete:
+ *     summary: Remove product from favourites
+ *     tags: [Favourite]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - C_id
+ *               - P_id
+ *             properties:
+ *               C_id:
+ *                 type: integer
+ *               P_id:
+ *                 type: integer
+ *     responses:
+ *       '200':
+ *         description: Item successfully removed from favourites
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Item successfully removed from favourites
+ *                 removeItem:
+ *                   $ref: '#/components/schemas/Favourite'
+ *       '400':
+ *         description: C_id and P_id are required
+ *       '500':
+ *         description: Error removing product from favourites
+ */
+
 const express = require("express");
 const router = express.Router();
 const prisma = require("../prisma/client");

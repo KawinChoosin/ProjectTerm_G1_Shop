@@ -1,3 +1,121 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Category:
+ *       type: object
+ *       required:
+ *         - CG_name
+ *       properties:
+ *         CG_id:
+ *           type: integer
+ *         CG_name:
+ *           type: string
+ * tags:
+ *   - name: Category
+ *     description: Category management API
+ * 
+ * /categories:
+ *   get:
+ *     summary: Get all categories
+ *     tags: [Category]
+ *     responses:
+ *       '200':
+ *         description: A list of categories
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Category'
+ *       '500':
+ *         description: Error fetching categories
+ * 
+ *   post:
+ *     summary: Create a new category
+ *     tags: [Category]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - CG_name
+ *             properties:
+ *               CG_name:
+ *                 type: string
+ *     responses:
+ *       '201':
+ *         description: Category created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *       '400':
+ *         description: Category name is required
+ *       '500':
+ *         description: Error adding category
+ * 
+ * /categories/{id}:
+ *   put:
+ *     summary: Update a category by ID
+ *     tags: [Category]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Category ID
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - CG_name
+ *             properties:
+ *               CG_name:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Category updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *       '400':
+ *         description: Category name is required
+ *       '500':
+ *         description: Error updating category
+ * 
+ *   delete:
+ *     summary: Delete a category by ID
+ *     tags: [Category]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Category ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Category deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Category deleted successfully
+ *       '500':
+ *         description: Error deleting category
+ */
+
 const express = require("express");
 const prisma = require("../prisma/client");
 

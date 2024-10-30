@@ -15,9 +15,15 @@ const categoryRoutes = require("./routes/categoryRoutes");
 
 const authenRoutes = require("./routes/authenRoutes");
 
+const swaggerjsdoc = require("swagger-jsdoc");
+const swaggerui = require("swagger-ui-express");
+
 const path = require("path");
 const app = express();
 const cors = require("cors");
+const { title } = require("process");
+const { version } = require("os");
+const { description } = require("./schemas/addressSchema");
 
 app.use(cors());
 app.use(express.json());
@@ -44,6 +50,30 @@ app.use("/auth/google", authenRoutes);
 app.get("/", (req, res) => {
   res.send("API is running");
 });
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info:{
+      title : "KAD-ENT",
+      version : "0.0.1",
+      description : "This is the api document for KAD-ENT website in Full-Stack course in 2024"
+    },
+    servers: [
+      {
+        url: "http://localhost:3000/",
+      }
+    ]
+  },
+  apis: ["./routes/*.js"]
+};
+
+const spacs = swaggerjsdoc(options);
+app.use(
+  "/api-docs",
+  swaggerui.serve,
+  swaggerui.setup(spacs)
+)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

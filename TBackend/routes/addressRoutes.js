@@ -1,3 +1,174 @@
+/**
+* @swagger
+* components:
+*   schemas:
+*     Address:
+*       type: object
+*       required:
+*         - A_id
+*         - C_id
+*         - A_name
+*         - A_phone
+*         - A_street
+*         - A_city
+*         - A_state
+*         - A_postalCode
+*         - A_country
+*       properties:
+*         A_id:
+*           type: string
+*         C_id:
+*           type: integer
+*         A_name:
+*           type: string
+*         A_phone:
+*           type: string
+*         A_street:
+*           type: string
+*         A_city:
+*           type: string
+*         A_state:
+*           type: string
+*         A_postalCode:
+*           type: string
+*         A_country:
+*           type: string
+*/
+/**
+* @swagger
+* tags:
+*   - name: Address
+*     description: The address managing API
+*
+* /addresses/{C_id}:
+*   get:
+*     summary: Get all addresses for a customer
+*     tags: [Address]
+*     parameters:
+*       - name: C_id
+*         in: path
+*         required: true
+*         description: The ID of the customer
+*         schema:
+*           type: integer
+*     responses:
+*       '200':
+*         description: A list of addresses
+*         content:
+*           application/json:
+*             schema:
+*               type: array
+*               items:
+*                 $ref: '#/components/schemas/Address'
+*       '500':
+*         description: Server error
+*
+* /addresses/address/{id}:
+*   get:
+*     summary: Get a specific address by ID
+*     tags: [Address]
+*     parameters:
+*       - name: id
+*         in: path
+*         required: true
+*         description: The ID of the address
+*         schema:
+*           type: integer
+*     responses:
+*       '200':
+*         description: Address object
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/Address'
+*       '404':
+*         description: Address not found
+*       '500':
+*         description: Server error
+*
+* /addresses:
+*   post:
+*     summary: Add a new address
+*     tags: [Address]
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             $ref: '#/components/schemas/Address'
+*     responses:
+*       '201':
+*         description: Address created
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/Address'
+*       '400':
+*         description: Validation error
+*       '500':
+*         description: Server error
+*
+* /addresses/{id}:
+*   patch:
+*     summary: Update an existing address
+*     tags: [Address]
+*     parameters:
+*       - name: id
+*         in: path
+*         required: true
+*         description: The ID of the address to update
+*         schema:
+*           type: integer
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             $ref: '#/components/schemas/Address'
+*     responses:
+*       '200':
+*         description: Updated address
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/Address'
+*       '400':
+*         description: Validation error
+*       '404':
+*         description: Address not found
+*       '500':
+*         description: Server error
+*
+* /addresses/{id}/delete:
+*   delete:
+*     summary: Delete an address
+*     tags: [Address]
+*     parameters:
+*       - name: id
+*         in: path
+*         required: true
+*         description: The ID of the address to delete
+*         schema:
+*           type: integer
+*     responses:
+*       '200':
+*         description: Address successfully deleted
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 message:
+*                   type: string
+*                 deletedAddress:
+*                   $ref: '#/components/schemas/Address'
+*       '404':
+*         description: Address not found
+*       '500':
+*         description: Server error
+*/
+ 
+
 const express = require("express");
 const prisma = require("../prisma/client");
 const addressSchema = require("../schemas/addressSchema");

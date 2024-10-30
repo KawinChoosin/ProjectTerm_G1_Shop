@@ -1,3 +1,79 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Customer:
+ *       type: object
+ *       required:
+ *         - C_id
+ *         - C_email
+ *       properties:
+ *         C_id:
+ *           type: integer
+ *         C_email:
+ *           type: string
+ *         C_name:
+ *           type: string
+ *         isOauth:
+ *           type: boolean
+ * tags:
+ *   - name: Google Auth
+ *     description: Google OAuth authentication API
+ * 
+ * /auth/google/callback:
+ *   get:
+ *     summary: Get all customers
+ *     tags: [Google Auth]
+ *     responses:
+ *       '200':
+ *         description: A list of customers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Customer'
+ *       '500':
+ *         description: Database connection error
+ * 
+ *   post:
+ *     summary: Handle Google OAuth callback
+ *     tags: [Google Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - code
+ *             properties:
+ *               code:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Successful login or new user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 C_id:
+ *                   type: integer
+ *                 C_email:
+ *                   type: string
+ *                 C_name:
+ *                   type: string
+ *                 isOauth:
+ *                   type: boolean
+ *       '400':
+ *         description: Authorization code is missing
+ *       '401':
+ *         description: Google login failed
+ *       '500':
+ *         description: Server error
+ */
+
 const { OAuth2Client } = require("google-auth-library");
 const express = require("express");
 const prisma = require("../prisma/client");

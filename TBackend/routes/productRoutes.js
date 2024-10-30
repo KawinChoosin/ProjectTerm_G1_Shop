@@ -1,3 +1,190 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       required:
+ *         - P_id
+ *         - P_name
+ *         - P_description
+ *         - P_quantity
+ *         - P_price
+ *         - P_img
+ *         - CG_id
+ *       properties:
+ *         P_id:
+ *           type: integer
+ *         P_name:
+ *           type: string
+ *         P_description:
+ *           type: string
+ *         P_quantity:
+ *           type: integer
+ *         P_price:
+ *           type: number
+ *           format: float
+ *         P_img:
+ *           type: string
+ *         CG_id:
+ *           type: integer
+ * tags:
+ *   - name: Products
+ *     description: Product management API
+ * 
+ * /products:
+ *   get:
+ *     summary: Get all products
+ *     tags: [Products]
+ *     responses:
+ *       '200':
+ *         description: A list of products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       '500':
+ *         description: Database connection error
+ * 
+ *   post:
+ *     summary: Add a new product
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - P_name
+ *               - P_description
+ *               - P_quantity
+ *               - P_price
+ *               - CG_id
+ *             properties:
+ *               P_name:
+ *                 type: string
+ *               P_description:
+ *                 type: string
+ *               P_quantity:
+ *                 type: integer
+ *               P_price:
+ *                 type: number
+ *                 format: float
+ *               CG_id:
+ *                 type: integer
+ *     responses:
+ *       '200':
+ *         description: Product created successfully
+ *       '400':
+ *         description: Invalid request
+ *       '500':
+ *         description: Error creating product
+ * 
+ * /products/category/{CG_id}:
+ *   get:
+ *     summary: Get products by category ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: CG_id
+ *         required: true
+ *         description: Category ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: A list of products in the specified category
+ *       '500':
+ *         description: Error fetching products by category
+ * 
+ * /products/{id}:
+ *   get:
+ *     summary: Get a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Product ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Product found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       '404':
+ *         description: Product not found
+ *       '500':
+ *         description: Server error
+ * 
+ *   put:
+ *     summary: Update a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Product ID
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               P_name:
+ *                 type: string
+ *               P_description:
+ *                 type: string
+ *               P_quantity:
+ *                 type: integer
+ *               P_price:
+ *                 type: number
+ *                 format: float
+ *               CG_id:
+ *                 type: integer
+ *     responses:
+ *       '200':
+ *         description: Product updated successfully
+ *       '404':
+ *         description: Product not found
+ *       '500':
+ *         description: Error updating product
+ * 
+ *   delete:
+ *     summary: Delete a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Product ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Product deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       '404':
+ *         description: Product not found
+ *       '500':
+ *         description: Server error
+ */
+
 // routes/productRoutes.js
 const express = require("express");
 const prisma = require("../prisma/client");
