@@ -148,7 +148,7 @@ const RegisterForm: React.FC = () => {
         backgroundImage: `url(${bgImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        height: "100vh",
+        height: "100%",
         width: "100%",
       }}
     >
